@@ -138,6 +138,7 @@ pyOpenSSL==18.0.0
 pypub==1.4
 PyScreeze==0.1.14
 pysqlite3==0.2.1
+python3-xlib==0.15
 PyTweening==1.0.3
 RepresentativeLogging==0.1
 requests==2.21.0
