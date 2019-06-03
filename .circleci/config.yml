@@ -7,8 +7,13 @@ jobs:
       - checkout
       - run: |
           pwd
+          ls
           cd ..
           pwd
+          ls
+          cd ..
+          pwd
+          ls
           sudo pip install -r requirements.txt
           cd src
           python3 run_tests.py
