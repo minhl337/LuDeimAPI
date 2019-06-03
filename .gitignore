@@ -5,4 +5,4 @@ venv/
 src/*.sqlite3
 src/*.backup
 *.pyc
-.DS_STORE
+.DS_Store
