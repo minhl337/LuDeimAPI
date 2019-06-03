@@ -28,7 +28,7 @@ hexbytes==0.1.0
 idna==2.8
 imutils==0.5.1
 itsdangerous==1.1.0
-Jinja2==2.10
+Jinja2>=2.10.1
 jsonrpcclient==2.6.0
 jsonschema==2.6.0
 jwt==0.5.4
@@ -44,8 +44,7 @@ parsimonious==0.8.0
 Pillow==5.2.0
 py-solc==3.1.0
 pycparser==2.19
-pycrypto==2.6.1
-pycryptodome==3.6.4
+pycryptodome>=3.6.6
 pygame==1.9.4
 PyMsgBox==1.0.6
 pynput==1.4
@@ -61,7 +60,6 @@ rlp==1.0.1
 selenium==3.14.0
 semantic-version==2.6.0
 six==1.11.0
-SQLAlchemy==1.2.12
 stripe==2.22.0
 toolz==0.9.0
 urllib3==1.24.3
