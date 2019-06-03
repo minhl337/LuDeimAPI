@@ -6,7 +6,7 @@ jobs:
     steps:
       - checkout
       - run: |
-          sudo apt-get install  python-xlib
+          pip install --upgrade setuptools
           sudo pip install -r requirments.txt
           cd src
           python3 run_tests.py
