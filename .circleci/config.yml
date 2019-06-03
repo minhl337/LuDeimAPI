@@ -6,14 +6,6 @@ jobs:
     steps:
       - checkout
       - run: |
-          pwd
-          ls
-          cd ..
-          pwd
-          ls
-          cd ..
-          pwd
-          ls
-          sudo pip install -r requirements.txt
+          sudo pip install -r requirments.txt
           cd src
           python3 run_tests.py
