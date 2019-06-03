@@ -1,8 +1,10 @@
 .idea/
 venv/
-*.sqlite3
+*.sqlite
 *.log
 src/*.sqlite3
 src/*.backup
 *.pyc
 .DS_Store
+src/errors_log.json
+src/general_log.json
