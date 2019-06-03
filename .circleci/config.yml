@@ -1,12 +1,12 @@
 version: 2
- jobs:
-   build:
-     working_directory: ~/
-     docker:
-       - image: circleci//python:3.7.1
-     steps:
-       - checkout
-       - run: |
-           sudo pip install -r requirements.txt
-           cd src
-           python3 run_tests.py
+jobs:
+  build:
+    working_directory: ~/
+    docker:
+      - image: circleci//python:3.7.1
+    steps:
+      - checkout
+      - run: |
+          sudo pip install -r requirements.txt
+          cd src
+          python3 run_tests.py
