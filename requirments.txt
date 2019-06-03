@@ -43,7 +43,6 @@ opencv-python==3.4.3.18
 parsimonious==0.8.0
 Pillow==5.2.0
 py-solc==3.1.0
-PyAutoGUI==0.9.36
 pycparser==2.19
 pycrypto==2.6.1
 pycryptodome==3.6.4
