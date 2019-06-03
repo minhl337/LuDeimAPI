@@ -1,0 +1,41 @@
+body, html {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    display: grid;
+    height: 100vh;
+    grid-template-columns:
+            0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw
+            0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw
+            0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw
+            0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw
+            0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw
+            0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw
+            0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw
+            0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw
+            0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw
+            0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw
+            0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw
+            0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw
+            0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw
+            0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw
+            0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw
+            0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw
+            0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw
+            0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw
+            0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw
+            0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw 0.5vw;
+    grid-template-rows:
+            1vh 1vh 1vh 1vh 1vh 1vh 1vh 1vh 1vh 1vh
+            1vh 1vh 1vh 1vh 1vh 1vh 1vh 1vh 1vh 1vh
+            1vh 1vh 1vh 1vh 1vh 1vh 1vh 1vh 1vh 1vh
+            1vh 1vh 1vh 1vh 1vh 1vh 1vh 1vh 1vh 1vh
+            1vh 1vh 1vh 1vh 1vh 1vh 1vh 1vh 1vh 1vh
+            1vh 1vh 1vh 1vh 1vh 1vh 1vh 1vh 1vh 1vh
+            1vh 1vh 1vh 1vh 1vh 1vh 1vh 1vh 1vh 1vh
+            1vh 1vh 1vh 1vh 1vh 1vh 1vh 1vh 1vh 1vh
+            1vh 1vh 1vh 1vh 1vh 1vh 1vh 1vh 1vh 1vh
+            1vh 1vh 1vh 1vh 1vh 1vh 1vh 1vh 1vh 1vh;
+}

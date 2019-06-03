@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+    <script type="text/javascript" src="{{ url_for('static',filename='js/dependencies/sha256.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static',filename='js/helpers/request_maker.js') }}"></script>
+    <script src="{{ url_for('static',filename='js/login.js') }}"></script>
+    <title>LuDeim | Login</title>
+</head>
+<body>
+    <form onsubmit="return false" >
+        <div class="container">
+            <b>Username</b>
+            <br>
+            <br>
+            <input id="username" type="text" placeholder="Enter Username">
+            <br>
+            <br>
+            <b>Password</b>
+            <br>
+            <br>
+            <input id="password" type="password" placeholder="Enter Password">
+            <br>
+            <br>
+            <button onclick="user_login()">Login</button>
+        </div>
+    </form>
+</body>
+</html>

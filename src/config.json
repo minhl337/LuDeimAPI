@@ -1,0 +1,63 @@
+{
+  "database_path": "test_db.sqlite",
+  "method_names": [
+    "add_user",
+    "add_location",
+    "login",
+    "logout",
+    "get_user_location_uuids",
+    "get_all_usernames"
+  ],
+  "param_primitives": [
+    "str",
+    "int",
+    "float",
+    "bool",
+    "list"
+  ],
+  "param_schemes": {
+    "add_user": [
+      {
+        "username": "str",
+        "password_hash": "str",
+        "type": "str"
+      }
+    ],
+    "add_location": [
+      {
+        "?uuid": "str",
+        "type": "str",
+        "name": "str",
+        "address": "str",
+        "latitude": "float",
+        "longitude": "float",
+        "details": "str",
+        "representative": {
+          "title": "str",
+          "first_name": "str",
+          "last_name": "str",
+          "contact_info": "str"
+        }
+      }
+    ],
+    "login": [
+      {
+        "username": "str",
+        "password_hash": "str"
+      }
+    ],
+    "logout": [
+      {
+        "?uuid": "str"
+      }
+    ],
+    "get_user_location_uuids": [
+      {
+        "username": "str"
+      }
+    ],
+    "get_all_usernames": [
+      {}
+    ]
+  }
+}

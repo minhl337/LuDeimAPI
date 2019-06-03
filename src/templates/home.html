@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/home.css') }}">
+    <script type="text/javascript" src="{{ url_for('static',filename='js/helpers/request_maker.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static',filename='js/helpers/dummy_data.js') }}"></script>
+    <script src="{{ url_for('static',filename='js/home.js') }}"></script>
+    <title>LuDeim | Home</title>
+</head>
+<body>
+    <div id="header">
+        <h1>LuDeim | Home</h1>
+    </div>
+    <hr>
+    <div id="inventory">
+        <h3>Inventory</h3>
+        <hr>
+        <div id="inventory_lines"></div>
+    </div>
+    <div id="locations">
+        <h3>Locations</h3>
+        <hr>
+        <div id="location_lines"></div>
+    </div>
+</body>
+</html>

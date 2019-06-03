@@ -1,0 +1,28 @@
+.container {
+    align-content: center;
+    margin: auto;
+    width: 25%;
+    background-color: darkslategrey;
+    padding: 20px;
+    text-align: center;
+    color: whitesmoke;
+}
+
+input, button {
+    width: 96%;
+    margin: 0;
+    border: none;
+    padding: 2%;
+}
+button {
+    width: 100%;
+}
+
+form {
+    margin-top: 10%;
+}
+
+html {
+    font-family: sans-serif;
+    color: #404040;
+}
