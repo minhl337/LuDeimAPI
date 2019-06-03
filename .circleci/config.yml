@@ -6,7 +6,7 @@ jobs:
     steps:
       - checkout
       - run: |
-          pip install --upgrade setuptools
+          pip install --upgrade pip
           sudo pip install -r requirments.txt
           cd src
           python3 run_tests.py
