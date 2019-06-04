@@ -4,12 +4,11 @@ import random
 import string
 import json
 import flask
+import time
 import utils.ludeim_constants as lconst
 import utils.response_constants as rconst
 import utils.ludeim_generic_helpers as ludeim
 import utils.database_helpers as db
-
-
 import app
 
 
@@ -25,6 +24,8 @@ class TestApiMethodLogin(unittest.TestCase):
         self.app = app.app.test_client()
 
     def test__login__valid__without_logout(self):
+        time.sleep(1)
+        print("\ntest__login__valid__without_logout")
         for _ in range(100):  # NOTE: run 100 random iterations to for robustness
             reset.auto_reset()  # NOTE: reset the database
             _type = random.choice(lconst.USER_TYPES)
@@ -116,6 +117,8 @@ class TestApiMethodLogin(unittest.TestCase):
                                      "type not saved in the session correctly during login")
 
     def test__login__valid__with_logout_with_uuid(self):
+        time.sleep(1)
+        print("\ntest__login__valid__with_logout_with_uuid")
         for _ in range(100):  # NOTE: run 100 random iterations to for robustness
             reset.auto_reset()  # NOTE: reset the database
             _type = random.choice(lconst.USER_TYPES)
@@ -226,6 +229,8 @@ class TestApiMethodLogin(unittest.TestCase):
                                      "type not saved in the session correctly during login")
 
     def test__login__valid__with_logout_without_uuid(self):
+        time.sleep(1)
+        print("\ntest__login__valid__with_logout_without_uuid")
         for _ in range(100):  # NOTE: run 100 random iterations to for robustness
             reset.auto_reset()  # NOTE: reset the database
             _type = random.choice(lconst.USER_TYPES)
@@ -334,6 +339,8 @@ class TestApiMethodLogin(unittest.TestCase):
                                      "type not saved in the session correctly during login")
 
     def test__login__invalid__nonexistent_username(self):
+        time.sleep(1)
+        print("\ntest__login__invalid__nonexistent_username")
         for _ in range(100):  # NOTE: run 100 random iterations to for robustness
             reset.auto_reset()  # NOTE: reset the database
             _type = random.choice(lconst.USER_TYPES)
@@ -425,6 +432,8 @@ class TestApiMethodLogin(unittest.TestCase):
                                      "type saved in the session inadvertently during login")
 
     def test__login__invalid__nonexistent_password_hash(self):
+        time.sleep(1)
+        print("\ntest__login__invalid__nonexistent_password_hash")
         for _ in range(100):  # NOTE: run 100 random iterations to for robustness
             reset.auto_reset()  # NOTE: reset the database
             _type = random.choice(lconst.USER_TYPES)

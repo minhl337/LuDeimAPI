@@ -28,15 +28,21 @@ def handle_batch(obj, logger, session):
     evaluation = rpc.validate_batch(obj)
     if evaluation is True:
         config = json.load(open("config.json", "r"))
-        executor = concurrent.ThreadPoolExecutor(max_workers=(len(obj) % 20))
+        executor = concurrent.futures.ThreadPoolExecutor(max_workers=(len(obj) % 20))
         promises = []
+        sessions = []
         for _ in obj:
-            promises.append(executor.submit(handle_obj, _, config, logger, session))
+            d_sess = dictize_session(session)
+            sessions.append(d_sess)
+            promises.append(executor.submit(handle_obj, _, config, logger, d_sess))
         results = []
         for promise in promises:
             result = promise.result()
             if result != const.NO_RESPONSE:
                 results.append(result)
+        for d_sess in sessions:
+            for k in d_sess:
+                session[k] = d_sess[k]
         if len(results) == 0:
             results = const.NO_RESPONSE
         return results
@@ -66,3 +72,11 @@ def method_call(method_name, params, _id, conn, logger, config, session):
         method_name,
         lambda v, w, x, y, z: rpc.make_error_resp(const.NO_METHOD_CODE, const.NO_METHOD, _id)
     )(params, _id, conn, logger, config, session)
+
+
+def dictize_session(s):
+    d = dict()
+    for k in s:
+        d[k] = s[k]
+    return d
+

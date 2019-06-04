@@ -255,7 +255,7 @@ def logout(params, _id, conn, logger, config, session):
         return rpc.make_success_resp(True, _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
-            "method": "logout",
+            "method": "logout" + str(e.methods),
             "params": params,
             "error": str(e.exception)
         })

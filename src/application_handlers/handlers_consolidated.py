@@ -1,1 +1,1 @@
-from application_handlers.included_handlers.ludeim_handlers import *
+from application_handlers.ludeim_handlers import *

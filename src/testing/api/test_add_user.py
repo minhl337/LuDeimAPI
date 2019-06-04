@@ -17,8 +17,6 @@ monkey.patch_all()  # NOTE: needed due to dependency problems with grequests (mu
 import grequests
 
 
-
-
 endpoint = "/api/"
 
 
@@ -31,6 +29,8 @@ class TestApiMethodAddUser(unittest.TestCase):
         self.app = app.app.test_client()
 
     def test__add_user__valid(self):
+        time.sleep(1)
+        print("\ntest__add_user__valid")
         for _ in range(100):  # NOTE: run 100 random iterations to for robustness
             reset.auto_reset()  # NOTE: reset the database
             _type = random.choice(lconst.USER_TYPES)
@@ -71,7 +71,9 @@ class TestApiMethodAddUser(unittest.TestCase):
                              [(derived_uuid, _type, username, password_hash, lconst.DEFAULT_USER_AVATAR, '[]',)],
                              "database didn't update correctly")
 
-    def test__add_user__valid__batch(self):
+    def test__add_user__valid__async(self):
+        time.sleep(1)
+        print("\ntest__add_user__valid__async")
         for _ in range(10):  # NOTE: run 100 random iterations to for robustness
             reset.auto_reset()  # NOTE: reset the database
 
@@ -127,7 +129,49 @@ class TestApiMethodAddUser(unittest.TestCase):
                              10,
                              "not all users got saved to the database")
 
+    def test__add_user__valid__batch(self):
+        time.sleep(1)
+        print("\ntest__add_location__valid__batch_with_uuid")
+        for _ in range(100):  # NOTE: run 100 random iterations to for robustness
+            reset.auto_reset()  # NOTE: reset the database
+            payloads = []
+            expected_resp = []
+            for i in range(25):
+                _type = random.choice(lconst.USER_TYPES)
+                username = "".join([
+                    random.choice(string.ascii_letters + string.digits) for _ in range(
+                        random.randint(lconst.MIN_USERNAME_LEN, lconst.MAX_USERNAME_LEN)
+                    )
+                ])
+                password_hash = "".join([
+                    random.choice(string.ascii_letters + string.digits) for _ in range(
+                        random.randint(lconst.MIN_PASSWORD_HASH_LEN, lconst.MAX_PASSWORD_HASH_LEN)
+                    )
+                ])
+                derived_uuid = ludeim.generate_user_uuid(username, password_hash)
+                payload = {
+                    "jsonrpc": "2.0",
+                    "method": "add_user",
+                    "params": {
+                        "type": _type,
+                        "username": username,
+                        "password_hash": password_hash
+                    },
+                    "id": i
+                }
+                payloads.append(payload)
+                expected_resp.append({"type": _type, "uuid": derived_uuid})
+            resp = self.app.post(endpoint, json=payloads)
+            resps = json.loads(resp.data.decode("utf-8"))
+            for r in resps:
+                self.assertIn("result", r, "error response")
+                self.assertEqual(r["result"], expected_resp[r["id"]], "incorrect response result object")
+            db_dump = db.get_connection().execute("""SELECT * FROM users""").fetchall()
+            self.assertEqual(len(db_dump), 25, "database didn't update correctly")
+
     def test__add_user__invalid__type(self):
+        time.sleep(1)
+        print("\ntest__add_user__invalid__type")
         for _ in range(100):  # NOTE: run 100 random iterations to for robustness
             reset.auto_reset()  # NOTE: reset the database
             _type = "".join([
@@ -170,6 +214,8 @@ class TestApiMethodAddUser(unittest.TestCase):
                              "database didn't update correctly")
 
     def test__add_user__invalid__short_username(self):
+        time.sleep(1)
+        print("\ntest__add_user__invalid__short_username")
         for _ in range(100):  # NOTE: run 100 random iterations to for robustness
             reset.auto_reset()  # NOTE: reset the database
             _type = random.choice(lconst.USER_TYPES)
@@ -210,6 +256,8 @@ class TestApiMethodAddUser(unittest.TestCase):
                              "database didn't update correctly")
 
     def test__add_user__invalid__long_username(self):
+        time.sleep(1)
+        print("\ntest__add_user__invalid__long_username")
         for _ in range(100):  # NOTE: run 100 random iterations to for robustness
             reset.auto_reset()  # NOTE: reset the database
             _type = random.choice(lconst.USER_TYPES)
@@ -250,6 +298,8 @@ class TestApiMethodAddUser(unittest.TestCase):
                              "database didn't update correctly")
 
     def test__add_user__invalid__short_password_hash(self):
+        time.sleep(1)
+        print("\ntest__add_user__invalid__short_password_hash")
         for _ in range(100):  # NOTE: run 100 random iterations to for robustness
             reset.auto_reset()  # NOTE: reset the database
             _type = random.choice(lconst.USER_TYPES)
@@ -290,6 +340,8 @@ class TestApiMethodAddUser(unittest.TestCase):
                              "database didn't update correctly")
 
     def test__add_user__invalid__long_password_hash(self):
+        time.sleep(1)
+        print("\ntest__add_user__invalid__long_password_hash")
         for _ in range(100):  # NOTE: run 100 random iterations to for robustness
             reset.auto_reset()  # NOTE: reset the database
             _type = random.choice(lconst.USER_TYPES)
@@ -330,6 +382,8 @@ class TestApiMethodAddUser(unittest.TestCase):
                              "database didn't update correctly")
 
     def test__add_user__invalid__username_collision(self):
+        time.sleep(1)
+        print("\ntest__add_user__invalid__username_collision")
         for _ in range(100):  # NOTE: run 100 random iterations to for robustness
             reset.auto_reset()  # NOTE: reset the database
             _type_original = random.choice(lconst.USER_TYPES)
