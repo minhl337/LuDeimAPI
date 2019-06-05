@@ -1,0 +1,350 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Welcome to the LuDeimAPI documentation &mdash; LuDeimAPI 0.1.0 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="#" class="icon icon-home"> LuDeimAPI
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <!-- Local TOC -->
+              <div class="local-toc"><ul>
+<li><a class="reference internal" href="#">Welcome to the LuDeimAPI documentation</a></li>
+<li><a class="reference internal" href="#json-rpc-2-0">JSON-RPC 2.0</a></li>
+<li><a class="reference internal" href="#sessions">Sessions</a></li>
+<li><a class="reference internal" href="#batch-requests">Batch Requests</a></li>
+<li><a class="reference internal" href="#user-types">User Types</a></li>
+<li><a class="reference internal" href="#location-types">Location Types</a></li>
+<li><a class="reference internal" href="#method-add-user">Method: add_user</a></li>
+</ul>
+</div>
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="#">LuDeimAPI</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="#">Docs</a> &raquo;</li>
+        
+      <li>Welcome to the LuDeimAPI documentation</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/index.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="welcome-to-the-ludeimapi-documentation">
+<h1>Welcome to the LuDeimAPI documentation<a class="headerlink" href="#welcome-to-the-ludeimapi-documentation" title="Permalink to this headline">¶</a></h1>
+<p>LuDeimAPI is a JSON-RPC 2.0 compliant api designed for use in the LuDeim diamond supply chain management system. The api has a companion API called LuDeimStorageAPI which handles the storage and retrieval of non-trivial size objects within the system. This documentation will not go over this companion API as it is not intended to be called directly from a front-end application.</p>
+</div>
+<div class="section" id="json-rpc-2-0">
+<h1>JSON-RPC 2.0<a class="headerlink" href="#json-rpc-2-0" title="Permalink to this headline">¶</a></h1>
+<p>LuDeimAPI is a fully JSON-RPC 2.0 compliant api. The full JSON-RPC 2.0 specification can be found <a class="reference external" href="https://www.jsonrpc.org/specification">here</a>. It’s only a few pages and very readable. It is highly recommended that anyone looking to develop on top of LuDeimAPI read that document. However, for those that don’t, here’s the skinny:</p>
+<ul class="simple">
+<li><p>All requests must be formatted in the following way.</p></li>
+</ul>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="s2">&quot;jsonrpc&quot;</span><span class="o">:</span> <span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
+   <span class="s2">&quot;method&quot;</span><span class="o">:</span> <span class="nx">NAME_OF_METHOD_BEING_CALLED</span><span class="p">,</span>
+   <span class="s2">&quot;params&quot;</span><span class="o">:</span> <span class="nx">OBJECT_CONTAINING_THE_REQUIRED_PARAMETERS</span><span class="p">,</span>
+   <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="nx">ID_NUMBER_FOR_THE_REQUEST</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>Every response will come in one of the following formats. If the method executed without errors:</p></li>
+</ul>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="s2">&quot;jsonrpc&quot;</span><span class="o">:</span> <span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
+   <span class="s2">&quot;result&quot;</span><span class="o">:</span> <span class="nx">OBJECT_CONTAINING_THE_RESULT_OF_YOUR_CALL</span><span class="p">,</span>
+   <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="nx">ID_NUMBER_OF_THE_CORRESPONDING_REQUEST</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>If the method execution threw an error:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="s2">&quot;jsonrpc&quot;</span><span class="o">:</span> <span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
+   <span class="s2">&quot;error&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;code&quot;</span><span class="o">:</span> <span class="nx">ERROR_CODE</span><span class="p">,</span>
+      <span class="s2">&quot;message&quot;</span><span class="o">:</span> <span class="nx">ERROR_MESSAGE</span>
+   <span class="p">},</span>
+   <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="nx">ID_NUMBER_OF_THE_CORRESPONDING_REQUEST</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><p>All requests should be sent to the <strong>/api/</strong> endpoint.</p></li>
+</ul>
+</div>
+<div class="section" id="sessions">
+<h1>Sessions<a class="headerlink" href="#sessions" title="Permalink to this headline">¶</a></h1>
+<p>LuDeimAPI sessions are persistent. That is if you are logged in you will stay logged in until you either clear your cache or the server running LuDeimAPI is restarted. To clear your session, call the <strong>logout</strong> method.</p>
+<p>As a convenience, your account’s <strong>uuid</strong> and <strong>type</strong> are stored in your server session whenever <strong>login</strong> is called. As a result, once <strong>login</strong> has been called the uuid field of all requests can be safely omitted.</p>
+<p>Additionally, the contents of the current session can be returned by calling <strong>get_sess</strong>, and arbitrary string key-value pairs can be added to the session via the <strong>put_sess</strong>. Note that if <strong>put_sess</strong> is called with a key-value pair whose key is already defined in the session, then the value for that key will get overwritten with the new one.</p>
+</div>
+<div class="section" id="batch-requests">
+<h1>Batch Requests<a class="headerlink" href="#batch-requests" title="Permalink to this headline">¶</a></h1>
+<p>One large feature of the JSON-RPC 2.0 standard is batch requests. Batch requests allow multiple request objects to be sent in as a single request. This is done by adding all the individual request objects to a list, and sending that list as your request object. For instance:</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
+   <span class="p">{</span>
+      <span class="s2">&quot;jsonrpc&quot;</span><span class="o">:</span> <span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;method&quot;</span><span class="o">:</span> <span class="s2">&quot;foo&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;params&quot;</span><span class="o">:</span> <span class="p">[</span>
+         <span class="mi">1</span><span class="p">,</span>
+         <span class="mi">2</span><span class="p">,</span>
+         <span class="mi">3</span>
+      <span class="p">],</span>
+      <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">1</span>
+   <span class="p">},</span>
+   <span class="p">{</span>
+      <span class="s2">&quot;jsonrpc&quot;</span><span class="o">:</span> <span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;method&quot;</span><span class="o">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;params&quot;</span><span class="o">:</span> <span class="p">{</span>
+         <span class="s2">&quot;arg1&quot;</span><span class="o">:</span> <span class="s2">&quot;james&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;arg2&quot;</span><span class="o">:</span> <span class="s2">&quot;kim&quot;</span><span class="p">,</span>
+         <span class="s2">&quot;arg3&quot;</span><span class="o">:</span> <span class="s2">&quot;chris&quot;</span>
+      <span class="p">},</span>
+      <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">2</span>
+   <span class="p">},</span>
+   <span class="p">{</span>
+      <span class="s2">&quot;jsonrpc&quot;</span><span class="o">:</span> <span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;method&quot;</span><span class="o">:</span> <span class="s2">&quot;other_thing&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;params&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
+      <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">3</span>
+   <span class="p">}</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>This has a few benefits. First, the number of requests that can be grouped in this way is unbounded. So, if you want to make an extremely large number of requests all at once, then this is a great way to reduce the networking overhead associated with doing that. Also, Batch requests are defined as being unordered. That is, the order in which request objects are included in the list doesn’t determine the order in which the server executes them. This may seem like a bad thing, but it allows the server to run batch requests asynchronously which can drastically reduce the time required to compute a response. There is a side effects to this asynchronous behavior though. Sessions are read and updated independently for each request. This means session behavior for batch requests is quite unpredictable. The best course of action is to not use batch requests with methods that interact with the session.</p>
+</div>
+<div class="section" id="user-types">
+<h1>User Types<a class="headerlink" href="#user-types" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>mining_company</p></li>
+<li><p>distributor</p></li>
+<li><p>jeweler</p></li>
+</ul>
+</div>
+<div class="section" id="location-types">
+<h1>Location Types<a class="headerlink" href="#location-types" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><p>mine</p></li>
+<li><p>warehouse</p></li>
+<li><p>store</p></li>
+</ul>
+</div>
+<div class="section" id="method-add-user">
+<h1>Method: add_user<a class="headerlink" href="#method-add-user" title="Permalink to this headline">¶</a></h1>
+<dl>
+<dt><strong>PERMISSION LEVEL</strong></dt><dd><ul class="simple">
+<li><p>public</p></li>
+</ul>
+</dd>
+<dt><strong>ARGUMENTS</strong></dt><dd><ul class="simple">
+<li><p><strong>username:</strong> string</p></li>
+<li><p><strong>password_hash:</strong> string</p></li>
+<li><p><strong>type:</strong> string</p></li>
+</ul>
+</dd>
+<dt><strong>ARGUMENT CONSTRAINTS</strong></dt><dd><ul class="simple">
+<li><p>The username must be between 8 and 64 characters</p></li>
+<li><p>The password_hash must be between 64 and 128 characters</p></li>
+<li><p>The type must be one of the valid types defined in the <em>User Types</em> section of this document</p></li>
+</ul>
+</dd>
+<dt><strong>RESPONSE MEMBERS</strong></dt><dd><ul class="simple">
+<li><p><strong>uuid:</strong> string</p></li>
+<li><p><strong>type:</strong> string</p></li>
+</ul>
+</dd>
+<dt><strong>RESPONSE MEMBERS MEANING</strong></dt><dd><ul class="simple">
+<li><p>The uuid returned is the uuid associated with the new user created by the method call. It is required to make any changes to that user’s various attributes.</p></li>
+<li><p>The type is the same as the type that was sent in as an argument. It can safely be ignored or used in a continuation function.</p></li>
+</ul>
+</dd>
+<dt><strong>EXAMPLE REQUEST</strong></dt><dd><div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="s2">&quot;jsonrpc&quot;</span><span class="o">:</span> <span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
+   <span class="s2">&quot;method&quot;</span><span class="o">:</span> <span class="s2">&quot;add_user&quot;</span><span class="p">,</span>
+   <span class="s2">&quot;params&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;mining_company&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;username&quot;</span><span class="o">:</span> <span class="s2">&quot;abcdefghijk&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;password_hash&quot;</span><span class="o">:</span> <span class="s2">&quot;abcdefghabcdefghabcdefghabcdefghabcdefghabcdefghabcdefghabcdefgh&quot;</span>
+   <span class="p">},</span>
+   <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">1</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+<dt><strong>EXAMPLE SUCCESSFUL RESPONSE</strong></dt><dd><div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
+   <span class="s2">&quot;jsonrpc&quot;</span><span class="o">:</span> <span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
+   <span class="s2">&quot;result&quot;</span><span class="o">:</span> <span class="p">{</span>
+      <span class="s2">&quot;uuid&quot;</span><span class="o">:</span> <span class="s2">&quot;813ebc3dcc3798a3f6ec9ea24d104f401362c6b6c5ed8032a78b643fd9afe502&quot;</span><span class="p">,</span>
+      <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;mining_company&quot;</span>
+   <span class="p">},</span>
+   <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">1</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</dd>
+</dl>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, Topl LLC
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
