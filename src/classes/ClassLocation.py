@@ -11,6 +11,7 @@ class Location(AbstrSerializable, AbstrChangeTracked):
                  uuid=None,
                  _type=None,
                  user_uuids=(),
+                 item_uuids=(),
                  name=None,
                  address=None,
                  latitude=None,
@@ -26,6 +27,7 @@ class Location(AbstrSerializable, AbstrChangeTracked):
             raise Exception("`type` can't be None.")
         self.type = _type
         self.user_uuids = user_uuids
+        self.item_uuids = item_uuids
         if name is None:
             raise Exception("`name` can't be None.")
         self.name = name

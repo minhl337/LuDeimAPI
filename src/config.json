@@ -6,7 +6,9 @@
     "login",
     "logout",
     "get_user_location_uuids",
-    "get_all_usernames"
+    "get_all_usernames",
+    "get_sess",
+    "put_sess"
   ],
   "param_primitives": [
     "str",
@@ -47,9 +49,7 @@
       }
     ],
     "logout": [
-      {
-        "?uuid": "str"
-      }
+      {}
     ],
     "get_user_location_uuids": [
       {
@@ -58,6 +58,15 @@
     ],
     "get_all_usernames": [
       {}
+    ],
+    "get_sess": [
+      {}
+    ],
+    "put_sess": [
+      {
+        "key": "str",
+        "value": "str"
+      }
     ]
   }
 }

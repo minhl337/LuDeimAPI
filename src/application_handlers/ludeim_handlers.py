@@ -180,7 +180,7 @@ def add_location(params, _id, conn, logger, config, session):
         with conn:
             conn.execute("BEGIN EXCLUSIVE")
             db.save_new_location(c=conn, loc_obj=location)
-            db.link(c=conn, user_uuid=uuid, loc_uuid=location.uuid)
+            db.link_user_w_loc(c=conn, user_uuid=uuid, loc_uuid=location.uuid)
         return rpc.make_success_resp(
             True,
             _id)
@@ -294,7 +294,7 @@ def get_user_location_uuids(params, _id, conn, logger, config, session):
         return rpc.make_success_resp(json.loads(json.dumps(r)), _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
-            "method": "get_user_location_uuids",
+            "method": "get_user_location_uuids" + str(e.methods),
             "params": params,
             "error": str(e.exception)
         })
@@ -335,7 +335,7 @@ def get_all_usernames(params, _id, conn, logger, config, session):
         return rpc.make_success_resp(r, _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
-            "method": "get_all_usernames",
+            "method": "get_all_usernames" + str(e.methods),
             "params": params,
             "error": str(e.exception)
         })
@@ -343,6 +343,68 @@ def get_all_usernames(params, _id, conn, logger, config, session):
     except Exception as e:
         file_logger.log_error({
             "method": "get_all_usernames",
+            "params": params,
+            "error": str(e)
+        })
+        return rpc.make_error_resp(
+            const.INTERNAL_ERROR_CODE,
+            const.INTERNAL_ERROR,
+            _id)
+
+
+def get_sess(params, _id, conn, logger, config, session):
+    try:
+        schemes = t.typize_config(config)
+        if not t.check_params_against_scheme_set(schemes["get_sess"], params):
+            return rpc.make_error_resp(
+                const.INVALID_PARAMS_CODE,
+                const.INVALID_PARAMS,
+                _id
+            )
+        r = dict()
+        for k in session:
+            r[k] = session[k]
+        return rpc.make_success_resp(r, _id)
+    except WrappedErrorResponse as e:
+        file_logger.log_error({
+            "method": "get_sess" + str(e.methods),
+            "params": params,
+            "error": str(e.exception)
+        })
+        return e.response_obj
+    except Exception as e:
+        file_logger.log_error({
+            "method": "get_sess",
+            "params": params,
+            "error": str(e)
+        })
+        return rpc.make_error_resp(
+            const.INTERNAL_ERROR_CODE,
+            const.INTERNAL_ERROR,
+            _id)
+
+
+def put_sess(params, _id, conn, logger, config, session):
+    try:
+        schemes = t.typize_config(config)
+        if not t.check_params_against_scheme_set(schemes["put_sess"], params):
+            return rpc.make_error_resp(
+                const.INVALID_PARAMS_CODE,
+                const.INVALID_PARAMS,
+                _id
+            )
+        session[params["key"]] = params["value"]
+        return rpc.make_success_resp(True, _id)
+    except WrappedErrorResponse as e:
+        file_logger.log_error({
+            "method": "put_sess" + str(e.methods),
+            "params": params,
+            "error": str(e.exception)
+        })
+        return e.response_obj
+    except Exception as e:
+        file_logger.log_error({
+            "method": "put_sess",
             "params": params,
             "error": str(e)
         })

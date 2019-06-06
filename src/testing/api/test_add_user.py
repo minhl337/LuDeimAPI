@@ -68,7 +68,7 @@ class TestApiMethodAddUser(unittest.TestCase):
                              expected_resp,
                              "api response was incorrect")
             self.assertEqual(db.get_connection().execute("""SELECT * FROM users""").fetchall(),
-                             [(derived_uuid, _type, username, password_hash, lconst.DEFAULT_USER_AVATAR, '[]',)],
+                             [(derived_uuid, _type, username, password_hash, lconst.DEFAULT_USER_AVATAR, '[]', '[]')],
                              "database didn't update correctly")
 
     def test__add_user__valid__async(self):
@@ -438,5 +438,5 @@ class TestApiMethodAddUser(unittest.TestCase):
                              expected_resp,
                              "api response was incorrect")
             self.assertEqual(db.get_connection().execute("""SELECT * FROM users""").fetchall(),
-                             [(derived_uuid, _type_original, username_original, password_hash_original, lconst.DEFAULT_USER_AVATAR, '[]',)],
+                             [(derived_uuid, _type_original, username_original, password_hash_original, lconst.DEFAULT_USER_AVATAR, '[]', '[]')],
                              "database didn't update correctly")
