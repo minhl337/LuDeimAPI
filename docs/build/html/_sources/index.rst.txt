@@ -96,71 +96,19 @@ One large feature of the JSON-RPC 2.0 standard is batch requests. Batch requests
 
 This has a few benefits. First, the number of requests that can be grouped in this way is unbounded. So, if you want to make an extremely large number of requests all at once, then this is a great way to reduce the networking overhead associated with doing that. Also, Batch requests are defined as being unordered. That is, the order in which request objects are included in the list doesn't determine the order in which the server executes them. This may seem like a bad thing, but it allows the server to run batch requests asynchronously which can drastically reduce the time required to compute a response. There is a side effects to this asynchronous behavior though. Sessions are read and updated independently for each request. This means session behavior for batch requests is quite unpredictable. The best course of action is to not use batch requests with methods that interact with the session.
 
-User Types
-==========
+.. toctree::
+   :maxdepth: 2
+   :caption: Constants
 
-* mining_company
+   constants/user_types
+   constants/location_types
+   constants/titles
 
-* distributor
+.. toctree::
+   :maxdepth: 2
+   :caption: Methods
 
-* jeweler
-
-Location Types
-==============
-
-* mine
-
-* warehouse
-
-* store
-
-Method: add_user
-====================
-**PERMISSION LEVEL**
-   * public
-
-**ARGUMENTS**
-   * **username:** string
-   * **password_hash:** string
-   * **type:** string
-
-**ARGUMENT CONSTRAINTS**
-   * The username must be between 8 and 64 characters
-   * The password_hash must be between 64 and 128 characters
-   * The type must be one of the valid types defined in the *User Types* section of this document
-
-**RESPONSE MEMBERS**
-   * **uuid:** string
-   * **type:** string
-
-**RESPONSE MEMBERS MEANING**
-   * The uuid returned is the uuid associated with the new user created by the method call. It is required to make any changes to that user's various attributes.
-   * The type is the same as the type that was sent in as an argument. It can safely be ignored or used in a continuation function.
-
-**EXAMPLE REQUEST**
-   .. code-block:: javascript
-
-      {
-         "jsonrpc": "2.0",
-         "method": "add_user",
-         "params": {
-            "type": "mining_company",
-            "username": "abcdefghijk",
-            "password_hash": "abcdefghabcdefghabcdefghabcdefghabcdefghabcdefghabcdefghabcdefgh"
-         },
-         "id": 1
-      }
-
-**EXAMPLE SUCCESSFUL RESPONSE**
-   .. code-block:: javascript
-
-      {
-         "jsonrpc": "2.0",
-         "result": {
-            "uuid": "813ebc3dcc3798a3f6ec9ea24d104f401362c6b6c5ed8032a78b643fd9afe502",
-            "type": "mining_company"
-         },
-         "id": 1
-      }
+   methods/add_user
+   methods/add_location
 
 .. _here: https://www.jsonrpc.org/specification

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Welcome to the LuDeimAPI documentation &mdash; LuDeimAPI 0.1.0 documentation</title>
+  <title>Welcome to the LuDeimAPI documentation &mdash; LuDeimAPI 0.0.1 documentation</title>
   
 
   
@@ -34,7 +34,8 @@
   <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="User Types" href="constants/user_types.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -54,9 +55,6 @@
           
           </a>
 
-          
-            
-            
           
 
           
@@ -78,17 +76,18 @@
               
             
             
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">Welcome to the LuDeimAPI documentation</a></li>
-<li><a class="reference internal" href="#json-rpc-2-0">JSON-RPC 2.0</a></li>
-<li><a class="reference internal" href="#sessions">Sessions</a></li>
-<li><a class="reference internal" href="#batch-requests">Batch Requests</a></li>
-<li><a class="reference internal" href="#user-types">User Types</a></li>
-<li><a class="reference internal" href="#location-types">Location Types</a></li>
-<li><a class="reference internal" href="#method-add-user">Method: add_user</a></li>
+              <p class="caption"><span class="caption-text">Constants</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="constants/user_types.html">User Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="constants/location_types.html">Location Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="constants/titles.html">Titles</a></li>
 </ul>
-</div>
+<p class="caption"><span class="caption-text">Methods</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="methods/add_user.html">Add User</a></li>
+<li class="toctree-l1"><a class="reference internal" href="methods/add_location.html">Add Location</a></li>
+</ul>
+
             
           
         </div>
@@ -234,77 +233,21 @@
 </pre></div>
 </div>
 <p>This has a few benefits. First, the number of requests that can be grouped in this way is unbounded. So, if you want to make an extremely large number of requests all at once, then this is a great way to reduce the networking overhead associated with doing that. Also, Batch requests are defined as being unordered. That is, the order in which request objects are included in the list doesn’t determine the order in which the server executes them. This may seem like a bad thing, but it allows the server to run batch requests asynchronously which can drastically reduce the time required to compute a response. There is a side effects to this asynchronous behavior though. Sessions are read and updated independently for each request. This means session behavior for batch requests is quite unpredictable. The best course of action is to not use batch requests with methods that interact with the session.</p>
-</div>
-<div class="section" id="user-types">
-<h1>User Types<a class="headerlink" href="#user-types" title="Permalink to this headline">¶</a></h1>
-<ul class="simple">
-<li><p>mining_company</p></li>
-<li><p>distributor</p></li>
-<li><p>jeweler</p></li>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Constants</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="constants/user_types.html">User Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="constants/location_types.html">Location Types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="constants/titles.html">Titles</a></li>
 </ul>
 </div>
-<div class="section" id="location-types">
-<h1>Location Types<a class="headerlink" href="#location-types" title="Permalink to this headline">¶</a></h1>
-<ul class="simple">
-<li><p>mine</p></li>
-<li><p>warehouse</p></li>
-<li><p>store</p></li>
+<div class="toctree-wrapper compound">
+<p class="caption"><span class="caption-text">Methods</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="methods/add_user.html">Add User</a></li>
+<li class="toctree-l1"><a class="reference internal" href="methods/add_location.html">Add Location</a></li>
 </ul>
 </div>
-<div class="section" id="method-add-user">
-<h1>Method: add_user<a class="headerlink" href="#method-add-user" title="Permalink to this headline">¶</a></h1>
-<dl>
-<dt><strong>PERMISSION LEVEL</strong></dt><dd><ul class="simple">
-<li><p>public</p></li>
-</ul>
-</dd>
-<dt><strong>ARGUMENTS</strong></dt><dd><ul class="simple">
-<li><p><strong>username:</strong> string</p></li>
-<li><p><strong>password_hash:</strong> string</p></li>
-<li><p><strong>type:</strong> string</p></li>
-</ul>
-</dd>
-<dt><strong>ARGUMENT CONSTRAINTS</strong></dt><dd><ul class="simple">
-<li><p>The username must be between 8 and 64 characters</p></li>
-<li><p>The password_hash must be between 64 and 128 characters</p></li>
-<li><p>The type must be one of the valid types defined in the <em>User Types</em> section of this document</p></li>
-</ul>
-</dd>
-<dt><strong>RESPONSE MEMBERS</strong></dt><dd><ul class="simple">
-<li><p><strong>uuid:</strong> string</p></li>
-<li><p><strong>type:</strong> string</p></li>
-</ul>
-</dd>
-<dt><strong>RESPONSE MEMBERS MEANING</strong></dt><dd><ul class="simple">
-<li><p>The uuid returned is the uuid associated with the new user created by the method call. It is required to make any changes to that user’s various attributes.</p></li>
-<li><p>The type is the same as the type that was sent in as an argument. It can safely be ignored or used in a continuation function.</p></li>
-</ul>
-</dd>
-<dt><strong>EXAMPLE REQUEST</strong></dt><dd><div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-   <span class="s2">&quot;jsonrpc&quot;</span><span class="o">:</span> <span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
-   <span class="s2">&quot;method&quot;</span><span class="o">:</span> <span class="s2">&quot;add_user&quot;</span><span class="p">,</span>
-   <span class="s2">&quot;params&quot;</span><span class="o">:</span> <span class="p">{</span>
-      <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;mining_company&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;username&quot;</span><span class="o">:</span> <span class="s2">&quot;abcdefghijk&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;password_hash&quot;</span><span class="o">:</span> <span class="s2">&quot;abcdefghabcdefghabcdefghabcdefghabcdefghabcdefghabcdefghabcdefgh&quot;</span>
-   <span class="p">},</span>
-   <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">1</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</dd>
-<dt><strong>EXAMPLE SUCCESSFUL RESPONSE</strong></dt><dd><div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-   <span class="s2">&quot;jsonrpc&quot;</span><span class="o">:</span> <span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
-   <span class="s2">&quot;result&quot;</span><span class="o">:</span> <span class="p">{</span>
-      <span class="s2">&quot;uuid&quot;</span><span class="o">:</span> <span class="s2">&quot;813ebc3dcc3798a3f6ec9ea24d104f401362c6b6c5ed8032a78b643fd9afe502&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;type&quot;</span><span class="o">:</span> <span class="s2">&quot;mining_company&quot;</span>
-   <span class="p">},</span>
-   <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">1</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-</dd>
-</dl>
 </div>
 
 
@@ -313,12 +256,19 @@
           </div>
           <footer>
   
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="constants/user_types.html" class="btn btn-neutral float-right" title="User Types" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+    </div>
+  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, Topl LLC
+        &copy; Copyright 2019 Topl LLC
 
     </p>
   </div>

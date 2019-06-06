@@ -96,22 +96,19 @@ One large feature of the JSON-RPC 2.0 standard is batch requests. Batch requests
 
 This has a few benefits. First, the number of requests that can be grouped in this way is unbounded. So, if you want to make an extremely large number of requests all at once, then this is a great way to reduce the networking overhead associated with doing that. Also, Batch requests are defined as being unordered. That is, the order in which request objects are included in the list doesn't determine the order in which the server executes them. This may seem like a bad thing, but it allows the server to run batch requests asynchronously which can drastically reduce the time required to compute a response. There is a side effects to this asynchronous behavior though. Sessions are read and updated independently for each request. This means session behavior for batch requests is quite unpredictable. The best course of action is to not use batch requests with methods that interact with the session.
 
-User Types
-==========
+.. toctree::
+   :maxdepth: 2
+   :caption: Constants
 
-* mining_company
+   constants/user_types
+   constants/location_types
+   constants/titles
 
-* distributor
+.. toctree::
+   :maxdepth: 2
+   :caption: Methods
 
-* jeweler
-
-Location Types
-==============
-
-* mine
-
-* warehouse
-
-* store
+   methods/add_user
+   methods/add_location
 
 .. _here: https://www.jsonrpc.org/specification
