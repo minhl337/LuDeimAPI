@@ -54,9 +54,7 @@ class TestApiMethodLogout(unittest.TestCase):
             payload = {
                 "jsonrpc": "2.0",
                 "method": "logout",
-                "params": {
-                    "uuid": derived_uuid
-                },
+                "params": {},
                 "id": 1
             }
             resp = self.app.post(endpoint, json=payload)
@@ -69,7 +67,7 @@ class TestApiMethodLogout(unittest.TestCase):
                              expected_resp,
                              "api response was incorrect")
             self.assertEqual(db.get_connection().execute("""SELECT * FROM users""").fetchall(),
-                             [(derived_uuid, _type, username, password_hash, lconst.DEFAULT_USER_AVATAR, '[]',)],
+                             [(derived_uuid, _type, username, password_hash, lconst.DEFAULT_USER_AVATAR, '[]', '[]')],
                              "database updated inadvertently")
             with self.app as c:
                 with c.session_transaction() as sess:

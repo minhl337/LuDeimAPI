@@ -123,7 +123,7 @@ class TestApiMethodAddLocation(unittest.TestCase):
             db_dump = db.get_connection().execute("""SELECT * FROM locations""").fetchall()
             self.assertEqual(len(db_dump), 1, "database didn't update correctly")
             self.assertEqual(db_dump[0][1:-1],
-                             (_type, json.dumps([derived_uuid]), name, address, latitude, longitude, details,
+                             (_type, json.dumps([derived_uuid]), '[]', name, address, latitude, longitude, details,
                               lconst.DEFAULT_LOCATION_AVATAR),
                              "database didn't update correctly")
             self.assertEqual(json.loads(db_dump[0][-1]),
@@ -223,7 +223,7 @@ class TestApiMethodAddLocation(unittest.TestCase):
             db_dump = db.get_connection().execute("""SELECT * FROM locations""").fetchall()
             self.assertEqual(len(db_dump), 1, "database didn't update correctly")
             self.assertEqual(db_dump[0][1:-1],
-                             (_type, json.dumps([derived_uuid]), name, address, latitude, longitude, details,
+                             (_type, json.dumps([derived_uuid]), '[]', name, address, latitude, longitude, details,
                               lconst.DEFAULT_LOCATION_AVATAR),
                              "database didn't update correctly")
             self.assertEqual(json.loads(db_dump[0][-1]),

@@ -13,7 +13,8 @@ class User(AbstrSerializable, AbstrChangeTracked):
                  username=None,
                  password_hash=None,
                  avatar=None,
-                 location_uuids=()):
+                 location_uuids=(),
+                 item_uuids=()):
         AbstrChangeTracked.__init__(self)
         if _type is None:
             raise Exception("`type` can't be None.")
@@ -34,15 +35,4 @@ class User(AbstrSerializable, AbstrChangeTracked):
             avatar = lconst.DEFAULT_USER_AVATAR
         self.avatar = avatar
         self.location_uuids = location_uuids
-
-    # def add_location(self, location_to_add):
-    #     if isinstance(location_to_add, str):
-    #         self.location_uuids += location_to_add
-    #     else:
-    #         self.location_uuids += location_to_add.uuid
-
-    # def remove_location(self, location_to_remove):
-    #     if isinstance(location_to_remove, str):
-    #         self.location_uuids = filter(lambda e: e != location_to_remove, self.location_uuids)
-    #     else:
-    #         self.location_uuids = filter(lambda e: e != location_to_remove.uuid, self.location_uuids)
+        self.item_uuids = item_uuids
