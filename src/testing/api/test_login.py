@@ -27,6 +27,7 @@ class TestApiMethodLogin(unittest.TestCase):
         print("\ntest__login__valid__without_logout")
         for _ in range(100):  # NOTE: run 100 random iterations to for robustness
             reset.auto_reset()  # NOTE: reset the database
+            self.setUp()  # NOTE: reset client to prevent carry over sessions
             _type = random.choice(lconst.USER_TYPES)
             username = "".join([
                 random.choice(string.ascii_letters + string.digits) for _ in range(
@@ -66,15 +67,6 @@ class TestApiMethodLogin(unittest.TestCase):
                              "database didn't update correctly")
             with self.app as c:
                 with c.session_transaction() as sess:
-                    self.assertEqual(sess["uuid"],
-                                     derived_uuid,
-                                     "uuid not saved in the session correctly during add_user")
-                    self.assertEqual(sess["type"],
-                                     _type,
-                                     "type not saved in the session correctly during add_user")
-                    # NOTE: manually clearing session here to simulate logout without using the logout method
-                    sess.pop("uuid")
-                    sess.pop("type")
                     # NOTE: rechecking to ensure manual session clear worked
                     self.assertEqual(sess.get("uuid", None),
                                      None,
@@ -120,6 +112,7 @@ class TestApiMethodLogin(unittest.TestCase):
         print("\ntest__login__valid__with_logout_with_uuid")
         for _ in range(100):  # NOTE: run 100 random iterations to for robustness
             reset.auto_reset()  # NOTE: reset the database
+            self.setUp()  # NOTE: reset client to prevent carry over sessions
             _type = random.choice(lconst.USER_TYPES)
             username = "".join([
                 random.choice(string.ascii_letters + string.digits) for _ in range(
@@ -157,41 +150,6 @@ class TestApiMethodLogin(unittest.TestCase):
             self.assertEqual(db.get_connection().execute("""SELECT * FROM users""").fetchall(),
                              [(derived_uuid, _type, username, password_hash, lconst.DEFAULT_USER_AVATAR, '[]', '[]')],
                              "database didn't update correctly")
-            with self.app as c:
-                with c.session_transaction() as sess:
-                    self.assertEqual(sess["uuid"],
-                                     derived_uuid,
-                                     "uuid not saved in the session correctly during add_user")
-                    self.assertEqual(sess["type"],
-                                     _type,
-                                     "type not saved in the session correctly during add_user")
-            payload = {
-                "jsonrpc": "2.0",
-                "method": "logout",
-                "params": {},
-                "id": 1
-            }
-            resp = self.app.post(endpoint, json=payload)
-            expected_resp = {
-                "jsonrpc": "2.0",
-                "result": True,
-                "id": 1
-            }
-            self.assertEqual(json.loads(resp.data.decode("utf-8")),
-                             expected_resp,
-                             "api response was incorrect")
-            self.assertEqual(db.get_connection().execute("""SELECT * FROM users""").fetchall(),
-                             [(derived_uuid, _type, username, password_hash, lconst.DEFAULT_USER_AVATAR, '[]', '[]')],
-                             "database updated when it shouldn't have during logout")
-            with self.app as c:
-                with c.session_transaction() as sess:
-                    # NOTE: checking to ensure logout worked
-                    self.assertEqual(sess.get("uuid", None),
-                                     None,
-                                     "uuid not cleared from session correctly")
-                    self.assertEqual(sess.get("type", None),
-                                     None,
-                                     "type not cleared from session correctly")
             payload = {
                 "jsonrpc": "2.0",
                 "method": "login",
@@ -218,10 +176,10 @@ class TestApiMethodLogin(unittest.TestCase):
                              "database didn't update correctly")
             with self.app as c:
                 with c.session_transaction() as sess:
-                    self.assertEqual(sess["uuid"],
+                    self.assertEqual(sess.get("uuid", None),
                                      derived_uuid,
                                      "uuid not saved in the session correctly during login")
-                    self.assertEqual(sess["type"],
+                    self.assertEqual(sess.get("type", None),
                                      _type,
                                      "type not saved in the session correctly during login")
 
@@ -230,6 +188,7 @@ class TestApiMethodLogin(unittest.TestCase):
         print("\ntest__login__invalid__nonexistent_username")
         for _ in range(100):  # NOTE: run 100 random iterations to for robustness
             reset.auto_reset()  # NOTE: reset the database
+            self.setUp()  # NOTE: reset client to prevent carry over sessions
             _type = random.choice(lconst.USER_TYPES)
             username = "".join([
                 random.choice(string.ascii_letters + string.digits) for _ in range(
@@ -269,15 +228,6 @@ class TestApiMethodLogin(unittest.TestCase):
                              "database didn't update correctly")
             with self.app as c:
                 with c.session_transaction() as sess:
-                    self.assertEqual(sess["uuid"],
-                                     derived_uuid,
-                                     "uuid not saved in the session correctly during add_user")
-                    self.assertEqual(sess["type"],
-                                     _type,
-                                     "type not saved in the session correctly during add_user")
-                    # NOTE: manually clearing session here to simulate logout without using the logout method
-                    sess.pop("uuid")
-                    sess.pop("type")
                     # NOTE: checking to ensure logout worked
                     self.assertEqual(sess.get("uuid", None),
                                      None,
@@ -323,6 +273,7 @@ class TestApiMethodLogin(unittest.TestCase):
         print("\ntest__login__invalid__nonexistent_password_hash")
         for _ in range(100):  # NOTE: run 100 random iterations to for robustness
             reset.auto_reset()  # NOTE: reset the database
+            self.setUp()  # NOTE: reset client to prevent carry over sessions
             _type = random.choice(lconst.USER_TYPES)
             username = "".join([
                 random.choice(string.ascii_letters + string.digits) for _ in range(
@@ -362,15 +313,6 @@ class TestApiMethodLogin(unittest.TestCase):
                              "database didn't update correctly")
             with self.app as c:
                 with c.session_transaction() as sess:
-                    self.assertEqual(sess["uuid"],
-                                     derived_uuid,
-                                     "uuid not saved in the session correctly during add_user")
-                    self.assertEqual(sess["type"],
-                                     _type,
-                                     "type not saved in the session correctly during add_user")
-                    # NOTE: manually clearing session here to simulate logout without using the logout method
-                    sess.pop("uuid")
-                    sess.pop("type")
                     # NOTE: checking to ensure logout worked
                     self.assertEqual(sess.get("uuid", None),
                                      None,

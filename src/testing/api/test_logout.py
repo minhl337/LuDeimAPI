@@ -49,6 +49,18 @@ class TestApiMethodLogout(unittest.TestCase):
                 "id": 1
             }
             self.app.post(endpoint, json=payload)
+            # NOTE: login to the new user
+            payload = {
+                "jsonrpc": "2.0",
+                "method": "login",
+                "params": {
+                    "username": username,
+                    "password_hash": password_hash
+                },
+                "id": 1
+            }
+            self.app.post(endpoint, json=payload)
+            # NOTE: then logout
             payload = {
                 "jsonrpc": "2.0",
                 "method": "logout",

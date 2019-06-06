@@ -135,6 +135,7 @@ class TestApiMethodAddLocation(unittest.TestCase):
         print("\ntest__add_location__valid__without_uuid")
         for _ in range(100):  # NOTE: run 100 random iterations to for robustness
             reset.auto_reset()  # NOTE: reset the database
+            # NOTE: add a new user
             _type = random.choice(lconst.USER_TYPES)
             username = "".join([
                         random.choice(string.ascii_letters + string.digits) for _ in range(
@@ -158,6 +159,18 @@ class TestApiMethodAddLocation(unittest.TestCase):
                 "id": 1
             }
             self.app.post(endpoint, json=payload)
+            # NOTE: login to the new user
+            payload = {
+                "jsonrpc": "2.0",
+                "method": "login",
+                "params": {
+                    "username": username,
+                    "password_hash": password_hash
+                },
+                "id": 1
+            }
+            self.app.post(endpoint, json=payload)
+            # NOTE: add a location to the new user & validate that it worked
             _type = random.choice(lconst.LOCATION_TYPES)
             name = "".join([
                 random.choice(string.ascii_letters + string.digits) for _ in range(
@@ -347,6 +360,17 @@ class TestApiMethodAddLocation(unittest.TestCase):
                 "method": "add_user",
                 "params": {
                     "type": _type,
+                    "username": username,
+                    "password_hash": password_hash
+                },
+                "id": 1
+            }
+            self.app.post(endpoint, json=payload)
+            # NOTE: login to the new user
+            payload = {
+                "jsonrpc": "2.0",
+                "method": "login",
+                "params": {
                     "username": username,
                     "password_hash": password_hash
                 },
@@ -566,6 +590,17 @@ class TestApiMethodAddLocation(unittest.TestCase):
                 "method": "add_user",
                 "params": {
                     "type": _type,
+                    "username": username,
+                    "password_hash": password_hash
+                },
+                "id": 1
+            }
+            self.app.post(endpoint, json=payload)
+            # NOTE: login to the new user
+            payload = {
+                "jsonrpc": "2.0",
+                "method": "login",
+                "params": {
                     "username": username,
                     "password_hash": password_hash
                 },
@@ -934,6 +969,17 @@ class TestApiMethodAddLocation(unittest.TestCase):
                 "id": 1
             }
             self.app.post(endpoint, json=payload)
+            # NOTE: login to the new user
+            payload = {
+                "jsonrpc": "2.0",
+                "method": "login",
+                "params": {
+                    "username": username,
+                    "password_hash": password_hash
+                },
+                "id": 1
+            }
+            self.app.post(endpoint, json=payload)
             _type = "".join([
                 random.choice(string.ascii_letters + string.digits) for _ in range(
                     random.randint(50, 100)
@@ -1028,6 +1074,17 @@ class TestApiMethodAddLocation(unittest.TestCase):
                 "method": "add_user",
                 "params": {
                     "type": _type,
+                    "username": username,
+                    "password_hash": password_hash
+                },
+                "id": 1
+            }
+            self.app.post(endpoint, json=payload)
+            # NOTE: login to the new user
+            payload = {
+                "jsonrpc": "2.0",
+                "method": "login",
+                "params": {
                     "username": username,
                     "password_hash": password_hash
                 },
