@@ -9,6 +9,7 @@ jobs:
         name: Setup testing environment
         command: |
           pip install --upgrade pip
+          sudo pip install pytest
           sudo pip install coverage
           sudo pip install Twisted
           sudo pip install requests_threads
