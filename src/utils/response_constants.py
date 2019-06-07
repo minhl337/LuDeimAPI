@@ -53,4 +53,6 @@ GET_LOC_USER_UUIDS_UNKNOWN_CODE = -19
 GET_LOC_USER_UUIDS_UNKNOWN = "An exception occurred while trying to get a location's user uuids"
 GET_LOC_ITEM_UUIDS_UNKNOWN_CODE = -20
 GET_LOC_ITEM_UUIDS_UNKNOWN = "An exception occurred while trying to get a location's item uuids"
+INVALID_ITEM_TYPE_CODE = -21
+INVALID_ITEM_TYPE = "The provided item type is not a valid item type"
 

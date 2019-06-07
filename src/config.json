@@ -3,6 +3,7 @@
   "method_names": [
     "add_user",
     "add_location",
+    "add_item",
     "login",
     "logout",
     "get_user_location_uuids",
@@ -40,6 +41,13 @@
           "last_name": "str",
           "contact_info": "str"
         }
+      }
+    ],
+    "add_item": [
+      {
+        "?uuid": "str",
+        "location_uuid": "str",
+        "?type": "str"
       }
     ],
     "login": [

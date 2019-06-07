@@ -7,6 +7,7 @@ import utils.ludeim_generic_helpers as ludeim
 import utils.ludeim_constants as lconst
 from classes.ClassUser import User
 from classes.ClassLocation import Location
+from classes.ClassItem import Item
 from classes.ClassWrappedErrorResponse import WrappedErrorResponse
 import json
 import traceback, sys
@@ -372,6 +373,60 @@ def add_location(params, _id, conn, logger, config, session):
         exc_type, exc_value, exc_traceback = sys.exc_info()
         file_logger.log_error({
             "method": "add_location",
+            "params": params,
+            "error": str(e),
+            "trace": str(traceback.extract_tb(exc_traceback))
+        })
+        return rpc.make_error_resp(
+            const.INTERNAL_ERROR_CODE,
+            const.INTERNAL_ERROR,
+            _id)
+
+
+# TODO:
+#  - catch invalid user uuid
+#  - catch invalid location uuid
+def add_item(params, _id, conn, logger, config, session):
+    try:
+        schemes = t.typize_config(config)
+        if not t.check_params_against_scheme_set(schemes["add_item"], params):
+            return rpc.make_error_resp(
+                const.INVALID_PARAMS_CODE,
+                const.INVALID_PARAMS,
+                _id
+            )
+        if "uuid" in params:
+            uuid = params["uuid"]
+        elif "uuid" in session:
+            uuid = session["uuid"]
+        else:
+            return rpc.make_error_resp(const.NOT_LOGGED_IN_CODE, const.NOT_LOGGED_IN, _id)
+        if "type" not in params:
+            _type = lconst.DIAMOND
+        else:
+            if params["params"] not in lconst.ITEM_TYPES:
+                return rpc.make_error_resp(const.INVALID_ITEM_TYPE_CODE, const.INVALID_ITEM_TYPE, _id)
+            _type = params["type"]
+        item = Item(_type=_type,
+                    location_uuids=(),
+                    user_uuids=())
+        with conn:
+            conn.execute("BEGIN EXCLUSIVE")
+            db.save_new_item(c=conn, item_obj=item)
+            db.link_item_w_user(c=conn, user_uuid=uuid, item_uuid=item.uuid)
+            db.link_loc_w_item(c=conn, loc_uuid=params["location_uuid"], item_uuid=item.uuid)
+        return rpc.make_success_resp(True, _id)
+    except WrappedErrorResponse as e:
+        file_logger.log_error({
+            "method": "add_item" + str(e.methods),
+            "params": params,
+            "error": str(e.exception)
+        })
+        return e.response_obj
+    except Exception as e:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        file_logger.log_error({
+            "method": "add_item",
             "params": params,
             "error": str(e),
             "trace": str(traceback.extract_tb(exc_traceback))
