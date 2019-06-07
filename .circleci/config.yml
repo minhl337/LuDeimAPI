@@ -2,13 +2,30 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:3.7-stretch-browsers
+    - image: circleci/python:3.7-node-browsers-legacy
     steps:
-      - checkout
-      - run: |
-          pip install --upgrade pip
+    - checkout
+    - run:
+        name: Setup testing environment
+        command: |
+          sudo pip install --upgrade pip
+          sudo pip install codecov
+          sudo pip install coverage
           sudo pip install Twisted
           sudo pip install requests_threads
           sudo pip install -r requirments.txt
+    - run:
+        name: Run Tests
+        command: |
           cd src
-          python3 run_tests.py
+          coverage run run_tests.py
+          coverage report
+          coverage html  # open htmlcov/index.html in a browser
+          codecov
+    - store_artifacts:
+        path: htmlcov
+workflows:
+  version: 2
+  workflow:
+    jobs:
+    - build
