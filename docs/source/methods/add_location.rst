@@ -5,7 +5,7 @@ Add Location
     *add_location*
 
 **PERMISSION LEVEL**
-    *public*
+    *user*
 
 **ARGUMENTS**
     * **[optional if logged in]** **uuid:** string
@@ -51,3 +51,6 @@ Add Location
             },
             "id": 1
         }
+
+**NOTES**
+    This endpoint is intended to be used by a logged in user wanting to add a location to their account. While this method can be called by a non-logged in user via the optional *uuid* argument, this is discouraged and should really only be done via third-party applications looking to integrate with LuDeim.

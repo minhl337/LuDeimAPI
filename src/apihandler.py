@@ -1,4 +1,4 @@
-import concurrent
+import concurrent.futures
 import sqlite3
 import utils.response_constants as const
 import utils.jsonrpc2 as rpc
@@ -68,6 +68,7 @@ def handle_obj(obj, config, logger, session):
 
 
 def method_call(method_name, params, _id, conn, logger, config, session):
+    logger.info("[calling] {} with {}".format(method_name, params))
     return methods.get(
         method_name,
         lambda v, w, x, y, z: rpc.make_error_resp(const.NO_METHOD_CODE, const.NO_METHOD, _id)

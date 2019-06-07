@@ -188,11 +188,17 @@ def save_existing_user(c, user_obj: User):
 
 
 # NOTE: not transaction wrapped
-def load_location(c, loc_uuid):
-    c.execute("""SELECT * FROM locations WHERE uuid = ?""", (loc_uuid,))
-    line = c.fetchone()
-    return Location(line[0], line[1], tuple(json.loads(line[2])), tuple(json.loads(line[3])), line[4], line[5], line[6],
-                    line[7], line[8], line[9], json.loads(line[10]))
+def load_location(c, loc_uuid, _id):
+    try:
+        line = c.execute("""SELECT * FROM locations WHERE uuid = ?""", (loc_uuid,)).fetchone()
+        return Location(line[0], line[1], tuple(json.loads(line[2])), tuple(json.loads(line[3])), line[4], line[5], line[6],
+                        line[7], line[8], line[9], json.loads(line[10]))
+    except Exception as e:
+        raise WrappedErrorResponse(
+            rpc.make_error_resp(const.NONEXISTENT_LOC_CODE, const.NONEXISTENT_LOC, _id),
+            e,
+            "load_location"
+        )
 
 
 # NOTE: not transaction wrapped

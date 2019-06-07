@@ -18,6 +18,12 @@ LOCATION_TYPES = [
     STORE
 ]
 
+# item consts
+DIAMOND = "diamond"
+ITEM_TYPES = [
+    DIAMOND
+]
+
 # misc
 TITLES = ["MR", "MRS", "MISS", "DR"]
 

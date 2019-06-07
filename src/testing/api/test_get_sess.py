@@ -2,18 +2,17 @@ import unittest
 import reset
 import random
 import string
-import json
 import time
 import utils.ludeim_constants as lconst
 import utils.ludeim_generic_helpers as ludeim
-import utils.database_helpers as db
 import app
+import json
 
 
 endpoint = "/api/"
 
 
-class TestApiMethodLogout(unittest.TestCase):
+class TestApiMethodGetSess(unittest.TestCase):
     def setUp(self):
         app.app.testing = True
         app.app.secret_key = "".join([
@@ -21,11 +20,12 @@ class TestApiMethodLogout(unittest.TestCase):
                 ])
         self.app = app.app.test_client()
 
-    def test__logout__valid__without_uuid(self):
+    def test__get_sess_valid(self):
         time.sleep(1)
-        print("\ntest__login__valid__without_logout")
+        print("\ntest__get_sess_valid")
         for _ in range(100):  # NOTE: run 100 random iterations to for robustness
             reset.auto_reset()  # NOTE: reset the database
+            # NOTE: add a user
             _type = random.choice(lconst.USER_TYPES)
             username = "".join([
                 random.choice(string.ascii_letters + string.digits) for _ in range(
@@ -60,30 +60,16 @@ class TestApiMethodLogout(unittest.TestCase):
                 "id": 1
             }
             self.app.post(endpoint, json=payload)
-            # NOTE: then logout
+            # NOTE: get the session & validate it
             payload = {
                 "jsonrpc": "2.0",
-                "method": "logout",
+                "method": "get_sess",
                 "params": {},
                 "id": 1
             }
             resp = self.app.post(endpoint, json=payload)
-            expected_resp = {
-                "jsonrpc": "2.0",
-                "result": True,
-                "id": 1
+            expected_result = {
+                "uuid": derived_uuid,
+                "type": _type
             }
-            self.assertEqual(json.loads(resp.data.decode("utf-8")),
-                             expected_resp,
-                             "api response was incorrect")
-            self.assertEqual(db.get_connection().execute("""SELECT * FROM users""").fetchall(),
-                             [(derived_uuid, _type, username, password_hash, lconst.DEFAULT_USER_AVATAR, '[]', '[]')],
-                             "database updated inadvertently")
-            with self.app as c:
-                with c.session_transaction() as sess:
-                    self.assertEqual(sess.get("uuid", None),
-                                     None,
-                                     "uuid not saved in the session correctly during login")
-                    self.assertEqual(sess.get("type", None),
-                                     None,
-                                     "type not saved in the session correctly during login")
+            self.assertEqual(json.loads(resp.data.decode("utf-8"))["result"], expected_result, "returned session didn't match expectation")
