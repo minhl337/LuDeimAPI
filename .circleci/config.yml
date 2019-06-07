@@ -9,16 +9,15 @@ jobs:
         name: Setup testing environment
         command: |
           pip install --upgrade pip
-          sudo pip install pytest
           sudo pip install coverage
           sudo pip install Twisted
           sudo pip install requests_threads
           sudo pip install -r requirments.txt
-          cd src
     - run:
         name: Run Tests
         command: |
-          coverage run -m pytest
+          cd src
+          coverage run run_tests.py
           coverage report
           coverage html  # open htmlcov/index.html in a browser
     - store_artifacts:
