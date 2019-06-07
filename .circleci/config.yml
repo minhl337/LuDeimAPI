@@ -8,7 +8,8 @@ jobs:
     - run:
         name: Setup testing environment
         command: |
-          pip install --upgrade pip
+          sudo pip install --upgrade pip
+          sudo pip install codecov
           sudo pip install coverage
           sudo pip install Twisted
           sudo pip install requests_threads
@@ -20,6 +21,7 @@ jobs:
           coverage run run_tests.py
           coverage report
           coverage html  # open htmlcov/index.html in a browser
+          codecov
     - store_artifacts:
         path: htmlcov
 workflows:
