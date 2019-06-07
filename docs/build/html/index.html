@@ -35,7 +35,7 @@
   <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="User Types" href="constants/user_types.html" /> 
+    <link rel="next" title="Sessions" href="miscellaneous/sessions.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -76,7 +76,13 @@
               
             
             
-              <p class="caption"><span class="caption-text">Constants</span></p>
+              <p class="caption"><span class="caption-text">Miscellaneous</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="miscellaneous/sessions.html">Sessions</a></li>
+<li class="toctree-l1"><a class="reference internal" href="miscellaneous/rpc.html">JSON-RPC 2.0</a></li>
+<li class="toctree-l1"><a class="reference internal" href="miscellaneous/batch_requests.html">Batch Requests</a></li>
+</ul>
+<p class="caption"><span class="caption-text">Constants</span></p>
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="constants/user_types.html">User Types</a></li>
 <li class="toctree-l1"><a class="reference internal" href="constants/location_types.html">Location Types</a></li>
@@ -153,100 +159,11 @@
   <div class="section" id="welcome-to-the-ludeimapi-documentation">
 <h1>Welcome to the LuDeimAPI documentation<a class="headerlink" href="#welcome-to-the-ludeimapi-documentation" title="Permalink to this headline">¶</a></h1>
 <p>LuDeimAPI is a JSON-RPC 2.0 compliant api designed for use in the LuDeim diamond supply chain management system. The api has a companion API called LuDeimStorageAPI which handles the storage and retrieval of non-trivial size objects within the system. This documentation will not go over this companion API as it is not intended to be called directly from a front-end application.</p>
-</div>
-<div class="section" id="json-rpc-2-0">
-<h1>JSON-RPC 2.0<a class="headerlink" href="#json-rpc-2-0" title="Permalink to this headline">¶</a></h1>
-<p>LuDeimAPI is a fully JSON-RPC 2.0 compliant api. The full JSON-RPC 2.0 specification can be found <a class="reference external" href="https://www.jsonrpc.org/specification">here</a>. It’s only a few pages and very readable. It is highly recommended that anyone looking to develop on top of LuDeimAPI read that document. However, for those that don’t, here’s the skinny:</p>
-<ul class="simple">
-<li><p>All requests must be formatted in the following way.</p></li>
-</ul>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-   <span class="s2">&quot;jsonrpc&quot;</span><span class="o">:</span> <span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
-   <span class="s2">&quot;method&quot;</span><span class="o">:</span> <span class="nx">NAME_OF_METHOD_BEING_CALLED</span><span class="p">,</span>
-   <span class="s2">&quot;params&quot;</span><span class="o">:</span> <span class="nx">OBJECT_CONTAINING_THE_REQUIRED_PARAMETERS</span><span class="p">,</span>
-   <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="nx">ID_NUMBER_FOR_THE_REQUEST</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<ul class="simple">
-<li><p>Every response will come in one of the following formats. If the method executed without errors:</p></li>
-</ul>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-   <span class="s2">&quot;jsonrpc&quot;</span><span class="o">:</span> <span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
-   <span class="s2">&quot;result&quot;</span><span class="o">:</span> <span class="nx">OBJECT_CONTAINING_THE_RESULT_OF_YOUR_CALL</span><span class="p">,</span>
-   <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="nx">ID_NUMBER_OF_THE_CORRESPONDING_REQUEST</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<p>If the method execution threw an error:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
-   <span class="s2">&quot;jsonrpc&quot;</span><span class="o">:</span> <span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
-   <span class="s2">&quot;error&quot;</span><span class="o">:</span> <span class="p">{</span>
-      <span class="s2">&quot;code&quot;</span><span class="o">:</span> <span class="nx">ERROR_CODE</span><span class="p">,</span>
-      <span class="s2">&quot;message&quot;</span><span class="o">:</span> <span class="nx">ERROR_MESSAGE</span>
-   <span class="p">},</span>
-   <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="nx">ID_NUMBER_OF_THE_CORRESPONDING_REQUEST</span>
-<span class="p">}</span>
-</pre></div>
-</div>
-<ul class="simple">
-<li><p>All requests should be sent to the <strong>/api/</strong> endpoint.</p></li>
-</ul>
-</div>
-<div class="section" id="sessions">
-<h1>Sessions<a class="headerlink" href="#sessions" title="Permalink to this headline">¶</a></h1>
-<p>LuDeimAPI sessions are persistent. That is if you are logged in you will stay logged in until you either clear your cache or the server running LuDeimAPI is restarted. To clear your session, call the <strong>logout</strong> method.</p>
-<p>As a convenience, your account’s <strong>uuid</strong> and <strong>type</strong> are stored in your server session whenever <strong>login</strong> is called. As a result, once <strong>login</strong> has been called the uuid field of all requests can be safely omitted.</p>
-<p>Additionally, the contents of the current session can be returned by calling <strong>get_sess</strong>, and arbitrary string key-value pairs can be added to the session via the <strong>put_sess</strong>. Note that if <strong>put_sess</strong> is called with a key-value pair whose key is already defined in the session, then the value for that key will get overwritten with the new one.</p>
-</div>
-<div class="section" id="batch-requests">
-<h1>Batch Requests<a class="headerlink" href="#batch-requests" title="Permalink to this headline">¶</a></h1>
-<p>One large feature of the JSON-RPC 2.0 standard is batch requests. Batch requests allow multiple request objects to be sent in as a single request. This is done by adding all the individual request objects to a list, and sending that list as your request object. For instance:</p>
-<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="p">[</span>
-   <span class="p">{</span>
-      <span class="s2">&quot;jsonrpc&quot;</span><span class="o">:</span> <span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;method&quot;</span><span class="o">:</span> <span class="s2">&quot;foo&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;params&quot;</span><span class="o">:</span> <span class="p">[</span>
-         <span class="mi">1</span><span class="p">,</span>
-         <span class="mi">2</span><span class="p">,</span>
-         <span class="mi">3</span>
-      <span class="p">],</span>
-      <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">1</span>
-   <span class="p">},</span>
-   <span class="p">{</span>
-      <span class="s2">&quot;jsonrpc&quot;</span><span class="o">:</span> <span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;method&quot;</span><span class="o">:</span> <span class="s2">&quot;bar&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;params&quot;</span><span class="o">:</span> <span class="p">{</span>
-         <span class="s2">&quot;arg1&quot;</span><span class="o">:</span> <span class="s2">&quot;james&quot;</span><span class="p">,</span>
-         <span class="s2">&quot;arg2&quot;</span><span class="o">:</span> <span class="s2">&quot;kim&quot;</span><span class="p">,</span>
-         <span class="s2">&quot;arg3&quot;</span><span class="o">:</span> <span class="s2">&quot;chris&quot;</span>
-      <span class="p">},</span>
-      <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">2</span>
-   <span class="p">},</span>
-   <span class="p">{</span>
-      <span class="s2">&quot;jsonrpc&quot;</span><span class="o">:</span> <span class="s2">&quot;2.0&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;method&quot;</span><span class="o">:</span> <span class="s2">&quot;other_thing&quot;</span><span class="p">,</span>
-      <span class="s2">&quot;params&quot;</span><span class="o">:</span> <span class="kc">true</span><span class="p">,</span>
-      <span class="s2">&quot;id&quot;</span><span class="o">:</span> <span class="mi">3</span>
-   <span class="p">}</span>
-<span class="p">]</span>
-</pre></div>
-</div>
-<p>This has a few benefits. First, the number of requests that can be grouped in this way is unbounded. So, if you want to make an extremely large number of requests all at once, then this is a great way to reduce the networking overhead associated with doing that. Also, Batch requests are defined as being unordered. That is, the order in which request objects are included in the list doesn’t determine the order in which the server executes them. This may seem like a bad thing, but it allows the server to run batch requests asynchronously which can drastically reduce the time required to compute a response. There is a side effects to this asynchronous behavior though. Sessions are read and updated independently for each request. This means session behavior for batch requests is quite unpredictable. The best course of action is to not use batch requests with methods that interact with the session.</p>
 <div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">Constants</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="constants/user_types.html">User Types</a></li>
-<li class="toctree-l1"><a class="reference internal" href="constants/location_types.html">Location Types</a></li>
-<li class="toctree-l1"><a class="reference internal" href="constants/titles.html">Titles</a></li>
-</ul>
 </div>
 <div class="toctree-wrapper compound">
-<p class="caption"><span class="caption-text">Methods</span></p>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="methods/add_user.html">Add User</a></li>
-<li class="toctree-l1"><a class="reference internal" href="methods/add_location.html">Add Location</a></li>
-</ul>
+</div>
+<div class="toctree-wrapper compound">
 </div>
 </div>
 
@@ -258,7 +175,7 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="constants/user_types.html" class="btn btn-neutral float-right" title="User Types" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="miscellaneous/sessions.html" class="btn btn-neutral float-right" title="Sessions" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
     </div>

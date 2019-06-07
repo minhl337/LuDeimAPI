@@ -51,15 +51,3 @@ Add Location
             },
             "id": 1
         }
-
-**EXAMPLE SUCCESSFUL RESPONSE**
-    .. code-block:: javascript
-
-        {
-            "jsonrpc": "2.0",
-            "result": {
-                "uuid": "813ebc3dcc3798a3f6ec9ea24d104f401362c6b6c5ed8032a78b643fd9afe502",
-                "type": "mining_company"
-            },
-            "id": 1
-        }

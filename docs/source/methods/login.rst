@@ -1,8 +1,8 @@
-Add User
-========
+Login
+=====
 
 **METHOD NAME**
-    *add_user*
+    *login*
 
 **PERMISSION LEVEL**
     *public*
@@ -10,29 +10,26 @@ Add User
 **ARGUMENTS**
     * **username:** string
     * **password_hash:** string
-    * **type:** string
 
 **ARGUMENT CONSTRAINTS**
     * The username must be between 8 and 64 characters
     * The password_hash must be between 64 and 128 characters
-    * The type must be one of the valid types defined in the *User Types* section of this document
 
 **RESPONSE MEMBERS**
     * **uuid:** string
     * **type:** string
 
 **RESPONSE MEMBERS MEANING**
-    * The uuid returned is the uuid associated with the new user created by the method call. It is required to make any changes to that user's various attributes.
-    * The type is the same as the type that was sent in as an argument. It can safely be ignored or used in a continuation function.
+    * The uuid returned is the uuid associated with the user logged in by the method call. It is required to make any changes to that user's various attributes.
+    * The type is the same as the type is the type of the user being logged in by the method call. Use this to display different website pages based on the type of the user that is logged in.
 
 **EXAMPLE REQUEST**
     .. code-block:: javascript
 
         {
             "jsonrpc": "2.0",
-            "method": "add_user",
+            "method": "login",
             "params": {
-                "type": "mining_company",
                 "username": "abcdefghijk",
                 "password_hash": "abcdefghabcdefghabcdefghabcdefghabcdefghabcdefghabcdefghabcdefgh"
             },
@@ -52,4 +49,4 @@ Add User
         }
 
 **NOTES**
-    This endpoint is intended to be used when registering a new user. Currently the endpoint is public. That is, anyone can call it can create a new user. However, the final implementation will have an admin only permission level. That is, only admins will be able to create users in the system. This to ensure that only LuDeim approved actors are given accounts in the system.
+    This method should be called when a user tries to login. While many methods can be called without being logged in via an optional *uuid* argument, this is discouraged. The intended use is to call the login method whenever a user logs in
