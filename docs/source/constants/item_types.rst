@@ -1,0 +1,4 @@
+Item Types
+==========
+
+* diamond
