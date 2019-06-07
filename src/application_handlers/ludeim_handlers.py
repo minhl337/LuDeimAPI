@@ -10,7 +10,8 @@ from classes.ClassLocation import Location
 from classes.ClassItem import Item
 from classes.ClassWrappedErrorResponse import WrappedErrorResponse
 import json
-import traceback, sys
+import traceback
+import sys
 
 
 # NOTE: not transaction wrapped
@@ -30,19 +31,19 @@ def __get_user_type(_id, conn, uuid):
 
 
 # NOTE: not transaction wrapped
-# def __get_user_username(_id, conn, uuid):
-#     try:
-#         user = db.load_user(conn, uuid, _id)
-#         return user.username
-#     except WrappedErrorResponse as e:
-#         e.methods.append("__get_user_username")
-#         raise e
-#     except Exception as e:
-#         raise WrappedErrorResponse(
-#             rpc.make_error_resp(const.GET_USER_USERNAME_UNKNOWN_CODE, const.GET_USER_USERNAME_UNKNOWN, _id),
-#             e,
-#             "__get_user_username"
-#         )
+def __get_user_username(_id, conn, uuid):
+    try:
+        user = db.load_user(conn, uuid, _id)
+        return user.username
+    except WrappedErrorResponse as e:
+        e.methods.append("__get_user_username")
+        raise e
+    except Exception as e:
+        raise WrappedErrorResponse(
+            rpc.make_error_resp(const.GET_USER_USERNAME_UNKNOWN_CODE, const.GET_USER_USERNAME_UNKNOWN, _id),
+            e,
+            "__get_user_username"
+        )
 
 
 # NOTE: not transaction wrapped
@@ -506,6 +507,8 @@ def logout(params, _id, conn, logger, config, session):
             _id)
 
 
+# TODO:
+#  - optimize to not get username when a uuid is given
 def get_user_location_uuids(params, _id, conn, logger, config, session):
     try:
         schemes = t.typize_config(config)
@@ -518,9 +521,16 @@ def get_user_location_uuids(params, _id, conn, logger, config, session):
         with conn:
             conn.execute("BEGIN EXCLUSIVE")
             try:
+                if "username" not in params:
+                    if "uuid" in params:
+                        username = __get_user_username(_id, conn, params["uuid"])
+                    else:
+                        username = __get_user_username(_id, conn, session["uuid"])
+                else:
+                    username = params["username"]
                 r = db.get_user_locs(conn,
                                      conn.execute("""SELECT uuid FROM users WHERE username = ?""",
-                                                  (params["username"],)).fetchone()[0])
+                                                  (username,)).fetchone()[0])
             except WrappedErrorResponse as e:
                 raise e
             except Exception as e:
@@ -579,6 +589,54 @@ def get_all_usernames(params, _id, conn, logger, config, session):
             "method": "get_all_usernames",
             "params": params,
             "error": str(e)
+        })
+        return rpc.make_error_resp(
+            const.INTERNAL_ERROR_CODE,
+            const.INTERNAL_ERROR,
+            _id)
+
+
+# TODO:
+#  - optimize to not get username when a uuid is given
+def get_user_item_uuids(params, _id, conn, logger, config, session):
+    try:
+        schemes = t.typize_config(config)
+        if not t.check_params_against_scheme_set(schemes["get_user_item_uuids"], params):
+            return rpc.make_error_resp(
+                const.INVALID_PARAMS_CODE,
+                const.INVALID_PARAMS,
+                _id
+            )
+        with conn:
+            conn.execute("BEGIN EXCLUSIVE")
+            try:
+                if "username" not in params:
+                    if "uuid" in params:
+                        username = __get_user_username(_id, conn, params["uuid"])
+                    else:
+                        username = __get_user_username(_id, conn, session["uuid"])
+                else:
+                    username = params["username"]
+                r = db.get_user_items(conn,
+                                      conn.execute("""SELECT uuid FROM users WHERE username = ?""",
+                                                   (username,)).fetchone()[0])
+            except WrappedErrorResponse as e:
+                raise e
+            except Exception as e:
+                rpc.make_error_resp(const.NO_CORRESPONDING_USER_CODE, const.NO_CORRESPONDING_USER, _id)
+        return rpc.make_success_resp(json.loads(json.dumps(r)), _id)
+    except WrappedErrorResponse as e:
+        file_logger.log_error({
+            "method": "get_user_item_uuids" + str(e.methods),
+            "params": params,
+            "error": str(e.exception)
+        })
+        return e.response_obj
+    except Exception as e:
+        file_logger.log_error({
+            "method": "get_user_item_uuids",
+            "params": params,
+            "error": str(e),
         })
         return rpc.make_error_resp(
             const.INTERNAL_ERROR_CODE,
