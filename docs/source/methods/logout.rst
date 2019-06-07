@@ -2,7 +2,7 @@ Logout
 ======
 
 **METHOD NAME**
-    *login*
+    *logout*
 
 **PERMISSION LEVEL**
     *user*
@@ -31,3 +31,6 @@ Logout
             "result": true,
             "id": 1
         }
+
+**NOTES**
+    This method should be called when a user wants to end leave the site. This method removes the user's *uuid* and *type* from their session. Should a user want to auto-login the next time they visit the site this method should simply not be called upon leaving which will result in the server remembering the user the next time they visit the site. Whether a user is login can be checked via the **get_sess** method.

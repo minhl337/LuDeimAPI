@@ -49,4 +49,4 @@ Login
         }
 
 **NOTES**
-    This method should be called when a user tries to login. While many methods can be called without being logged in via an optional *uuid* argument, this is discouraged. The intended use is to call the login method whenever a user logs in
+    This method should be called when a user tries to login. While many methods can be called without being logged in via an optional *uuid* argument, this is discouraged. The intended use is to call the login method whenever a user logs into the frontend then not have to worry about providing a uuid for each request. Login will fail if the user tries logging in with a non-existent account. This should be expected and caught by the frontend.

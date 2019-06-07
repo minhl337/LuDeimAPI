@@ -23,6 +23,7 @@ LuDeimAPI is a JSON-RPC 2.0 compliant api designed for use in the LuDeim diamond
    :maxdepth: 2
    :caption: Constants
 
+   constants/item_types
    constants/user_types
    constants/location_types
    constants/titles
@@ -34,5 +35,6 @@ LuDeimAPI is a JSON-RPC 2.0 compliant api designed for use in the LuDeim diamond
 
    methods/add_user
    methods/add_location
+   methods/add_item
    methods/login
    methods/logout
