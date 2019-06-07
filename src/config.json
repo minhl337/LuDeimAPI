@@ -46,8 +46,8 @@
     ],
     "add_item": [
       {
-        "?uuid": "str",
         "location_uuid": "str",
+        "?uuid": "str",
         "?type": "str"
       }
     ],
