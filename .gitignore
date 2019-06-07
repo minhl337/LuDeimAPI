@@ -8,3 +8,4 @@ src/*.backup
 .DS_Store
 src/errors_log.json
 src/general_log.json
+docs/build
