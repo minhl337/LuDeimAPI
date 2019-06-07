@@ -30,242 +30,242 @@ def __get_user_type(_id, conn, uuid):
 
 
 # NOTE: not transaction wrapped
-def __get_user_username(_id, conn, uuid):
-    try:
-        user = db.load_user(conn, uuid, _id)
-        return user.username
-    except WrappedErrorResponse as e:
-        e.methods.append("__get_user_username")
-        raise e
-    except Exception as e:
-        raise WrappedErrorResponse(
-            rpc.make_error_resp(const.GET_USER_USERNAME_UNKNOWN_CODE, const.GET_USER_USERNAME_UNKNOWN, _id),
-            e,
-            "__get_user_username"
-        )
+# def __get_user_username(_id, conn, uuid):
+#     try:
+#         user = db.load_user(conn, uuid, _id)
+#         return user.username
+#     except WrappedErrorResponse as e:
+#         e.methods.append("__get_user_username")
+#         raise e
+#     except Exception as e:
+#         raise WrappedErrorResponse(
+#             rpc.make_error_resp(const.GET_USER_USERNAME_UNKNOWN_CODE, const.GET_USER_USERNAME_UNKNOWN, _id),
+#             e,
+#             "__get_user_username"
+#         )
 
 
 # NOTE: not transaction wrapped
-def __get_user_password_hash(_id, conn, uuid):
-    try:
-        user = db.load_user(conn, uuid, _id)
-        return user.password_hash
-    except WrappedErrorResponse as e:
-        e.methods.append("__get_user_password_hash")
-        raise e
-    except Exception as e:
-        raise WrappedErrorResponse(
-            rpc.make_error_resp(const.GET_USER_PASSWORD_HASH_UNKNOWN_CODE, const.GET_USER_PASSWORD_HASH_UNKNOWN, _id),
-            e,
-            "__get_user_password_hash"
-        )
+# def __get_user_password_hash(_id, conn, uuid):
+#     try:
+#         user = db.load_user(conn, uuid, _id)
+#         return user.password_hash
+#     except WrappedErrorResponse as e:
+#         e.methods.append("__get_user_password_hash")
+#         raise e
+#     except Exception as e:
+#         raise WrappedErrorResponse(
+#             rpc.make_error_resp(const.GET_USER_PASSWORD_HASH_UNKNOWN_CODE, const.GET_USER_PASSWORD_HASH_UNKNOWN, _id),
+#             e,
+#             "__get_user_password_hash"
+#         )
 
 
 # NOTE: not transaction wrapped
-def __get_user_avatar(_id, conn, uuid):
-    try:
-        user = db.load_user(conn, uuid, _id)
-        return user.avatar
-    except WrappedErrorResponse as e:
-        e.methods.append("__get_user_avatar")
-        raise e
-    except Exception as e:
-        raise WrappedErrorResponse(
-            rpc.make_error_resp(const.GET_USER_AVATAR_UNKNOWN_CODE, const.GET_USER_AVATAR_UNKNOWN, _id),
-            e,
-            "__get_user_avatar"
-        )
+# def __get_user_avatar(_id, conn, uuid):
+#     try:
+#         user = db.load_user(conn, uuid, _id)
+#         return user.avatar
+#     except WrappedErrorResponse as e:
+#         e.methods.append("__get_user_avatar")
+#         raise e
+#     except Exception as e:
+#         raise WrappedErrorResponse(
+#             rpc.make_error_resp(const.GET_USER_AVATAR_UNKNOWN_CODE, const.GET_USER_AVATAR_UNKNOWN, _id),
+#             e,
+#             "__get_user_avatar"
+#         )
 
 
 # NOTE: not transaction wrapped
-def __get_user_location_uuids(_id, conn, uuid):
-    try:
-        return db.get_user_locs(conn, uuid)
-    except WrappedErrorResponse as e:
-        e.methods.append("__get_user_location_uuids")
-        raise e
-    except Exception as e:
-        raise WrappedErrorResponse(
-            rpc.make_error_resp(const.GET_USER_LOCATION_UUIDS_UNKNOWN_CODE, const.GET_USER_LOCATION_UUIDS_UNKNOWN, _id),
-            e,
-            "__get_user_location_uuids"
-        )
+# def __get_user_location_uuids(_id, conn, uuid):
+#     try:
+#         return db.get_user_locs(conn, uuid)
+#     except WrappedErrorResponse as e:
+#         e.methods.append("__get_user_location_uuids")
+#         raise e
+#     except Exception as e:
+#         raise WrappedErrorResponse(
+#             rpc.make_error_resp(const.GET_USER_LOCATION_UUIDS_UNKNOWN_CODE, const.GET_USER_LOCATION_UUIDS_UNKNOWN, _id),
+#             e,
+#             "__get_user_location_uuids"
+#         )
 
 
 # NOTE: not transaction wrapped
-def __get_user_item_uuids(_id, conn, uuid):
-    try:
-        return db.get_user_items(conn, uuid)
-    except WrappedErrorResponse as e:
-        e.methods.append("__get_user_item_uuids")
-        raise e
-    except Exception as e:
-        raise WrappedErrorResponse(
-            rpc.make_error_resp(const.GET_USER_ITEM_UUIDS_UNKNOWN_CODE, const.GET_USER_ITEM_UUIDS_UNKNOWN, _id),
-            e,
-            "__get_user_item_uuids"
-        )
+# def __get_user_item_uuids(_id, conn, uuid):
+#     try:
+#         return db.get_user_items(conn, uuid)
+#     except WrappedErrorResponse as e:
+#         e.methods.append("__get_user_item_uuids")
+#         raise e
+#     except Exception as e:
+#         raise WrappedErrorResponse(
+#             rpc.make_error_resp(const.GET_USER_ITEM_UUIDS_UNKNOWN_CODE, const.GET_USER_ITEM_UUIDS_UNKNOWN, _id),
+#             e,
+#             "__get_user_item_uuids"
+#         )
 
 
 # ----------------------------------------------------------------------------------------------------------------------
 
 
 # NOTE: not transaction wrapped
-def __get_location_type(_id, conn, uuid):
-    try:
-        loc = db.load_location(conn, uuid, _id)
-        return loc.type
-    except WrappedErrorResponse as e:
-        e.methods.append("__get_location_type")
-        raise e
-    except Exception as e:
-        raise WrappedErrorResponse(
-            rpc.make_error_resp(const.GET_LOC_TYPE_UNKNOWN_CODE, const.GET_LOC_TYPE_UNKNOWN, _id),
-            e,
-            "__get_location_type"
-        )
+# def __get_location_type(_id, conn, uuid):
+#     try:
+#         loc = db.load_location(conn, uuid, _id)
+#         return loc.type
+#     except WrappedErrorResponse as e:
+#         e.methods.append("__get_location_type")
+#         raise e
+#     except Exception as e:
+#         raise WrappedErrorResponse(
+#             rpc.make_error_resp(const.GET_LOC_TYPE_UNKNOWN_CODE, const.GET_LOC_TYPE_UNKNOWN, _id),
+#             e,
+#             "__get_location_type"
+#         )
 
 
 # NOTE: not transaction wrapped
-def __get_location_user_uuids(_id, conn, uuid):
-    try:
-        return db.get_loc_users(conn, uuid)
-    except WrappedErrorResponse as e:
-        e.methods.append("__get_location_user_uuids")
-        raise e
-    except Exception as e:
-        raise WrappedErrorResponse(
-            rpc.make_error_resp(const.GET_LOC_USER_UUIDS_UNKNOWN_CODE, const.GET_LOC_USER_UUIDS_UNKNOWN, _id),
-            e,
-            "__get_location_user_uuids"
-        )
+# def __get_location_user_uuids(_id, conn, uuid):
+#     try:
+#         return db.get_loc_users(conn, uuid)
+#     except WrappedErrorResponse as e:
+#         e.methods.append("__get_location_user_uuids")
+#         raise e
+#     except Exception as e:
+#         raise WrappedErrorResponse(
+#             rpc.make_error_resp(const.GET_LOC_USER_UUIDS_UNKNOWN_CODE, const.GET_LOC_USER_UUIDS_UNKNOWN, _id),
+#             e,
+#             "__get_location_user_uuids"
+#         )
 
 
 # NOTE: not transaction wrapped
-def __get_location_item_uuids(_id, conn, uuid):
-    try:
-        return db.get_loc_items(conn, uuid)
-    except WrappedErrorResponse as e:
-        e.methods.append("__get_location_item_uuids")
-        raise e
-    except Exception as e:
-        raise WrappedErrorResponse(
-            rpc.make_error_resp(const.GET_LOC_ITEM_UUIDS_UNKNOWN_CODE, const.GET_LOC_ITEM_UUIDS_UNKNOWN, _id),
-            e,
-            "__get_location_item_uuids"
-        )
+# def __get_location_item_uuids(_id, conn, uuid):
+#     try:
+#         return db.get_loc_items(conn, uuid)
+#     except WrappedErrorResponse as e:
+#         e.methods.append("__get_location_item_uuids")
+#         raise e
+#     except Exception as e:
+#         raise WrappedErrorResponse(
+#             rpc.make_error_resp(const.GET_LOC_ITEM_UUIDS_UNKNOWN_CODE, const.GET_LOC_ITEM_UUIDS_UNKNOWN, _id),
+#             e,
+#             "__get_location_item_uuids"
+#         )
 
 
 # NOTE: not transaction wrapped
-def __get_location_name(_id, conn, uuid):
-    try:
-        loc = db.load_location(conn, uuid, _id)
-        return loc.name
-    except WrappedErrorResponse as e:
-        e.methods.append("__get_location_name")
-        raise e
-    except Exception as e:
-        raise WrappedErrorResponse(
-            rpc.make_error_resp(const.NONEXISTENT_LOC_CODE, const.NONEXISTENT_LOC, _id),
-            e,
-            "__get_location_name"
-        )
+# def __get_location_name(_id, conn, uuid):
+#     try:
+#         loc = db.load_location(conn, uuid, _id)
+#         return loc.name
+#     except WrappedErrorResponse as e:
+#         e.methods.append("__get_location_name")
+#         raise e
+#     except Exception as e:
+#         raise WrappedErrorResponse(
+#             rpc.make_error_resp(const.NONEXISTENT_LOC_CODE, const.NONEXISTENT_LOC, _id),
+#             e,
+#             "__get_location_name"
+#         )
 
 
 # NOTE: not transaction wrapped
-def __get_location_address(_id, conn, uuid):
-    try:
-        loc = db.load_location(conn, uuid, _id)
-        return loc.address
-    except WrappedErrorResponse as e:
-        e.methods.append("__get_location_address")
-        raise e
-    except Exception as e:
-        raise WrappedErrorResponse(
-            rpc.make_error_resp(const.NONEXISTENT_LOC_CODE, const.NONEXISTENT_LOC, _id),
-            e,
-            "__get_location_address"
-        )
+# def __get_location_address(_id, conn, uuid):
+#     try:
+#         loc = db.load_location(conn, uuid, _id)
+#         return loc.address
+#     except WrappedErrorResponse as e:
+#         e.methods.append("__get_location_address")
+#         raise e
+#     except Exception as e:
+#         raise WrappedErrorResponse(
+#             rpc.make_error_resp(const.NONEXISTENT_LOC_CODE, const.NONEXISTENT_LOC, _id),
+#             e,
+#             "__get_location_address"
+#         )
 
 
 # NOTE: not transaction wrapped
-def __get_location_latitude(_id, conn, uuid):
-    try:
-        loc = db.load_location(conn, uuid, _id)
-        return loc.latitude
-    except WrappedErrorResponse as e:
-        e.methods.append("__get_location_latitude")
-        raise e
-    except Exception as e:
-        raise WrappedErrorResponse(
-            rpc.make_error_resp(const.NONEXISTENT_LOC_CODE, const.NONEXISTENT_LOC, _id),
-            e,
-            "__get_location_latitude"
-        )
+# def __get_location_latitude(_id, conn, uuid):
+#     try:
+#         loc = db.load_location(conn, uuid, _id)
+#         return loc.latitude
+#     except WrappedErrorResponse as e:
+#         e.methods.append("__get_location_latitude")
+#         raise e
+#     except Exception as e:
+#         raise WrappedErrorResponse(
+#             rpc.make_error_resp(const.NONEXISTENT_LOC_CODE, const.NONEXISTENT_LOC, _id),
+#             e,
+#             "__get_location_latitude"
+#         )
 
 
 # NOTE: not transaction wrapped
-def __get_location_longitude(_id, conn, uuid):
-    try:
-        loc = db.load_location(conn, uuid, _id)
-        return loc.longitude
-    except WrappedErrorResponse as e:
-        e.methods.append("__get_location_longitude")
-        raise e
-    except Exception as e:
-        raise WrappedErrorResponse(
-            rpc.make_error_resp(const.NONEXISTENT_LOC_CODE, const.NONEXISTENT_LOC, _id),
-            e,
-            "__get_location_longitude"
-        )
+# def __get_location_longitude(_id, conn, uuid):
+#     try:
+#         loc = db.load_location(conn, uuid, _id)
+#         return loc.longitude
+#     except WrappedErrorResponse as e:
+#         e.methods.append("__get_location_longitude")
+#         raise e
+#     except Exception as e:
+#         raise WrappedErrorResponse(
+#             rpc.make_error_resp(const.NONEXISTENT_LOC_CODE, const.NONEXISTENT_LOC, _id),
+#             e,
+#             "__get_location_longitude"
+#         )
 
 
 # NOTE: not transaction wrapped
-def __get_location_details(_id, conn, uuid):
-    try:
-        loc = db.load_location(conn, uuid, _id)
-        return loc.details
-    except WrappedErrorResponse as e:
-        e.methods.append("__get_location_details")
-        raise e
-    except Exception as e:
-        raise WrappedErrorResponse(
-            rpc.make_error_resp(const.NONEXISTENT_LOC_CODE, const.NONEXISTENT_LOC, _id),
-            e,
-            "__get_location_details"
-        )
+# def __get_location_details(_id, conn, uuid):
+#     try:
+#         loc = db.load_location(conn, uuid, _id)
+#         return loc.details
+#     except WrappedErrorResponse as e:
+#         e.methods.append("__get_location_details")
+#         raise e
+#     except Exception as e:
+#         raise WrappedErrorResponse(
+#             rpc.make_error_resp(const.NONEXISTENT_LOC_CODE, const.NONEXISTENT_LOC, _id),
+#             e,
+#             "__get_location_details"
+#         )
 
 
 # NOTE: not transaction wrapped
-def __get_location_photo(_id, conn, uuid):
-    try:
-        loc = db.load_location(conn, uuid, _id)
-        return loc.photo
-    except WrappedErrorResponse as e:
-        e.methods.append("__get_location_photo")
-        raise e
-    except Exception as e:
-        raise WrappedErrorResponse(
-            rpc.make_error_resp(const.NONEXISTENT_LOC_CODE, const.NONEXISTENT_LOC, _id),
-            e,
-            "__get_location_photo"
-        )
+# def __get_location_photo(_id, conn, uuid):
+#     try:
+#         loc = db.load_location(conn, uuid, _id)
+#         return loc.photo
+#     except WrappedErrorResponse as e:
+#         e.methods.append("__get_location_photo")
+#         raise e
+#     except Exception as e:
+#         raise WrappedErrorResponse(
+#             rpc.make_error_resp(const.NONEXISTENT_LOC_CODE, const.NONEXISTENT_LOC, _id),
+#             e,
+#             "__get_location_photo"
+#         )
 
 
 # NOTE: not transaction wrapped
-def __get_location_representative(_id, conn, uuid):
-    try:
-        loc = db.load_location(conn, uuid, _id)
-        return loc.representative
-    except WrappedErrorResponse as e:
-        e.methods.append("__get_location_representative")
-        raise e
-    except Exception as e:
-        raise WrappedErrorResponse(
-            rpc.make_error_resp(const.NONEXISTENT_LOC_CODE, const.NONEXISTENT_LOC, _id),
-            e,
-            "__get_location_representative"
-        )
+# def __get_location_representative(_id, conn, uuid):
+#     try:
+#         loc = db.load_location(conn, uuid, _id)
+#         return loc.representative
+#     except WrappedErrorResponse as e:
+#         e.methods.append("__get_location_representative")
+#         raise e
+#     except Exception as e:
+#         raise WrappedErrorResponse(
+#             rpc.make_error_resp(const.NONEXISTENT_LOC_CODE, const.NONEXISTENT_LOC, _id),
+#             e,
+#             "__get_location_representative"
+#         )
 
 
 # ----------------------------------------------------------------------------------------------------------------------
