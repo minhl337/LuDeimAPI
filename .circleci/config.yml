@@ -2,28 +2,6 @@ version: 2
 jobs:
   build:
     docker:
-      - image: circleci/python:3.7-stretch-browsers
-        environment:
-          CODECOV_TOKEN="0e059367-a6b0-48fa-a0ca-044ac6f63fbb"
-    steps:
-      - checkout
-      - run: |
-          pip install --upgrade pip
-          sudo pip install coverage
-          sudo pip install Twisted
-          sudo pip install requests_threads
-          sudo pip install -r requirments.txt
-          cd src
-          coverage run run_tests.py
-          coverage report
-          coverage html
-        - store_artifacts:
-          path: htmlcov
-
-version: 2
-jobs:
-  build:
-    docker:
     - image: circleci/python:3.7-node-browsers-legacy
     steps:
     - checkout
