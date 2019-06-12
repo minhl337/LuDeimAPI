@@ -29,6 +29,7 @@ LuDeimAPI is a JSON-RPC 2.0 compliant API designed for use in the LuDeim diamond
    constants/titles
 
 .. toctree::
+   :hidden:
    :maxdepth: 2
    :caption: Methods
 
