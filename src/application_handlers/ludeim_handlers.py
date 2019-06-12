@@ -302,7 +302,7 @@ def add_user(params, _id, conn, logger, config, session):
             conn.execute("BEGIN EXCLUSIVE")
             if __is_username_taken(_id, conn, params["username"]):
                 return rpc.make_error_resp(const.USERNAME_TAKEN_CODE, const.USERNAME_TAKEN, _id)
-            db.save_new_user(conn, user)
+            db.save_new_user(conn, user, _id)
         return rpc.make_success_resp({"type": user.type, "uuid": user.uuid}, _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
@@ -358,8 +358,8 @@ def add_location(params, _id, conn, logger, config, session):
             return rpc.make_error_resp(const.INVALID_REPRESENTATIVE_TITLE_CODE, const.INVALID_REPRESENTATIVE_TITLE, _id)
         with conn:
             conn.execute("BEGIN EXCLUSIVE")
-            db.save_new_location(c=conn, loc_obj=location)
-            db.link_user_w_loc(c=conn, user_uuid=uuid, loc_uuid=location.uuid)
+            db.save_new_location(c=conn, loc_obj=location, _id=_id)
+            db.link_user_w_loc(c=conn, user_uuid=uuid, loc_uuid=location.uuid, _id=_id)
         return rpc.make_success_resp(
             True,
             _id)
@@ -414,8 +414,8 @@ def add_item(params, _id, conn, logger, config, session):
         with conn:
             conn.execute("BEGIN EXCLUSIVE")
             db.save_new_item(c=conn, item_obj=item)
-            db.link_item_w_user(c=conn, user_uuid=uuid, item_uuid=item.uuid)
-            db.link_loc_w_item(c=conn, loc_uuid=params["location_uuid"], item_uuid=item.uuid)
+            db.link_item_w_user(c=conn, user_uuid=uuid, item_uuid=item.uuid, _id=_id)
+            db.link_loc_w_item(c=conn, loc_uuid=params["location_uuid"], item_uuid=item.uuid, _id=_id)
         return rpc.make_success_resp(True, _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
@@ -530,7 +530,8 @@ def get_user_location_uuids(params, _id, conn, logger, config, session):
                     username = params["username"]
                 r = db.get_user_locs(conn,
                                      conn.execute("""SELECT uuid FROM users WHERE username = ?""",
-                                                  (username,)).fetchone()[0])
+                                                  (username,)).fetchone()[0],
+                                     _id)
             except WrappedErrorResponse as e:
                 raise e
             except Exception as e:
@@ -619,7 +620,8 @@ def get_user_item_uuids(params, _id, conn, logger, config, session):
                     username = params["username"]
                 r = db.get_user_items(conn,
                                       conn.execute("""SELECT uuid FROM users WHERE username = ?""",
-                                                   (username,)).fetchone()[0])
+                                                   (username,)).fetchone()[0],
+                                      _id)
             except WrappedErrorResponse as e:
                 raise e
             except Exception as e:

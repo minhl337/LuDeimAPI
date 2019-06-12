@@ -55,4 +55,7 @@ GET_LOC_ITEM_UUIDS_UNKNOWN_CODE = -20
 GET_LOC_ITEM_UUIDS_UNKNOWN = "An exception occurred while trying to get a location's item uuids"
 INVALID_ITEM_TYPE_CODE = -21
 INVALID_ITEM_TYPE = "The provided item type is not a valid item type"
-
+NONEXISTENT_ITEM_CODE = -18
+NONEXISTENT_ITEM = "There was a problem looking up an item"
+DATABASE_FAILURE_CODE = -19
+DATABASE_FAILURE = "There was a problem with the database"
