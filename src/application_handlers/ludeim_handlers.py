@@ -413,7 +413,7 @@ def add_item(params, _id, conn, logger, config, session):
                     user_uuids=())
         with conn:
             conn.execute("BEGIN EXCLUSIVE")
-            db.save_new_item(c=conn, item_obj=item)
+            db.save_new_item(c=conn, item_obj=item, _id=_id)
             db.link_item_w_user(c=conn, user_uuid=uuid, item_uuid=item.uuid, _id=_id)
             db.link_loc_w_item(c=conn, loc_uuid=params["location_uuid"], item_uuid=item.uuid, _id=_id)
         return rpc.make_success_resp(True, _id)

@@ -253,7 +253,7 @@ def link_loc_w_item(c, loc_uuid, item_uuid, _id):
         loc_item_uuids += (item_uuid,)
         item_loc_uuids += (loc_uuid,)
         save_loc_items(c, loc_uuid, loc_item_uuids, _id)
-        save_item_locs(c, item_uuid, item_loc_uuids)
+        save_item_locs(c, item_uuid, item_loc_uuids, _id)
     except WrappedErrorResponse as e:
         e.methods.append("database_helpers.link_loc_w_item")
         raise e
