@@ -1,5 +1,4 @@
 from uuid import uuid4
-import utils.ludeim_constants as lconst
 
 
 from classes.ClassAbstrSerializable import AbstrSerializable
