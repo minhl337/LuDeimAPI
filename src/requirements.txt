@@ -1,4 +1,4 @@
-Twisted==19.2.0
+Twisted==19.2.1
 requests-threads==0.1.1
 asn1crypto==0.24.0
 attrdict==2.0.0
