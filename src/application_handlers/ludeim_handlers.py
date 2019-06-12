@@ -535,7 +535,7 @@ def get_user_location_uuids(params, _id, conn, logger, config, session):
             except WrappedErrorResponse as e:
                 raise e
             except Exception as e:
-                rpc.make_error_resp(const.NO_CORRESPONDING_USER_CODE, const.NO_CORRESPONDING_USER, _id)
+                return rpc.make_error_resp(const.NO_CORRESPONDING_USER_CODE, const.NO_CORRESPONDING_USER, _id)
         return rpc.make_success_resp(json.loads(json.dumps(r)), _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
@@ -700,6 +700,52 @@ def put_sess(params, _id, conn, logger, config, session):
     except Exception as e:
         file_logger.log_error({
             "method": "put_sess",
+            "params": params,
+            "error": str(e)
+        })
+        return rpc.make_error_resp(
+            const.INTERNAL_ERROR_CODE,
+            const.INTERNAL_ERROR,
+            _id)
+
+
+def get_location(params, _id, conn, logger, config, session):
+    try:
+        schemes = t.typize_config(config)
+        if not t.check_params_against_scheme_set(schemes["get_location"], params):
+            return rpc.make_error_resp(
+                const.INVALID_PARAMS_CODE,
+                const.INVALID_PARAMS,
+                _id
+            )
+        if "uuid" in params:
+            uuid = params["uuid"]
+        elif "uuid" in session:
+            uuid = session["uuid"]
+        else:
+            return rpc.make_error_resp(const.NOT_LOGGED_IN_CODE, const.NOT_LOGGED_IN, _id)
+        with conn:
+            conn.execute("BEGIN EXCLUSIVE")
+            try:
+                r = db.load_location(conn, params["location_uuid"], _id)
+            except WrappedErrorResponse as e:
+                raise e
+            except Exception as e:
+                raise WrappedErrorResponse(
+                    rpc.make_error_resp(const.DATABASE_FAILURE_CODE, const.DATABASE_FAILURE, _id),
+                    e,
+                    "database transaction")
+        return rpc.make_success_resp(r.one_hot_encode(), _id)
+    except WrappedErrorResponse as e:
+        file_logger.log_error({
+            "method": "get_location" + str(e.methods),
+            "params": params,
+            "error": str(e.exception)
+        })
+        return e.response_obj
+    except Exception as e:
+        file_logger.log_error({
+            "method": "get_location",
             "params": params,
             "error": str(e)
         })

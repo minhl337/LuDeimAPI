@@ -10,7 +10,8 @@
     "get_user_item_uuids",
     "get_all_usernames",
     "get_sess",
-    "put_sess"
+    "put_sess",
+    "get_location"
   ],
   "param_primitives": [
     "str",
@@ -86,6 +87,12 @@
       {
         "key": "str",
         "value": "str"
+      }
+    ],
+    "get_location": [
+      {
+        "?uuid": "str",
+        "location_uuid": "str"
       }
     ]
   }

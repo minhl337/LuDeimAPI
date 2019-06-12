@@ -7,6 +7,7 @@ from testing.api.test_get_user_location_uuids import TestApiMethodGetUserLocatio
 from testing.api.test_get_all_usernames import TestApiMethodGetAllUsernames
 from testing.api.test_get_sess import TestApiMethodGetSess
 from testing.api.test_put_sess import TestApiMethodPutSess
+from testing.api.test_get_location import TestApiMethodGetLocation
 
 import unittest
 
@@ -25,5 +26,6 @@ suite.addTest(loader.loadTestsFromTestCase(TestApiMethodGetUserLocationUUIDS))
 suite.addTest(loader.loadTestsFromTestCase(TestApiMethodGetAllUsernames))
 suite.addTest(loader.loadTestsFromTestCase(TestApiMethodGetSess))
 suite.addTest(loader.loadTestsFromTestCase(TestApiMethodPutSess))
+suite.addTest(loader.loadTestsFromTestCase(TestApiMethodGetLocation))
 
 runner.run(suite)
