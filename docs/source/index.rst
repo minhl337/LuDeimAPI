@@ -6,7 +6,7 @@
 Welcome to the LuDeimAPI documentation
 ======================================
 
-LuDeimAPI is a JSON-RPC 2.0 compliant api designed for use in the LuDeim diamond supply chain management system. The api has a companion API called LuDeimStorageAPI which handles the storage and retrieval of non-trivial size objects within the system. This documentation will not go over this companion API as it is not intended to be called directly from a front-end application.
+LuDeimAPI is a JSON-RPC 2.0 compliant API designed for use in the LuDeim diamond supply chain management system. The API has a companion API called LuDeimStorageAPI which handles the storage and retrieval of non-trivial size objects within the system. This documentation will not go over this companion API as it is not intended to be called directly from a front-end application.
 
 .. toctree::
    :hidden:
