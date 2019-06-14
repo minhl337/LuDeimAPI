@@ -15,6 +15,8 @@ import os
 from gevent import monkey
 monkey.patch_all()  # NOTE: needed due to dependency problems with grequests (must be above grequests import)
 import grequests
+import logging
+import testing.utils.logging as l
 
 
 endpoint = "/api/"
@@ -27,12 +29,20 @@ class TestApiMethodAddItem(unittest.TestCase):
                     random.choice(string.ascii_letters + string.digits) for _ in range(128)
                 ])
         self.app = app.app.test_client()
+        logging.basicConfig(level=logging.NOTSET)
+        dbg = logging.getLogger('dbg')
+        dbg.setLevel(logging.DEBUG)
+        self.dbg = dbg
+        flask_logger = logging.getLogger('flask')
+        flask_logger.setLevel(logging.CRITICAL)
 
     def test__add_item__valid__with_uuid(self):
-        time.sleep(1)
-        print("\ntest__add_item__valid__with_uuid")
-        for _ in range(100):  # NOTE: run 100 random iterations to for robustness
+        l.log(self.dbg, "entering: test__add_item__valid__with_uuid")
+        for _ in range(10):  # NOTE: run 100 random iterations to for robustness
+            l.log(self.dbg, "\tstarting round {}".format(_))
+            l.log(self.dbg, "\tresetting the database")
             reset.auto_reset()  # NOTE: reset the database
+            l.log(self.dbg, "\tadding a user")
             # NOTE: add a new user
             _type_1 = random.choice(lconst.USER_TYPES)
             username_1 = "".join([
@@ -57,6 +67,7 @@ class TestApiMethodAddItem(unittest.TestCase):
                 "id": 1
             }
             self.app.post(endpoint, json=payload)
+            l.log(self.dbg, "\tlogin to the user")
             # NOTE: login to the new user
             payload = {
                 "jsonrpc": "2.0",
@@ -68,6 +79,7 @@ class TestApiMethodAddItem(unittest.TestCase):
                 "id": 1
             }
             self.app.post(endpoint, json=payload)
+            l.log(self.dbg, "\tadding a location to the user")
             # NOTE: add a location to that new user
             _type = random.choice(lconst.LOCATION_TYPES)
             name = "".join([
@@ -124,6 +136,7 @@ class TestApiMethodAddItem(unittest.TestCase):
                 "id": 1
             }
             self.app.post(endpoint, json=payload)
+            l.log(self.dbg, "\tgetting the location's a uuid")
             # NOTE: get the user's location's uuid
             payload = {
                 "jsonrpc": "2.0",
@@ -135,6 +148,7 @@ class TestApiMethodAddItem(unittest.TestCase):
             }
             resp = self.app.post(endpoint, json=payload)
             resp = json.loads(resp.data.decode("utf-8"))
+            l.log(self.dbg, "\tadding an item to this user's location")
             # NOTE: add an item to the new user at this location
             payload = {
                 "jsonrpc": "2.0",
@@ -146,6 +160,7 @@ class TestApiMethodAddItem(unittest.TestCase):
             }
             resp = self.app.post(endpoint, json=payload)
             resp = json.loads(resp.data.decode("utf-8"))
+            l.log(self.dbg, "\tasserting the item was created and added")
             db_dump = db.get_connection().execute("""SELECT * FROM items""").fetchall()
             self.assertEqual(len(db_dump), 1, "database didn't update correctly")
             self.assertEqual(db_dump[0][1:],
@@ -154,3 +169,4 @@ class TestApiMethodAddItem(unittest.TestCase):
                               json.dumps((derived_uuid,)),
                               lconst.STATIONARY),
                              "database didn't update correctly")
+            l.log(self.dbg, "\tending round {}\n".format(_))

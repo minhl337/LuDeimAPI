@@ -16,6 +16,8 @@ from gevent import monkey
 monkey.patch_all()  # NOTE: needed due to dependency problems with grequests (must be above grequests import)
 from requests_threads import AsyncSession
 import app
+import logging
+import testing.utils.logging as l
 
 
 endpoint = "/api/"
@@ -28,12 +30,24 @@ class TestApiMethodAddLocation(unittest.TestCase):
                     random.choice(string.ascii_letters + string.digits) for _ in range(128)
                 ])
         self.app = app.app.test_client()
+        logging.basicConfig(level=logging.NOTSET)
+        dbg = logging.getLogger('dbg')
+        dbg.setLevel(logging.DEBUG)
+        self.dbg = dbg
+        flask_logger = logging.getLogger('flask')
+        flask_logger.setLevel(logging.CRITICAL)
+        urllib_logger = logging.getLogger("urllib3.connectionpool")
+        urllib_logger.setLevel(logging.CRITICAL)
+        asyncio_logger = logging.getLogger("asyncio")
+        asyncio_logger.setLevel(logging.CRITICAL)
 
     def test__add_location__valid__with_uuid(self):
-        time.sleep(1)
-        print("\ntest__add_location__valid__with_uuid")
-        for _ in range(100):  # NOTE: run 100 random iterations to for robustness
+        l.log(self.dbg, "entering: test__add_location__valid__with_uuid")
+        for _ in range(10):  # NOTE: run 100 random iterations to for robustness
+            l.log(self.dbg, "\tstarting round {}".format(_))
+            l.log(self.dbg, "\tresetting the database")
             reset.auto_reset()  # NOTE: reset the database
+            l.log(self.dbg, "\tadding a user")
             _type = random.choice(lconst.USER_TYPES)
             username = "".join([
                         random.choice(string.ascii_letters + string.digits) for _ in range(
@@ -57,6 +71,7 @@ class TestApiMethodAddLocation(unittest.TestCase):
                 "id": 1
             }
             self.app.post(endpoint, json=payload)
+            l.log(self.dbg, "\tadding a location to the user")
             _type = random.choice(lconst.LOCATION_TYPES)
             name = "".join([
                 random.choice(string.ascii_letters + string.digits) for _ in range(
@@ -112,6 +127,7 @@ class TestApiMethodAddLocation(unittest.TestCase):
                 "id": 1
             }
             resp = self.app.post(endpoint, json=payload)
+            l.log(self.dbg, "\tasserting the location was successfully added")
             expected_resp = {
                 "jsonrpc": "2.0",
                 "result": True,
@@ -129,12 +145,15 @@ class TestApiMethodAddLocation(unittest.TestCase):
             self.assertEqual(json.loads(db_dump[0][-1]),
                              payload["params"]["representative"],
                              "saved representative incorrect")
+            l.log(self.dbg, "\tending round {}\n".format(_))
 
     def test__add_location__valid__without_uuid(self):
-        time.sleep(1)
-        print("\ntest__add_location__valid__without_uuid")
-        for _ in range(100):  # NOTE: run 100 random iterations to for robustness
+        l.log(self.dbg, "entering: test__add_location__valid__without_uuid")
+        for _ in range(10):  # NOTE: run 100 random iterations to for robustness
+            l.log(self.dbg, "\tstarting round {}".format(_))
+            l.log(self.dbg, "\tresetting the database")
             reset.auto_reset()  # NOTE: reset the database
+            l.log(self.dbg, "\tadding a user")
             # NOTE: add a new user
             _type = random.choice(lconst.USER_TYPES)
             username = "".join([
@@ -159,6 +178,7 @@ class TestApiMethodAddLocation(unittest.TestCase):
                 "id": 1
             }
             self.app.post(endpoint, json=payload)
+            l.log(self.dbg, "\tlogin to the user")
             # NOTE: login to the new user
             payload = {
                 "jsonrpc": "2.0",
@@ -170,6 +190,7 @@ class TestApiMethodAddLocation(unittest.TestCase):
                 "id": 1
             }
             self.app.post(endpoint, json=payload)
+            l.log(self.dbg, "\tadding a location to the user")
             # NOTE: add a location to the new user & validate that it worked
             _type = random.choice(lconst.LOCATION_TYPES)
             name = "".join([
@@ -225,6 +246,7 @@ class TestApiMethodAddLocation(unittest.TestCase):
                 "id": 1
             }
             resp = self.app.post(endpoint, json=payload)
+            l.log(self.dbg, "\tassert the location was added correctly")
             expected_resp = {
                 "jsonrpc": "2.0",
                 "result": True,
@@ -242,12 +264,15 @@ class TestApiMethodAddLocation(unittest.TestCase):
             self.assertEqual(json.loads(db_dump[0][-1]),
                              payload["params"]["representative"],
                              "saved representative incorrect")
+            l.log(self.dbg, "\tending round {}\n".format(_))
 
     def test__add_location__valid__batch_with_uuid(self):
-        time.sleep(1)
-        print("\ntest__add_location__valid__batch_with_uuid")
-        for _ in range(100):  # NOTE: run 100 random iterations to for robustness
+        l.log(self.dbg, "entering: test__add_location__valid__batch_with_uuid")
+        for _ in range(10):  # NOTE: run 100 random iterations to for robustness
+            l.log(self.dbg, "\tstarting round {}".format(_))
+            l.log(self.dbg, "\tresetting the database")
             reset.auto_reset()  # NOTE: reset the database
+            l.log(self.dbg, "\tadding a user")
             _type = random.choice(lconst.USER_TYPES)
             username = "".join([
                 random.choice(string.ascii_letters + string.digits) for _ in range(
@@ -271,6 +296,7 @@ class TestApiMethodAddLocation(unittest.TestCase):
                 "id": 1
             }
             self.app.post(endpoint, json=payload)
+            l.log(self.dbg, "\tadding 25 locations at once with a batch request")
             payloads = []
             expected_results = []
             for i in range(25):
@@ -332,17 +358,21 @@ class TestApiMethodAddLocation(unittest.TestCase):
                 payloads.append(payload)
             resp = self.app.post(endpoint, json=payloads)
             resps = json.loads(resp.data.decode("utf-8"))
+            l.log(self.dbg, "\tasserting all the locations were added")
             for r in resps:
                 self.assertIn("result", r, "error response")
                 self.assertEqual(r["result"], expected_results[r["id"]], "differing result object")
             db_dump = db.get_connection().execute("""SELECT * FROM locations""").fetchall()
             self.assertEqual(len(db_dump), 25, "database didn't update correctly")
+            l.log(self.dbg, "\tending round {}\n".format(_))
 
     def test__add_location__valid__batch_without_uuid(self):
-        time.sleep(1)
-        print("\ntest__add_location__valid__batch_without_uuid")
-        for _ in range(100):  # NOTE: run 100 random iterations to for robustness
+        l.log(self.dbg, "entering: test__add_location__valid__batch_without_uuid")
+        for _ in range(10):  # NOTE: run 100 random iterations to for robustness
+            l.log(self.dbg, "\tstarting round {}".format(_))
+            l.log(self.dbg, "\tresetting the database")
             reset.auto_reset()  # NOTE: reset the database
+            l.log(self.dbg, "\tadding a user")
             _type = random.choice(lconst.USER_TYPES)
             username = "".join([
                 random.choice(string.ascii_letters + string.digits) for _ in range(
@@ -367,6 +397,7 @@ class TestApiMethodAddLocation(unittest.TestCase):
             }
             self.app.post(endpoint, json=payload)
             # NOTE: login to the new user
+            l.log(self.dbg, "\tlogin to the user")
             payload = {
                 "jsonrpc": "2.0",
                 "method": "login",
@@ -377,6 +408,7 @@ class TestApiMethodAddLocation(unittest.TestCase):
                 "id": 1
             }
             self.app.post(endpoint, json=payload)
+            l.log(self.dbg, "\tadding 25 locations at once with a batch request")
             payloads = []
             for _ in range(25):
                 _type = random.choice(lconst.LOCATION_TYPES)
@@ -435,6 +467,7 @@ class TestApiMethodAddLocation(unittest.TestCase):
                 }
                 payloads.append(payload)
             resp = self.app.post(endpoint, json=payloads)
+            l.log(self.dbg, "\tasserting all locations were added")
             expected_resp = [
                 {
                     "jsonrpc": "2.0",
@@ -567,12 +600,15 @@ class TestApiMethodAddLocation(unittest.TestCase):
                              "api response was incorrect")
             db_dump = db.get_connection().execute("""SELECT * FROM locations""").fetchall()
             self.assertEqual(len(db_dump), 25, "database didn't update correctly")
+            l.log(self.dbg, "\tending round {}\n".format(_))
 
     def test__add_location__valid__batch_mixed(self):
-        time.sleep(1)
-        print("\ntest__add_location__valid__batch_mixed")
-        for _ in range(100):  # NOTE: run 100 random iterations to for robustness
+        l.log(self.dbg, "entering: test__add_location__valid__batch_mixed")
+        for _ in range(10):  # NOTE: run 100 random iterations to for robustness
+            l.log(self.dbg, "\tstarting round {}".format(_))
+            l.log(self.dbg, "\tresetting the database")
             reset.auto_reset()  # NOTE: reset the database
+            l.log(self.dbg, "\tadding a user")
             _type = random.choice(lconst.USER_TYPES)
             username = "".join([
                 random.choice(string.ascii_letters + string.digits) for _ in range(
@@ -597,6 +633,7 @@ class TestApiMethodAddLocation(unittest.TestCase):
             }
             self.app.post(endpoint, json=payload)
             # NOTE: login to the new user
+            l.log(self.dbg, "\tlogging in")
             payload = {
                 "jsonrpc": "2.0",
                 "method": "login",
@@ -607,6 +644,7 @@ class TestApiMethodAddLocation(unittest.TestCase):
                 "id": 1
             }
             self.app.post(endpoint, json=payload)
+            l.log(self.dbg, "\tadding 25 locations at once with a batch request")
             payloads = []
             for _ in range(25):
                 _type = random.choice(lconst.LOCATION_TYPES)
@@ -687,6 +725,7 @@ class TestApiMethodAddLocation(unittest.TestCase):
                     }
                 payloads.append(payload)
             resp = self.app.post(endpoint, json=payloads)
+            l.log(self.dbg, "\tasserting all locations were added")
             expected_resp = [
                 {
                     "jsonrpc": "2.0",
@@ -819,13 +858,15 @@ class TestApiMethodAddLocation(unittest.TestCase):
                              "api response was incorrect")
             db_dump = db.get_connection().execute("""SELECT * FROM locations""").fetchall()
             self.assertEqual(len(db_dump), 25, "database didn't update correctly")
+            l.log(self.dbg, "\tending round {}\n".format(_))
 
     def test__add_location__valid__async_with_uuid(self):
-        time.sleep(1)
-        print("\ntest__add_location__valid__async_with_uuid")
+        l.log(self.dbg, "entering: test__add_location__valid__async_with_uuid")
         for _ in range(10):  # NOTE: run 100 random iterations to for robustness
+            l.log(self.dbg, "\tstarting round {}".format(_))
+            l.log(self.dbg, "\tresetting the database")
             reset.auto_reset()  # NOTE: reset the database
-
+            l.log(self.dbg, "\tadding a user")
             def ex(w):
                 os.dup2(w.fileno(), 1)
                 app.app.run()
@@ -863,6 +904,7 @@ class TestApiMethodAddLocation(unittest.TestCase):
                                              },
                                              "id": 1
                                          }))
+                l.log(self.dbg, "\tadding 10 locations asynchronously")
                 resps = []
                 for _ in range(10):
                     _type = random.choice(lconst.LOCATION_TYPES)
@@ -928,6 +970,7 @@ class TestApiMethodAddLocation(unittest.TestCase):
                 acc = True
                 for r in resps:
                     acc = acc and "result" in r
+                l.log(self.dbg, "\tasserting all locations were added")
                 self.assertTrue(acc, msg="a request errored")
                 db_resp = db.get_connection().execute("""SELECT * FROM locations""").fetchall()
                 self.assertEqual(len(db_resp),
@@ -940,12 +983,15 @@ class TestApiMethodAddLocation(unittest.TestCase):
             except SystemExit:  # NOTE: requests_threads is experimental and currently always exits with a hard sys exit
                 pass
             p.kill()
+            l.log(self.dbg, "\tending round {}\n".format(_))
 
     def test__add_location__invalid__type(self):
-        time.sleep(1)
-        print("\ntest__add_location__invalid__type")
-        for _ in range(100):  # NOTE: run 100 random iterations to for robustness
+        l.log(self.dbg, "entering: test__add_location__invalid__type")
+        for _ in range(10):  # NOTE: run 100 random iterations to for robustness
+            l.log(self.dbg, "\tstarting round {}".format(_))
+            l.log(self.dbg, "\tresetting the database")
             reset.auto_reset()  # NOTE: reset the database
+            l.log(self.dbg, "\tadding a user")
             _type = random.choice(lconst.USER_TYPES)
             username = "".join([
                 random.choice(string.ascii_letters + string.digits) for _ in range(
@@ -969,6 +1015,7 @@ class TestApiMethodAddLocation(unittest.TestCase):
                 "id": 1
             }
             self.app.post(endpoint, json=payload)
+            l.log(self.dbg, "\tlogin to the user")
             # NOTE: login to the new user
             payload = {
                 "jsonrpc": "2.0",
@@ -980,6 +1027,7 @@ class TestApiMethodAddLocation(unittest.TestCase):
                 "id": 1
             }
             self.app.post(endpoint, json=payload)
+            l.log(self.dbg, "\tadd a location with invalid type")
             _type = "".join([
                 random.choice(string.ascii_letters + string.digits) for _ in range(
                     random.randint(50, 100)
@@ -1038,6 +1086,7 @@ class TestApiMethodAddLocation(unittest.TestCase):
                 "id": 1
             }
             resp = self.app.post(endpoint, json=payload)
+            l.log(self.dbg, "\tasserting the location wasn't added")
             expected_resp = {
                 "jsonrpc": "2.0",
                 "error": {
@@ -1051,12 +1100,15 @@ class TestApiMethodAddLocation(unittest.TestCase):
                              "api response was incorrect")
             db_dump = db.get_connection().execute("""SELECT * FROM locations""").fetchall()
             self.assertEqual(db_dump, [], "database response was incorrect")
+            l.log(self.dbg, "\tending round {}\n".format(_))
 
     def test__add_location__invalid__representative_title(self):
-        time.sleep(1)
-        print("\ntest__add_location__invalid__representative_title")
-        for _ in range(100):  # NOTE: run 100 random iterations to for robustness
+        l.log(self.dbg, "entering: test__add_location__invalid__representative_title")
+        for _ in range(10):  # NOTE: run 100 random iterations to for robustness
+            l.log(self.dbg, "\tstarting round {}".format(_))
+            l.log(self.dbg, "\tresetting the database")
             reset.auto_reset()  # NOTE: reset the database
+            l.log(self.dbg, "\tadding a user")
             _type = random.choice(lconst.USER_TYPES)
             username = "".join([
                         random.choice(string.ascii_letters + string.digits) for _ in range(
@@ -1081,6 +1133,7 @@ class TestApiMethodAddLocation(unittest.TestCase):
             }
             self.app.post(endpoint, json=payload)
             # NOTE: login to the new user
+            l.log(self.dbg, "\tlogin to the user")
             payload = {
                 "jsonrpc": "2.0",
                 "method": "login",
@@ -1091,6 +1144,7 @@ class TestApiMethodAddLocation(unittest.TestCase):
                 "id": 1
             }
             self.app.post(endpoint, json=payload)
+            l.log(self.dbg, "\tadding a location with an invalid representative title")
             _type = random.choice(lconst.LOCATION_TYPES)
             name = "".join([
                 random.choice(string.ascii_letters + string.digits) for _ in range(
@@ -1149,6 +1203,7 @@ class TestApiMethodAddLocation(unittest.TestCase):
                 "id": 1
             }
             resp = self.app.post(endpoint, json=payload)
+            l.log(self.dbg, "\tasserting the location wasn't added")
             expected_resp = {
                 "jsonrpc": "2.0",
                 "error": {
@@ -1162,3 +1217,4 @@ class TestApiMethodAddLocation(unittest.TestCase):
                              "api response was incorrect")
             db_dump = db.get_connection().execute("""SELECT * FROM locations""").fetchall()
             self.assertEqual(db_dump, [], "database inadvertently updated")
+            l.log(self.dbg, "\tending round {}\n".format(_))

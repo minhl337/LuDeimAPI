@@ -555,8 +555,57 @@ def get_all_usernames(params, _id, conn, logger, config, session):
             _id)
 
 
+# NOTE: public
+def get_user_locations(params, _id, conn, logger, config, session):
+    try:
+        schemes = t.typize_config(config)
+        if not t.check_params_against_scheme_set(schemes["get_user_locations"], params):
+            return rpc.make_error_resp(
+                const.INVALID_PARAMS_CODE,
+                const.INVALID_PARAMS,
+                _id
+            )
+        with conn:
+            conn.execute("BEGIN EXCLUSIVE")
+            try:
+                if "username" not in params:
+                    if "uuid" in params:
+                        uuid = params["uuid"]
+                    else:
+                        uuid = session["uuid"]
+                else:
+                    uuid = conn.execute("""SELECT uuid FROM users WHERE username = ?""", (params["username"],)).fetchone()[0]
+                loc_uuids = db.get_user_locs(conn, uuid, _id)
+                r = list()
+                for loc_uuid in loc_uuids:
+                    r.append(db.load_location(conn, loc_uuid, _id).one_hot_encode())
+            except WrappedErrorResponse as e:
+                raise e
+            except Exception as e:
+                return rpc.make_error_resp(const.NO_CORRESPONDING_USER_CODE, const.NO_CORRESPONDING_USER, _id)
+        return rpc.make_success_resp(r, _id)
+    except WrappedErrorResponse as e:
+        file_logger.log_error({
+            "method": "get_user_locations" + str(e.methods),
+            "params": params,
+            "error": str(e.exception)
+        })
+        return e.response_obj
+    except Exception as e:
+        file_logger.log_error({
+            "method": "get_user_locations",
+            "params": params,
+            "error": str(e),
+        })
+        return rpc.make_error_resp(
+            const.INTERNAL_ERROR_CODE,
+            const.INTERNAL_ERROR,
+            _id)
+
+
 # TODO:
 #  - optimize to not get username when a uuid is given
+# DEPRECATED: use get_user_locations instead
 # NOTE: public
 def get_user_location_uuids(params, _id, conn, logger, config, session):
     try:

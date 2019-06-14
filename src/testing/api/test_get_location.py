@@ -7,6 +7,8 @@ import utils.ludeim_constants as lconst
 import utils.ludeim_generic_helpers as ludeim
 import time
 import app
+import logging
+import testing.utils.logging as l
 
 
 endpoint = "/api/"
@@ -19,12 +21,22 @@ class TestApiMethodGetLocation(unittest.TestCase):
                     random.choice(string.ascii_letters + string.digits) for _ in range(128)
                 ])
         self.app = app.app.test_client()
+        logging.basicConfig(level=logging.NOTSET)
+        dbg = logging.getLogger('dbg')
+        dbg.setLevel(logging.DEBUG)
+        self.dbg = dbg
+        flask_logger = logging.getLogger('flask')
+        flask_logger.setLevel(logging.CRITICAL)
 
     def test__get_location__valid(self):
-        time.sleep(1)
-        for _ in range(100):  # NOTE: run 100 random iterations to for robustness
+        l.log(self.dbg, "entering: test__get_location__valid")
+        for _ in range(10):  # NOTE: run 100 random iterations to for robustness
+            l.log(self.dbg, "\tstarting round {}".format(_))
+            l.log(self.dbg, "\tresetting the database")
             reset.auto_reset()  # NOTE: reset the database
-            self.setUp()  # NOTE: reset API
+            l.log(self.dbg, "\tresetting the application")
+            self.setUp()  # NOTE: reset client to prevent carry over sessions
+            l.log(self.dbg, "\tadding a user")
             # NOTE: adding a user
             _type = random.choice(lconst.USER_TYPES)
             username = "".join([
@@ -50,6 +62,7 @@ class TestApiMethodGetLocation(unittest.TestCase):
             }
             self.app.post(endpoint, json=payload)
             # NOTE: login to the user
+            l.log(self.dbg, "\tlogging into the user")
             payload = {
                 "jsonrpc": "2.0",
                 "method": "login",
@@ -61,6 +74,7 @@ class TestApiMethodGetLocation(unittest.TestCase):
             }
             self.app.post(endpoint, json=payload)
             # NOTE: add a location to that user
+            l.log(self.dbg, "\tadding a location to the user")
             _type = random.choice(lconst.LOCATION_TYPES)
             name = "".join([
                 random.choice(string.ascii_letters + string.digits) for _ in range(
@@ -117,6 +131,7 @@ class TestApiMethodGetLocation(unittest.TestCase):
             }
             self.app.post(endpoint, json=payload)
             # NOTE: look up the user's location uuids
+            l.log(self.dbg, "\tlooking up the user's location uuids")
             payload = {
                 "jsonrpc": "2.0",
                 "method": "get_user_location_uuids",
@@ -126,6 +141,7 @@ class TestApiMethodGetLocation(unittest.TestCase):
             resp = self.app.post(endpoint, json=payload)
             loc_uuid = resp.json["result"][0]
             # NOTE: look up the location based on uuid and compared to expected
+            l.log(self.dbg, "\tlooking up the location based on the uuid")
             payload = {
                 "jsonrpc": "2.0",
                 "method": "get_location",
@@ -135,4 +151,6 @@ class TestApiMethodGetLocation(unittest.TestCase):
                 "id": 1
             }
             resp = self.app.post(endpoint, json=payload)
+            l.log(self.dbg, "\tasserting the response is not an error")
             self.assertIn("result", resp.json, "returned no error")
+            l.log(self.dbg, "\tending round {}\n".format(_))
