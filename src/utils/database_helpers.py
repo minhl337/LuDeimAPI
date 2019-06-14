@@ -468,8 +468,8 @@ def save_new_location(c, loc_obj: Location, _id):
 # NOTE: not transaction wrapped
 def load_item(c, item_uuid, _id):
     try:
-        line = c.execute("""SELECT * FROM item WHERE uuid = ?""", (item_uuid,)).fetchone()
-        return Item(line[0], line[1], tuple(json.loads(line[2])), tuple(json.loads(line[3])))
+        line = c.execute("""SELECT * FROM items WHERE uuid = ?""", (item_uuid,)).fetchone()
+        return Item(line[0], line[1], tuple(json.loads(line[2])), tuple(json.loads(line[3])), line[4])
     except WrappedErrorResponse as e:
         e.methods.append("database_helpers.load_item")
         raise e
@@ -485,12 +485,13 @@ def load_item(c, item_uuid, _id):
 def save_existing_item(c, item_obj: Item, _id):
     try:
         c.execute("""UPDATE items
-                     SET uuid = ?, type = ?, user_uuids = ?, location_uuids = ?, item_uuids = ?
+                     SET uuid = ?, type_ = ?, location_uuids = ?, user_uuids = ?, status = ?
                      WHERE uuid = ?""", (
             item_obj.uuid,
             item_obj.type,
             json.dumps(item_obj.location_uuids),
             json.dumps(item_obj.user_uuids),
+            item_obj.status,
             item_obj.uuid,
         ))
     except WrappedErrorResponse as e:
@@ -507,11 +508,12 @@ def save_existing_item(c, item_obj: Item, _id):
 # NOTE: not transaction wrapped
 def save_new_item(c, item_obj: Item, _id):
     try:
-        c.execute("""INSERT INTO items VALUES (?, ?, ?, ?)""", (
+        c.execute("""INSERT INTO items VALUES (?, ?, ?, ?, ?)""", (
             item_obj.uuid,
             item_obj.type,
             json.dumps(item_obj.location_uuids),
             json.dumps(item_obj.user_uuids),
+            item_obj.status,
         ))
     except WrappedErrorResponse as e:
         e.methods.append("database_helpers.save_new_item")

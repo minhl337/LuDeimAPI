@@ -2,6 +2,7 @@ import sqlite3
 import json
 import hashlib
 import os
+import utils.ludeim_constants as lconst
 from uuid import uuid4
 
 
@@ -44,9 +45,10 @@ def build_db():
     )""")
     c.execute("""CREATE TABLE items (
         uuid text,
-        type text,
+        type_ text,
         location_uuids text,
-        user_uuids text
+        user_uuids text,
+        status text
     )""")
     conn.commit()
     conn.close()
@@ -119,8 +121,9 @@ def reset():
         test_type = input("what type of item would you like to create (diamond)?\n")
         test_user_uuids = json.dumps(())
         test_location_uuids = json.dumps(())
-        c.execute("""INSERT INTO items VALUES (?, ?, ?, ?)""",
-                  (test_uuid, test_type, test_user_uuids, test_location_uuids,))
+        test_status = lconst.STATIONARY
+        c.execute("""INSERT INTO items VALUES (?, ?, ?, ?, ?)""",
+                  (test_uuid, test_type, test_user_uuids, test_location_uuids, test_status))
         print("your test location was successfully added to the database. Here's its uuid:")
         print("uuid: {}".format(test_uuid))
 

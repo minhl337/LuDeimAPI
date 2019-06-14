@@ -59,3 +59,5 @@ NONEXISTENT_ITEM_CODE = -18
 NONEXISTENT_ITEM = "There was a problem looking up an item"
 DATABASE_FAILURE_CODE = -19
 DATABASE_FAILURE = "There was a problem with the database"
+NOT_OWNER_CODE = -20
+NOT_OWNER = "You are not the owner of the thing you're trying to operate on"

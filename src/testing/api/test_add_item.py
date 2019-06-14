@@ -151,5 +151,6 @@ class TestApiMethodAddItem(unittest.TestCase):
             self.assertEqual(db_dump[0][1:],
                              (lconst.DIAMOND,
                               json.dumps((payload["params"]["location_uuid"],)),
-                              json.dumps((derived_uuid,))),
+                              json.dumps((derived_uuid,)),
+                              lconst.STATIONARY),
                              "database didn't update correctly")

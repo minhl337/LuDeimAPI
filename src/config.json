@@ -11,7 +11,8 @@
     "get_all_usernames",
     "get_sess",
     "put_sess",
-    "get_location"
+    "get_location",
+    "begin_transfer"
   ],
   "param_primitives": [
     "str",
@@ -93,6 +94,14 @@
       {
         "?uuid": "str",
         "location_uuid": "str"
+      }
+    ],
+    "begin_transfer": [
+      {
+        "?uuid": "str",
+        "item_uuid": "str",
+        "destination_location_uuid": "str",
+        "destination_user_uuid": "str"
       }
     ]
   }
