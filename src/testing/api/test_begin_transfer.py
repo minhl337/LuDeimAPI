@@ -7,6 +7,8 @@ import utils.ludeim_constants as lconst
 import utils.ludeim_generic_helpers as ludeim
 import time
 import app
+import logging
+import testing.utils.logging as l
 
 
 endpoint = "/api/"
@@ -19,13 +21,22 @@ class TestApiMethodBeginTransfer(unittest.TestCase):
                     random.choice(string.ascii_letters + string.digits) for _ in range(128)
                 ])
         self.app = app.app.test_client()
+        logging.basicConfig(level=logging.NOTSET)
+        dbg = logging.getLogger('dbg')
+        dbg.setLevel(logging.DEBUG)
+        self.dbg = dbg
+        flask_logger = logging.getLogger('flask')
+        flask_logger.setLevel(logging.CRITICAL)
 
     def test__begin_transfer__valid(self):
-        time.sleep(1)
-        for _ in range(100):  # NOTE: run 100 random iterations to for robustness
+        l.log(self.dbg, "entering: test__begin_transfer__valid")
+        for _ in range(10):  # NOTE: run 10 random iterations to for robustness
+            l.log(self.dbg, "\tstarting round {}".format(_))
+            l.log(self.dbg, "\tresetting the database")
             reset.auto_reset()  # NOTE: reset the database
-            self.setUp()  # NOTE: reset API
-            # print("- - - - - - - - - - - - - - - - - - -")
+            l.log(self.dbg, "\tresetting the application")
+            self.setUp()  # NOTE: reset client to prevent carry over sessions
+            l.log(self.dbg, "\tadding a user")
             # NOTE: adding user 1
             _type_1 = random.choice(lconst.USER_TYPES)
             username_1 = "".join([
@@ -50,8 +61,8 @@ class TestApiMethodBeginTransfer(unittest.TestCase):
                 "id": 1
             }
             resp = self.app.post(endpoint, json=payload)
-            # print("adding user 1: " + str(resp.json))
             # NOTE: adding user 2
+            l.log(self.dbg, "\tadding a second user")
             _type_2 = random.choice(lconst.USER_TYPES)
             username_2 = "".join([
                 random.choice(string.ascii_letters + string.digits) for _ in range(
@@ -75,8 +86,8 @@ class TestApiMethodBeginTransfer(unittest.TestCase):
                 "id": 1
             }
             resp = self.app.post(endpoint, json=payload)
-            # print("adding user 2: " + str(resp.json))
             # NOTE: login to user 1
+            l.log(self.dbg, "\tlogging into the first user")
             payload = {
                 "jsonrpc": "2.0",
                 "method": "login",
@@ -87,8 +98,8 @@ class TestApiMethodBeginTransfer(unittest.TestCase):
                 "id": 1
             }
             resp = self.app.post(endpoint, json=payload)
-            # print("login to user 1: " + str(resp.json))
             # NOTE: add a location to user 1
+            l.log(self.dbg, "\tadding a location to the first user")
             _type = random.choice(lconst.LOCATION_TYPES)
             name = "".join([
                 random.choice(string.ascii_letters + string.digits) for _ in range(
@@ -144,8 +155,8 @@ class TestApiMethodBeginTransfer(unittest.TestCase):
                 "id": 1
             }
             resp = self.app.post(endpoint, json=payload)
-            # print("add location to user 1: " + str(resp.json))
             # NOTE: add a location to user 2
+            l.log(self.dbg, "\tadding a location to user 2")
             _type = random.choice(lconst.LOCATION_TYPES)
             name = "".join([
                 random.choice(string.ascii_letters + string.digits) for _ in range(
@@ -201,7 +212,7 @@ class TestApiMethodBeginTransfer(unittest.TestCase):
                 "id": 1
             }
             resp = self.app.post(endpoint, json=payload)
-            # print("add location to user 2: " + str(resp.json))
+            l.log(self.dbg, "\tlooking up user 1's location's uuid")
             # NOTE: look up user 1's location's uuid
             payload = {
                 "jsonrpc": "2.0",
@@ -210,8 +221,8 @@ class TestApiMethodBeginTransfer(unittest.TestCase):
                 "id": 1
             }
             resp = self.app.post(endpoint, json=payload)
-            # print("look up user 1's locations: " + str(resp.json))
             loc_uuid_1 = resp.json["result"][0]
+            l.log(self.dbg, "\tadding a and item to user user 1 at it's only location")
             # NOTE: add an item
             payload = {
                 "jsonrpc": "2.0",
@@ -222,7 +233,7 @@ class TestApiMethodBeginTransfer(unittest.TestCase):
                 "id": 1
             }
             resp = self.app.post(endpoint, json=payload)
-            # print("add an item to user 1: " + str(resp.json))
+            l.log(self.dbg, "\tlooking up the item's uuid")
             # NOTE: look up the item's uuid
             payload = {
                 "jsonrpc": "2.0",
@@ -231,8 +242,8 @@ class TestApiMethodBeginTransfer(unittest.TestCase):
                 "id": 1
             }
             resp = self.app.post(endpoint, json=payload)
-            # print("look up user 1's item: " + str(resp.json))
             item_uuid = resp.json["result"][0]
+            l.log(self.dbg, "\tlooking up user 2's location uuids")
             # NOTE: look up user 2's location's uuid
             payload = {
                 "jsonrpc": "2.0",
@@ -243,16 +254,9 @@ class TestApiMethodBeginTransfer(unittest.TestCase):
                 "id": 1
             }
             resp = self.app.post(endpoint, json=payload)
-            # print("look up user 2's locations: " + str(resp.json))
             loc_uuid_2 = resp.json["result"][0]
-            # with self.app as c:
-            #     with c.session_transaction() as sess:
-            #         print("user1 uuid: " + derived_uuid_1)
-            #         print("user2 uuid: " + derived_uuid_2)
-            #         print("session: " + str(sess.get("uuid", None)))
-            # for x in db.get_connection().execute("""SELECT * FROM users""").fetchall():
-            #     print(x)
             # NOTE: begin transfer
+            l.log(self.dbg, "\tbeginning transfer from user 1's location to user 2's location")
             payload = {
                 "jsonrpc": "2.0",
                 "method": "begin_transfer",
@@ -264,4 +268,6 @@ class TestApiMethodBeginTransfer(unittest.TestCase):
                 "id": 1
             }
             resp = self.app.post(endpoint, json=payload)
+            l.log(self.dbg, "\tasserting that the transfer has begun")
             self.assertIn("result", resp.json, "result was an error")
+            l.log(self.dbg, "\tending round {}\n".format(_))
