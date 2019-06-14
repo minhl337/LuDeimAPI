@@ -19,7 +19,7 @@ def hello_world():
 def api_endpoint():
     resp = handle.handle_request(request, app.logger, session)
     if resp != const.NO_RESPONSE:
-        return json.dumps(resp)
+        return resp
 
 
 # # cache

@@ -4,23 +4,15 @@ import random
 import string
 import json
 import utils.ludeim_constants as lconst
-import utils.response_constants as rconst
 import utils.ludeim_generic_helpers as ludeim
-import utils.database_helpers as db
-import app
-import logging
 import time
-import multiprocessing
-import os
-from gevent import monkey
-monkey.patch_all()  # NOTE: needed due to dependency problems with grequests (must be above grequests import)
-import grequests
+import app
 
 
 endpoint = "/api/"
 
 
-class TestApiMethodAddItem(unittest.TestCase):
+class TestApiMethodGetLocation(unittest.TestCase):
     def setUp(self):
         app.app.testing = True
         app.app.secret_key = "".join([
@@ -28,47 +20,47 @@ class TestApiMethodAddItem(unittest.TestCase):
                 ])
         self.app = app.app.test_client()
 
-    def test__add_item__valid__with_uuid(self):
+    def test__get_location__valid(self):
         time.sleep(1)
-        print("\ntest__add_item__valid__with_uuid")
         for _ in range(100):  # NOTE: run 100 random iterations to for robustness
             reset.auto_reset()  # NOTE: reset the database
-            # NOTE: add a new user
-            _type_1 = random.choice(lconst.USER_TYPES)
-            username_1 = "".join([
+            self.setUp()  # NOTE: reset API
+            # NOTE: adding a user
+            _type = random.choice(lconst.USER_TYPES)
+            username = "".join([
                 random.choice(string.ascii_letters + string.digits) for _ in range(
                     random.randint(lconst.MIN_USERNAME_LEN, lconst.MAX_USERNAME_LEN)
                 )
             ])
-            password_hash_1 = "".join([
+            password_hash = "".join([
                 random.choice(string.ascii_letters + string.digits) for _ in range(
                     random.randint(lconst.MIN_PASSWORD_HASH_LEN, lconst.MAX_PASSWORD_HASH_LEN)
                 )
             ])
-            derived_uuid = ludeim.generate_user_uuid(username_1, password_hash_1)
+            derived_uuid = ludeim.generate_user_uuid(username, password_hash)
             payload = {
                 "jsonrpc": "2.0",
                 "method": "add_user",
                 "params": {
-                    "type": _type_1,
-                    "username": username_1,
-                    "password_hash": password_hash_1
+                    "type": _type,
+                    "username": username,
+                    "password_hash": password_hash
                 },
                 "id": 1
             }
             self.app.post(endpoint, json=payload)
-            # NOTE: login to the new user
+            # NOTE: login to the user
             payload = {
                 "jsonrpc": "2.0",
                 "method": "login",
                 "params": {
-                    "username": username_1,
-                    "password_hash": password_hash_1
+                    "username": username,
+                    "password_hash": password_hash
                 },
                 "id": 1
             }
             self.app.post(endpoint, json=payload)
-            # NOTE: add a location to that new user
+            # NOTE: add a location to that user
             _type = random.choice(lconst.LOCATION_TYPES)
             name = "".join([
                 random.choice(string.ascii_letters + string.digits) for _ in range(
@@ -124,33 +116,23 @@ class TestApiMethodAddItem(unittest.TestCase):
                 "id": 1
             }
             self.app.post(endpoint, json=payload)
-            # NOTE: get the user's location's uuid
+            # NOTE: look up the user's location uuids
             payload = {
                 "jsonrpc": "2.0",
                 "method": "get_user_location_uuids",
-                "params": {
-                    "username": username_1
-                },
+                "params": {},
                 "id": 1
             }
             resp = self.app.post(endpoint, json=payload)
-            resp = json.loads(resp.data.decode("utf-8"))
-            # NOTE: add an item to the new user at this location
+            loc_uuid = resp.json["result"][0]
+            # NOTE: look up the location based on uuid and compared to expected
             payload = {
                 "jsonrpc": "2.0",
-                "method": "add_item",
+                "method": "get_location",
                 "params": {
-                    "location_uuid": resp["result"][0]
+                    "location_uuid": loc_uuid
                 },
                 "id": 1
             }
             resp = self.app.post(endpoint, json=payload)
-            resp = json.loads(resp.data.decode("utf-8"))
-            db_dump = db.get_connection().execute("""SELECT * FROM items""").fetchall()
-            self.assertEqual(len(db_dump), 1, "database didn't update correctly")
-            self.assertEqual(db_dump[0][1:],
-                             (lconst.DIAMOND,
-                              json.dumps((payload["params"]["location_uuid"],)),
-                              json.dumps((derived_uuid,)),
-                              lconst.STATIONARY),
-                             "database didn't update correctly")
+            self.assertIn("result", resp.json, "returned no error")

@@ -1,4 +1,6 @@
 import utils.response_constants as const
+from flask import jsonify
+from time import time
 
 
 def validate_request(request):
@@ -36,19 +38,54 @@ def validate_obj(obj, config):
 
 
 def make_success_resp(result, _id):
-    return {
-        "jsonrpc": "2.0",
-        "result": result,
-        "id": _id
-    }
+    try:
+        resp = jsonify({
+            "jsonrpc": "2.0",
+            "result": result,
+            "id": _id
+        })
+    except:
+        resp = {
+            "jsonrpc": "2.0",
+            "result": result,
+            "id": _id
+        }
+    # resp.set_cookie(key="ludeim_user",
+    #                 value=bytes(True),
+    #                 max_age=3155760000,
+    #                 expires=32503680000)
+    # resp.set_cookie(key="last_visit",
+    #                 value=bytes(int(time())),
+    #                 max_age=3155760000,
+    #                 expires=32503680000)
+    return resp
 
 
 def make_error_resp(code, msg, _id):
-    return {
-        "jsonrpc": "2.0",
-        "error": {
-            "code": code,
-            "message": msg
-        },
-        "id": _id
-    }
+    try:
+        resp = jsonify({
+            "jsonrpc": "2.0",
+            "error": {
+                "code": code,
+                "message": msg
+            },
+            "id": _id
+        })
+    except:
+        resp = {
+            "jsonrpc": "2.0",
+            "error": {
+                "code": code,
+                "message": msg
+            },
+            "id": _id
+        }
+    # resp.set_cookie(key="ludeim_user",
+    #                 value=bytes(True),
+    #                 max_age=3155760000,
+    #                 expires=32503680000)
+    # resp.set_cookie(key="last_visit",
+    #                 value=bytes(int(time())),
+    #                 max_age=3155760000,
+    #                 expires=32503680000)
+    return resp

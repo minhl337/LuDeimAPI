@@ -278,8 +278,10 @@ def __is_username_taken(_id, conn, username):
 
 
 # TODO:
+#  - make admin only
 #  - further username validation
 #  - further password hash validation
+# NOTE: public (for now)
 def add_user(params, _id, conn, logger, config, session):
     try:
         schemes = t.typize_config(config)
@@ -302,7 +304,7 @@ def add_user(params, _id, conn, logger, config, session):
             conn.execute("BEGIN EXCLUSIVE")
             if __is_username_taken(_id, conn, params["username"]):
                 return rpc.make_error_resp(const.USERNAME_TAKEN_CODE, const.USERNAME_TAKEN, _id)
-            db.save_new_user(conn, user)
+            db.save_new_user(conn, user, _id)
         return rpc.make_success_resp({"type": user.type, "uuid": user.uuid}, _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
@@ -330,6 +332,7 @@ def add_user(params, _id, conn, logger, config, session):
 #  - validate location address
 #  - validate location details (what are details even?)
 #  - validate location representative
+# NOTE: user uuid protected
 def add_location(params, _id, conn, logger, config, session):
     try:
         schemes = t.typize_config(config)
@@ -358,8 +361,8 @@ def add_location(params, _id, conn, logger, config, session):
             return rpc.make_error_resp(const.INVALID_REPRESENTATIVE_TITLE_CODE, const.INVALID_REPRESENTATIVE_TITLE, _id)
         with conn:
             conn.execute("BEGIN EXCLUSIVE")
-            db.save_new_location(c=conn, loc_obj=location)
-            db.link_user_w_loc(c=conn, user_uuid=uuid, loc_uuid=location.uuid)
+            db.save_new_location(c=conn, loc_obj=location, _id=_id)
+            db.link_user_w_loc(c=conn, user_uuid=uuid, loc_uuid=location.uuid, _id=_id)
         return rpc.make_success_resp(
             True,
             _id)
@@ -387,6 +390,7 @@ def add_location(params, _id, conn, logger, config, session):
 # TODO:
 #  - catch invalid user uuid
 #  - catch invalid location uuid
+# NOTE: user uuid protected
 def add_item(params, _id, conn, logger, config, session):
     try:
         schemes = t.typize_config(config)
@@ -413,9 +417,9 @@ def add_item(params, _id, conn, logger, config, session):
                     user_uuids=())
         with conn:
             conn.execute("BEGIN EXCLUSIVE")
-            db.save_new_item(c=conn, item_obj=item)
-            db.link_item_w_user(c=conn, user_uuid=uuid, item_uuid=item.uuid)
-            db.link_loc_w_item(c=conn, loc_uuid=params["location_uuid"], item_uuid=item.uuid)
+            db.save_new_item(c=conn, item_obj=item, _id=_id)
+            db.link_item_w_user(c=conn, user_uuid=uuid, item_uuid=item.uuid, _id=_id)
+            db.link_loc_w_item(c=conn, loc_uuid=params["location_uuid"], item_uuid=item.uuid, _id=_id)
         return rpc.make_success_resp(True, _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
@@ -439,6 +443,7 @@ def add_item(params, _id, conn, logger, config, session):
 
 
 # WARNING: session updated
+# NOTE: public
 def login(params, _id, conn, logger, config, session):
     try:
         schemes = t.typize_config(config)
@@ -476,6 +481,7 @@ def login(params, _id, conn, logger, config, session):
 
 
 # WARNING: session updated
+# NOTE: public (sort of)
 def logout(params, _id, conn, logger, config, session):
     try:
         schemes = t.typize_config(config)
@@ -507,54 +513,7 @@ def logout(params, _id, conn, logger, config, session):
             _id)
 
 
-# TODO:
-#  - optimize to not get username when a uuid is given
-def get_user_location_uuids(params, _id, conn, logger, config, session):
-    try:
-        schemes = t.typize_config(config)
-        if not t.check_params_against_scheme_set(schemes["get_user_location_uuids"], params):
-            return rpc.make_error_resp(
-                const.INVALID_PARAMS_CODE,
-                const.INVALID_PARAMS,
-                _id
-            )
-        with conn:
-            conn.execute("BEGIN EXCLUSIVE")
-            try:
-                if "username" not in params:
-                    if "uuid" in params:
-                        username = __get_user_username(_id, conn, params["uuid"])
-                    else:
-                        username = __get_user_username(_id, conn, session["uuid"])
-                else:
-                    username = params["username"]
-                r = db.get_user_locs(conn,
-                                     conn.execute("""SELECT uuid FROM users WHERE username = ?""",
-                                                  (username,)).fetchone()[0])
-            except WrappedErrorResponse as e:
-                raise e
-            except Exception as e:
-                rpc.make_error_resp(const.NO_CORRESPONDING_USER_CODE, const.NO_CORRESPONDING_USER, _id)
-        return rpc.make_success_resp(json.loads(json.dumps(r)), _id)
-    except WrappedErrorResponse as e:
-        file_logger.log_error({
-            "method": "get_user_location_uuids" + str(e.methods),
-            "params": params,
-            "error": str(e.exception)
-        })
-        return e.response_obj
-    except Exception as e:
-        file_logger.log_error({
-            "method": "get_user_location_uuids",
-            "params": params,
-            "error": str(e),
-        })
-        return rpc.make_error_resp(
-            const.INTERNAL_ERROR_CODE,
-            const.INTERNAL_ERROR,
-            _id)
-
-
+# NOTE: public
 def get_all_usernames(params, _id, conn, logger, config, session):
     try:
         schemes = t.typize_config(config)
@@ -598,6 +557,57 @@ def get_all_usernames(params, _id, conn, logger, config, session):
 
 # TODO:
 #  - optimize to not get username when a uuid is given
+# NOTE: public
+def get_user_location_uuids(params, _id, conn, logger, config, session):
+    try:
+        schemes = t.typize_config(config)
+        if not t.check_params_against_scheme_set(schemes["get_user_location_uuids"], params):
+            return rpc.make_error_resp(
+                const.INVALID_PARAMS_CODE,
+                const.INVALID_PARAMS,
+                _id
+            )
+        with conn:
+            conn.execute("BEGIN EXCLUSIVE")
+            try:
+                if "username" not in params:
+                    if "uuid" in params:
+                        username = __get_user_username(_id, conn, params["uuid"])
+                    else:
+                        username = __get_user_username(_id, conn, session["uuid"])
+                else:
+                    username = params["username"]
+                r = db.get_user_locs(conn,
+                                     conn.execute("""SELECT uuid FROM users WHERE username = ?""",
+                                                  (username,)).fetchone()[0],
+                                     _id)
+            except WrappedErrorResponse as e:
+                raise e
+            except Exception as e:
+                return rpc.make_error_resp(const.NO_CORRESPONDING_USER_CODE, const.NO_CORRESPONDING_USER, _id)
+        return rpc.make_success_resp(json.loads(json.dumps(r)), _id)
+    except WrappedErrorResponse as e:
+        file_logger.log_error({
+            "method": "get_user_location_uuids" + str(e.methods),
+            "params": params,
+            "error": str(e.exception)
+        })
+        return e.response_obj
+    except Exception as e:
+        file_logger.log_error({
+            "method": "get_user_location_uuids",
+            "params": params,
+            "error": str(e),
+        })
+        return rpc.make_error_resp(
+            const.INTERNAL_ERROR_CODE,
+            const.INTERNAL_ERROR,
+            _id)
+
+
+# TODO:
+#  - optimize to not get username when a uuid is given
+# NOTE: public
 def get_user_item_uuids(params, _id, conn, logger, config, session):
     try:
         schemes = t.typize_config(config)
@@ -619,7 +629,8 @@ def get_user_item_uuids(params, _id, conn, logger, config, session):
                     username = params["username"]
                 r = db.get_user_items(conn,
                                       conn.execute("""SELECT uuid FROM users WHERE username = ?""",
-                                                   (username,)).fetchone()[0])
+                                                   (username,)).fetchone()[0],
+                                      _id)
             except WrappedErrorResponse as e:
                 raise e
             except Exception as e:
@@ -644,6 +655,7 @@ def get_user_item_uuids(params, _id, conn, logger, config, session):
             _id)
 
 
+# NOTE: public
 def get_sess(params, _id, conn, logger, config, session):
     try:
         schemes = t.typize_config(config)
@@ -677,6 +689,7 @@ def get_sess(params, _id, conn, logger, config, session):
 
 
 # WARNING: session updated
+# NOTE: public
 def put_sess(params, _id, conn, logger, config, session):
     try:
         schemes = t.typize_config(config)
@@ -698,6 +711,109 @@ def put_sess(params, _id, conn, logger, config, session):
     except Exception as e:
         file_logger.log_error({
             "method": "put_sess",
+            "params": params,
+            "error": str(e)
+        })
+        return rpc.make_error_resp(
+            const.INTERNAL_ERROR_CODE,
+            const.INTERNAL_ERROR,
+            _id)
+
+
+# NOTE: user uuid protected
+def get_location(params, _id, conn, logger, config, session):
+    try:
+        schemes = t.typize_config(config)
+        if not t.check_params_against_scheme_set(schemes["get_location"], params):
+            return rpc.make_error_resp(
+                const.INVALID_PARAMS_CODE,
+                const.INVALID_PARAMS,
+                _id
+            )
+        if "uuid" in params:
+            uuid = params["uuid"]
+        elif "uuid" in session:
+            uuid = session["uuid"]
+        else:
+            return rpc.make_error_resp(const.NOT_LOGGED_IN_CODE, const.NOT_LOGGED_IN, _id)
+        with conn:
+            conn.execute("BEGIN EXCLUSIVE")
+            __get_user_username(_id, conn, uuid)  # NOTE: check the user exists
+            try:
+                r = db.load_location(conn, params["location_uuid"], _id)
+            except WrappedErrorResponse as e:
+                raise e
+            except Exception as e:
+                raise WrappedErrorResponse(
+                    rpc.make_error_resp(const.DATABASE_FAILURE_CODE, const.DATABASE_FAILURE, _id),
+                    e,
+                    "database transaction")
+        return rpc.make_success_resp(r.one_hot_encode(), _id)
+    except WrappedErrorResponse as e:
+        file_logger.log_error({
+            "method": "get_location" + str(e.methods),
+            "params": params,
+            "error": str(e.exception)
+        })
+        return e.response_obj
+    except Exception as e:
+        file_logger.log_error({
+            "method": "get_location",
+            "params": params,
+            "error": str(e)
+        })
+        return rpc.make_error_resp(
+            const.INTERNAL_ERROR_CODE,
+            const.INTERNAL_ERROR,
+            _id)
+
+
+# WARNING: untested
+# NOTE: user uuid protected
+def begin_transfer(params, _id, conn, logger, config, session):
+    try:
+        schemes = t.typize_config(config)
+        if not t.check_params_against_scheme_set(schemes["begin_transfer"], params):
+            return rpc.make_error_resp(
+                const.INVALID_PARAMS_CODE,
+                const.INVALID_PARAMS,
+                _id
+            )
+        if "uuid" in params:
+            uuid = params["uuid"]
+        elif "uuid" in session:
+            uuid = session["uuid"]
+        else:
+            return rpc.make_error_resp(const.NOT_LOGGED_IN_CODE, const.NOT_LOGGED_IN, _id)
+        with conn:
+            conn.execute("BEGIN EXCLUSIVE")
+            try:
+                item = db.load_item(conn, params["item_uuid"], _id)
+                if item.user_uuids[-1] != uuid:
+                    return rpc.make_error_resp(const.NOT_OWNER_CODE, const.NOT_OWNER, _id)
+                __get_user_username(_id, conn, params["destination_user_uuid"])  # NOTE: check the receiever exists
+                item.status = lconst.TRANSIT
+                item.location_uuids += (params["destination_location_uuid"],)
+                item.user_uuids += (params["destination_user_uuid"],)
+                db.save_existing_item(conn, item, _id)
+            except WrappedErrorResponse as e:
+                raise e
+            except Exception as e:
+                raise WrappedErrorResponse(
+                    rpc.make_error_resp(const.DATABASE_FAILURE_CODE, const.DATABASE_FAILURE, _id),
+                    e,
+                    "database transaction")
+        return rpc.make_success_resp(True, _id)
+    except WrappedErrorResponse as e:
+        file_logger.log_error({
+            "method": "begin_transfer" + str(e.methods),
+            "params": params,
+            "error": str(e.exception)
+        })
+        return e.response_obj
+    except Exception as e:
+        file_logger.log_error({
+            "method": "begin_transfer",
             "params": params,
             "error": str(e)
         })

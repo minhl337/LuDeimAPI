@@ -23,6 +23,12 @@ DIAMOND = "diamond"
 ITEM_TYPES = [
     DIAMOND
 ]
+STATIONARY = "stationary"
+TRANSIT = "transit"
+ITEM_STATUSES = [
+    STATIONARY,
+    TRANSIT
+]
 
 # misc
 TITLES = ["MR", "MRS", "MISS", "DR"]

@@ -4,6 +4,7 @@ import utils.response_constants as const
 import utils.jsonrpc2 as rpc
 import json
 import application_handlers.handlers_consolidated as hc
+from flask import jsonify
 
 
 methods = dict()
@@ -44,8 +45,8 @@ def handle_batch(obj, logger, session):
             for k in d_sess:
                 session[k] = d_sess[k]
         if len(results) == 0:
-            results = const.NO_RESPONSE
-        return results
+            return const.NO_RESPONSE
+        return jsonify(results)
     else:
         return evaluation
 
