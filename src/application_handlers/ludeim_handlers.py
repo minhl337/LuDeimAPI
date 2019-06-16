@@ -817,7 +817,6 @@ def get_location(params, _id, conn, logger, config, session):
             _id)
 
 
-# WARNING: untested
 # NOTE: user uuid protected
 def begin_transfer(params, _id, conn, logger, config, session):
     try:

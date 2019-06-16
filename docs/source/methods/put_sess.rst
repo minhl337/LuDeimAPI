@@ -1,33 +1,36 @@
 Put Session
-===========
+============
 
-**METHOD NAME**
-    *put_sess*
+:strong:`Method Name:` :literal:`put_sess`
 
-**PERMISSION LEVEL**
-    *user*
+:strong:`Permission Level:` |lit_public|_
 
-**ARGUMENTS**
-    * **key:** string
-    * **value:** string
+:strong:`Argumentation:`
 
-**RESPONSE MEMBERS**
-    * This method just returns **True** indicating the key-value pair has been added to your session.
+    * **key:** *(string)* -- This is the key for the value being stored in your server session.
 
-**EXAMPLE REQUEST**
+    * **value:** *(string)* -- This is the value being stored in your server session.
+
+:strong:`Response Members:`
+
+    This method returns the boolean :code:`true` upon success.
+
+:strong:`Example Request:`
+
     .. code-block:: javascript
 
         {
             "jsonrpc": "2.0",
             "method": "put_sess",
             "params": {
-                "key": "MY_KEY",
-                "value": "MY_VALUE"
+                "key": "abcd",
+                "value": "lmnop"
             },
             "id": 1
         }
 
-**EXAMPLE SUCCESSFUL RESPONSE**
+:strong:`Example Response:`
+
     .. code-block:: javascript
 
         {
@@ -36,5 +39,10 @@ Put Session
             "id": 1
         }
 
-**NOTES**
-    This method should be called when a user wants to save information in their session. While sessions are persistent they should NOT be considered permanent storage.
+:strong:`Notes`
+
+    This method is intended to be used as an arbitrary key-value store. However, it only supports strings. If you want to store other types you will have to serialize them and deserialize them before sending them in.
+
+.. |lit_public| replace:: :literal:`public`
+
+.. _lit_public: ../miscellaneous/permissions.html
