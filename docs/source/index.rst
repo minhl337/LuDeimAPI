@@ -16,27 +16,31 @@ LuDeimAPI is a JSON-RPC 2.0 compliant API designed for use in the LuDeim diamond
    miscellaneous/sessions
    miscellaneous/rpc
    miscellaneous/batch_requests
+   miscellaneous/permissions
+   miscellaneous/optional_arguments
 
 
 .. toctree::
    :hidden:
    :maxdepth: 2
-   :caption: Constants
+   :caption: Constants, Structures, and Types
 
    constants/item_types
    constants/user_types
    constants/location_types
    constants/titles
+   constants/uuids
 
 .. toctree::
    :hidden:
    :maxdepth: 2
    :caption: Methods
 
-   methods/add_user
-   methods/add_location
-   methods/add_item
    methods/login
    methods/logout
    methods/get_sess
    methods/put_sess
+   methods/add_user
+   methods/add_location
+   methods/add_item
+   methods/get_user_location_uuids

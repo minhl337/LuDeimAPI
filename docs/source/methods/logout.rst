@@ -1,29 +1,33 @@
 Logout
 ======
 
-**METHOD NAME**
-    *logout*
+:strong:`Method Name:` :literal:`logout`
 
-**PERMISSION LEVEL**
-    *user*
+:strong:`Permission Level:` |lit_user|_
 
-**ARGUMENTS**
-    * There are no arguments to this method. Just send *{}* as your params object.
+:strong:`Argumentation:`
 
-**RESPONSE MEMBERS**
-    * Response is just the boolean, *True*.
+        This method takes no arguments. Just send an empty dictionary, :code:`{ }`.
 
-**EXAMPLE REQUEST**
+:strong:`Response Members:`
+
+    This method returns the boolean :code:`true` upon success.
+
+:strong:`Example Request:`
+
     .. code-block:: javascript
 
         {
             "jsonrpc": "2.0",
             "method": "logout",
-            "params": {},
+            "params": { },
             "id": 1
         }
 
-**EXAMPLE SUCCESSFUL RESPONSE**
+:strong:`Example Response:`
+
+    Find out about the assumptions made when writing this example code, here_.
+
     .. code-block:: javascript
 
         {
@@ -32,5 +36,12 @@ Logout
             "id": 1
         }
 
-**NOTES**
-    This method should be called when a user wants to end leave the site. This method removes the user's *uuid* and *type* from their session. Should a user want to auto-login the next time they visit the site this method should simply not be called upon leaving which will result in the server remembering the user the next time they visit the site. Whether a user is login can be checked via the **get_sess** method.
+:strong:`Example Assumptions`
+
+    .. _here:
+
+    The examples above require an assumption to make sense. They assume the user sending the request is logged in to begin with. Logging out while not logged in will return an error.
+
+.. |lit_user| replace:: :literal:`user`
+
+.. _lit_user: ../miscellaneous/permissions.html
