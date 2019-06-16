@@ -19,7 +19,6 @@ LuDeimAPI is a JSON-RPC 2.0 compliant API designed for use in the LuDeim diamond
    miscellaneous/permissions
    miscellaneous/optional_arguments
 
-
 .. toctree::
    :hidden:
    :maxdepth: 2
@@ -44,3 +43,4 @@ LuDeimAPI is a JSON-RPC 2.0 compliant API designed for use in the LuDeim diamond
    methods/add_location
    methods/add_item
    methods/get_user_location_uuids
+   methods/get_all_usernames
