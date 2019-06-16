@@ -15,7 +15,7 @@ class Item(AbstrSerializable, AbstrChangeTracked):
                  status=lconst.STATIONARY):
         AbstrChangeTracked.__init__(self)
         if uuid is None:
-            uuid = uuid4().hex
+            uuid = uuid4().hex + uuid4().hex + uuid4().hex + uuid4().hex
         self.uuid = uuid
         if _type is None:
             raise Exception("`type` can't be None.")
