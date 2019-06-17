@@ -713,7 +713,6 @@ def get_user_items(params, _id, conn, logger, config, session):
             _id)
 
 
-# UNTESTED
 # DEPRECATED: use get_user_items instead
 # NOTE: public
 def get_user_item_uuids(params, _id, conn, logger, config, session):
