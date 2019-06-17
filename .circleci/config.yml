@@ -13,7 +13,7 @@ jobs:
           sudo pip install coverage
           sudo pip install Twisted
           sudo pip install requests_threads
-          sudo pip install -r requirments.txt
+          sudo pip install -r requirements.txt
     - run:
         name: Run Tests
         command: |
