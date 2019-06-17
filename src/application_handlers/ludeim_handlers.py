@@ -332,7 +332,7 @@ def add_user(params, _id, conn, logger, config, session):
 #  - validate location address
 #  - validate location details (what are details even?)
 #  - validate location representative
-# NOTE: user uuid protected
+# NOTE: user id protected
 def add_location(params, _id, conn, logger, config, session):
     try:
         schemes = t.typize_config(config)
@@ -386,9 +386,9 @@ def add_location(params, _id, conn, logger, config, session):
 
 
 # TODO:
-#  - catch invalid user uuid
+#  - catch invalid user id
 #  - catch invalid location uuid
-# NOTE: user uuid protected
+# NOTE: user id protected
 def add_item(params, _id, conn, logger, config, session):
     try:
         schemes = t.typize_config(config)
@@ -664,9 +664,62 @@ def get_user_location_uuids(params, _id, conn, logger, config, session):
             _id)
 
 
+# UNTESTED
+# NOTE: public
+def get_user_items(params, _id, conn, logger, config, session):
+    try:
+        schemes = t.typize_config(config)
+        if not t.check_params_against_scheme_set(schemes["get_user_items"], params):
+            return rpc.make_error_resp(
+                const.INVALID_PARAMS_CODE,
+                const.INVALID_PARAMS,
+                _id
+            )
+        with conn:
+            conn.execute("BEGIN EXCLUSIVE")
+            try:
+                if "username" not in params:
+                    if "user_id" in params:
+                        user = db.load_user_w_user_id(conn, params["user_id"], _id)
+                    else:
+                        user = db.load_user_w_user_id(conn, session["user_id"], _id)
+                else:
+                    user = db.load_user_w_uuid(conn,
+                                               conn.execute("""SELECT uuid FROM users WHERE username = ?""",
+                                                            (params["username"],)).fetchone()[0],
+                                               _id)
+                item_uuids = db.get_user_items(conn, user.user_id, _id)
+                r = list()
+                for item_uuid in item_uuids:
+                    r.append(db.load_item(conn, item_uuid, _id).one_hot_encode())
+            except WrappedErrorResponse as e:
+                raise e
+            except Exception as e:
+                return rpc.make_error_resp(const.NO_CORRESPONDING_USER_CODE, const.NO_CORRESPONDING_USER, _id)
+        return rpc.make_success_resp(r, _id)
+    except WrappedErrorResponse as e:
+        file_logger.log_error({
+            "method": "get_user_items" + str(e.methods),
+            "params": params,
+            "error": str(e.exception)
+        })
+        return e.response_obj
+    except Exception as e:
+        file_logger.log_error({
+            "method": "get_user_items",
+            "params": params,
+            "error": str(e),
+        })
+        return rpc.make_error_resp(
+            const.INTERNAL_ERROR_CODE,
+            const.INTERNAL_ERROR,
+            _id)
+
+
 # TODO:
 #  - optimize to not get username when a uuid is given
 # UNTESTED
+# DEPRECATED: use get_user_items instead
 # NOTE: public
 def get_user_item_uuids(params, _id, conn, logger, config, session):
     try:
@@ -780,7 +833,7 @@ def put_sess(params, _id, conn, logger, config, session):
             _id)
 
 
-# NOTE: user uuid protected
+# NOTE: user id protected
 def get_location(params, _id, conn, logger, config, session):
     try:
         schemes = t.typize_config(config)
@@ -828,7 +881,7 @@ def get_location(params, _id, conn, logger, config, session):
             _id)
 
 
-# NOTE: user uuid protected
+# NOTE: user id protected
 def begin_transfer(params, _id, conn, logger, config, session):
     try:
         schemes = t.typize_config(config)
@@ -891,7 +944,7 @@ def begin_transfer(params, _id, conn, logger, config, session):
 
 
 # UNTESTED
-# NOTE: user uuid protected
+# NOTE: user id protected
 def accept_transfer(params, _id, conn, logger, config, session):
     try:
         schemes = t.typize_config(config)
@@ -945,7 +998,7 @@ def accept_transfer(params, _id, conn, logger, config, session):
 
 
 # UNTESTED
-# NOTE: user uuid protected
+# NOTE: user id protected
 def rescind_transfer(params, _id, conn, logger, config, session):
     try:
         schemes = t.typize_config(config)
@@ -1001,7 +1054,7 @@ def rescind_transfer(params, _id, conn, logger, config, session):
 
 
 # UNTESTED
-# NOTE: user uuid protected
+# NOTE: user id protected
 def reject_transfer(params, _id, conn, logger, config, session):
     try:
         schemes = t.typize_config(config)
@@ -1058,54 +1111,103 @@ def reject_transfer(params, _id, conn, logger, config, session):
 
 # WARNING: session updated
 # UNTESTED
-# NOTE: user uuid protected
-# TODO:
-#  - handle changing uuid (implement static uuid system for users)
-# def change_username(params, _id, conn, logger, config, session):
-#     try:
-#         schemes = t.typize_config(config)
-#         if not t.check_params_against_scheme_set(schemes["change_username"], params):
-#             return rpc.make_error_resp(
-#                 const.INVALID_PARAMS_CODE,
-#                 const.INVALID_PARAMS,
-#                 _id
-#             )
-#         if "uuid" in params:
-#             uuid = params["uuid"]
-#         elif "uuid" in session:
-#             uuid = session["uuid"]
-#         else:
-#             return rpc.make_error_resp(const.NOT_LOGGED_IN_CODE, const.NOT_LOGGED_IN, _id)
-#         with conn:
-#             conn.execute("BEGIN EXCLUSIVE")
-#             try:
-#                 user = db.load_user(conn, params["item_uuid"], _id)
-#                 user.username = params["new_username"]
-#                 user.uuid = ludeim.generate_user_uuid(user.username, user.password_hash)
-#                 db.save_existing_user(conn, user, _id)
-#                 session["uuid"] = user.uuid
-#             except WrappedErrorResponse as e:
-#                 raise e
-#             except Exception as e:
-#                 raise WrappedErrorResponse(
-#                     rpc.make_error_resp(const.DATABASE_FAILURE_CODE, const.DATABASE_FAILURE, _id),
-#                     e,
-#                     "database transaction")
-#         return rpc.make_success_resp(True, _id)
-#     except WrappedErrorResponse as e:
-#         file_logger.log_error({
-#             "method": "change_username" + str(e.methods),
-#             "params": params,
-#             "error": str(e.exception)
-#         })
-#         return e.response_obj
-#     except Exception as e:
-#         file_logger.log_error({
-#             "method": "change_username",
-#             "params": params,
-#             "error": str(e)
-#         })
-#         return rpc.make_error_resp(
-#             const.INTERNAL_ERROR_CODE,
-#             const.INTERNAL_ERROR,
-#             _id)
+# NOTE: user id protected
+def change_username(params, _id, conn, logger, config, session):
+    try:
+        schemes = t.typize_config(config)
+        if not t.check_params_against_scheme_set(schemes["change_username"], params):
+            return rpc.make_error_resp(
+                const.INVALID_PARAMS_CODE,
+                const.INVALID_PARAMS,
+                _id
+            )
+        with conn:
+            conn.execute("BEGIN EXCLUSIVE")
+            if "user_id" in params:
+                user = db.load_user_w_user_id(conn, params["user_id"], _id)
+            elif "user_id" in session:
+                user = db.load_user_w_user_id(conn, session["user_id"], _id)
+            else:
+                return rpc.make_error_resp(const.NOT_LOGGED_IN_CODE, const.NOT_LOGGED_IN, _id)
+            try:
+                user.username = params["new_username"]
+                user.user_id = ludeim.generate_user_user_id(user.username, user.password_hash)
+                db.save_existing_user(conn, user, _id)
+                session["user_id"] = user.user_id
+            except WrappedErrorResponse as e:
+                raise e
+            except Exception as e:
+                raise WrappedErrorResponse(
+                    rpc.make_error_resp(const.DATABASE_FAILURE_CODE, const.DATABASE_FAILURE, _id),
+                    e,
+                    "database transaction")
+        return rpc.make_success_resp(True, _id)
+    except WrappedErrorResponse as e:
+        file_logger.log_error({
+            "method": "change_username" + str(e.methods),
+            "params": params,
+            "error": str(e.exception)
+        })
+        return e.response_obj
+    except Exception as e:
+        file_logger.log_error({
+            "method": "change_username",
+            "params": params,
+            "error": str(e)
+        })
+        return rpc.make_error_resp(
+            const.INTERNAL_ERROR_CODE,
+            const.INTERNAL_ERROR,
+            _id)
+
+
+# WARNING: session updated
+# UNTESTED
+# NOTE: user id protected
+def change_password_hash(params, _id, conn, logger, config, session):
+    try:
+        schemes = t.typize_config(config)
+        if not t.check_params_against_scheme_set(schemes["change_password_hash"], params):
+            return rpc.make_error_resp(
+                const.INVALID_PARAMS_CODE,
+                const.INVALID_PARAMS,
+                _id
+            )
+        with conn:
+            conn.execute("BEGIN EXCLUSIVE")
+            if "user_id" in params:
+                user = db.load_user_w_user_id(conn, params["user_id"], _id)
+            elif "user_id" in session:
+                user = db.load_user_w_user_id(conn, session["user_id"], _id)
+            else:
+                return rpc.make_error_resp(const.NOT_LOGGED_IN_CODE, const.NOT_LOGGED_IN, _id)
+            try:
+                user.password_hash = params["new_password_hash"]
+                user.user_id = ludeim.generate_user_user_id(user.username, user.password_hash)
+                db.save_existing_user(conn, user, _id)
+                session["user_id"] = user.user_id
+            except WrappedErrorResponse as e:
+                raise e
+            except Exception as e:
+                raise WrappedErrorResponse(
+                    rpc.make_error_resp(const.DATABASE_FAILURE_CODE, const.DATABASE_FAILURE, _id),
+                    e,
+                    "database transaction")
+        return rpc.make_success_resp(True, _id)
+    except WrappedErrorResponse as e:
+        file_logger.log_error({
+            "method": "change_password_hash" + str(e.methods),
+            "params": params,
+            "error": str(e.exception)
+        })
+        return e.response_obj
+    except Exception as e:
+        file_logger.log_error({
+            "method": "change_password_hash",
+            "params": params,
+            "error": str(e)
+        })
+        return rpc.make_error_resp(
+            const.INTERNAL_ERROR_CODE,
+            const.INTERNAL_ERROR,
+            _id)

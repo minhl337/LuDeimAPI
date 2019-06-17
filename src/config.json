@@ -8,6 +8,7 @@
     "logout",
     "get_user_locations",
     "get_user_location_uuids",
+    "get_user_items",
     "get_user_item_uuids",
     "get_all_users",
     "get_sess",
@@ -16,7 +17,9 @@
     "begin_transfer",
     "accept_transfer",
     "rescind_transfer",
-    "reject_transfer"
+    "reject_transfer",
+    "change_username",
+    "change_password_hash"
   ],
   "param_primitives": [
     "str",
@@ -82,6 +85,14 @@
         "?user_id": "str"
       }
     ],
+    "get_user_items": [
+      {
+        "username": "str"
+      },
+      {
+        "?user_id": "str"
+      }
+    ],
     "get_user_item_uuids": [
       {
         "username": "str"
@@ -136,6 +147,18 @@
       {
         "?user_id": "str",
         "item_uuid": "str"
+      }
+    ],
+    "change_username": [
+      {
+        "?user_id": "str",
+        "new_username": "str"
+      }
+    ],
+    "change_password_hash": [
+      {
+        "?user_id": "str",
+        "new_password_hash": "str"
       }
     ]
   }
