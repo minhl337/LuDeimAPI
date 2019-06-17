@@ -49,7 +49,7 @@ class TestApiMethodGetLocation(unittest.TestCase):
                     random.randint(lconst.MIN_PASSWORD_HASH_LEN, lconst.MAX_PASSWORD_HASH_LEN)
                 )
             ])
-            derived_uuid = ludeim.generate_user_uuid(username, password_hash)
+            derived_user_id = ludeim.generate_user_user_id(username, password_hash)
             payload = {
                 "jsonrpc": "2.0",
                 "method": "add_user",
@@ -113,7 +113,6 @@ class TestApiMethodGetLocation(unittest.TestCase):
                 "jsonrpc": "2.0",
                 "method": "add_location",
                 "params": {
-                    "uuid": derived_uuid,
                     "type": _type,
                     "name": name,
                     "address": address,

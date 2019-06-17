@@ -18,7 +18,7 @@ Get User Location UUIDs
 
     .. admonition:: Argumentation Scheme 2
 
-        * **uuid** *(string)* |lit_conditionally_optional|_  -- When looking up your own |lit_location_UUIDs|_ you may either call |func_login|_ and then omit any arguments to this method or not call |func_login|_ and instead send your |lit_UUID|_ as an argument to this method.
+        * **user_id** *(string)* |lit_conditionally_optional|_  -- When looking up your own |lit_location_UUIDs|_ you may either call |func_login|_ and then omit any arguments to this method or not call |func_login|_ and instead send your |lit_user_id|_ as an argument to this method.
 
 :strong:`Response Members:`
 
@@ -69,7 +69,7 @@ Get User Location UUIDs
 .. |lit_conditionally_optional| replace:: :literal:`conditionally optional`
 .. |lit_public| replace:: :literal:`public`
 .. |lit_location_UUIDs| replace:: :literal:`location UUIDs`
-.. |lit_UUID| replace:: :literal:`UUID`
+.. |lit_user_id| replace:: :literal:`user_id`
 .. |lit_list_of_location_UUIDs| replace:: :literal:`list of location UUIDs`
 
 .. |func_get_user_locations| replace:: :func:`get_user_locations`
@@ -79,7 +79,7 @@ Get User Location UUIDs
 .. _lit_conditionally_optional: ../miscellaneous/optional_arguments.html
 .. _lit_public: ../miscellaneous/permissions.html
 .. _lit_location_UUIDs: ../constants/uuids.html
-.. _lit_UUID: ../constants/uuids.html
+.. _lit_user_id: ../constants/uuids.html
 .. _lit_list_of_location_UUIDs: ../constants/uuids.html
 
 .. _func_get_user_locations: ../methods/get_user_locations.html

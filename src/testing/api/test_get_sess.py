@@ -2,7 +2,6 @@ import unittest
 import reset
 import random
 import string
-import time
 import utils.ludeim_constants as lconst
 import utils.ludeim_generic_helpers as ludeim
 import app
@@ -47,7 +46,7 @@ class TestApiMethodGetSess(unittest.TestCase):
                     random.randint(lconst.MIN_PASSWORD_HASH_LEN, lconst.MAX_PASSWORD_HASH_LEN)
                 )
             ])
-            derived_uuid = ludeim.generate_user_uuid(username, password_hash)
+            derived_user_id = ludeim.generate_user_user_id(username, password_hash)
             payload = {
                 "jsonrpc": "2.0",
                 "method": "add_user",
@@ -81,9 +80,11 @@ class TestApiMethodGetSess(unittest.TestCase):
             }
             resp = self.app.post(endpoint, json=payload)
             expected_result = {
-                "uuid": derived_uuid,
+                "user_id": derived_user_id,
                 "type": _type
             }
             l.log(self.dbg, "\tasserting the returned session is correct")
-            self.assertEqual(json.loads(resp.data.decode("utf-8"))["result"], expected_result, "returned session didn't match expectation")
+            self.assertEqual(json.loads(resp.data.decode("utf-8"))["result"],
+                             expected_result,
+                             "returned session didn't match expectation")
             l.log(self.dbg, "\tending round {}\n".format(_))

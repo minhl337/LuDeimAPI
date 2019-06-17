@@ -11,7 +11,7 @@ Get Session
 
 :strong:`Response Members:`
 
-    This method returns your server session as string → string dictionary.
+    This method returns your server session as string-to-string dictionary.
 
 :strong:`Example Request:`
 
@@ -33,7 +33,7 @@ Get Session
         {
             "jsonrpc": "2.0",
             "result": {
-                "uuid": "ED905886F16EE7733E02EFADB3C95E2EC4B36CBB5511DACD76909BB513BA8E56",
+                "user_id": "ED905886F16EE7733E02EFADB3C95E2EC4B36CBB5511DACD76909BB513BA8E56",
                 "type": "mining_company",
                 "abcd": "lmnop"
             }

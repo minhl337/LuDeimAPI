@@ -6,6 +6,7 @@ from classes.ClassUser import User
 from classes.ClassLocation import Location
 from classes.ClassItem import Item
 from classes.ClassWrappedErrorResponse import WrappedErrorResponse
+import sys
 
 
 def get_connection():
@@ -14,10 +15,10 @@ def get_connection():
 
 
 # NOTE: not transaction wrapped
-def get_user_locs(c, user_uuid, _id):
+def get_user_locs(c, user_id, _id):
     try:
-        return tuple(json.loads(c.execute("""SELECT location_uuids FROM users WHERE uuid = ?""",
-                                          (user_uuid,)).fetchone()[0]))
+        return tuple(json.loads(c.execute("""SELECT location_uuids FROM users WHERE user_id = ?""",
+                                          (user_id,)).fetchone()[0]))
     except WrappedErrorResponse as e:
         e.methods.append("database_helpers.get_user_locs")
         raise e
@@ -30,10 +31,26 @@ def get_user_locs(c, user_uuid, _id):
 
 
 # NOTE: not transaction wrapped
-def get_user_items(c, user_uuid, _id):
+def get_user_locs_w_uuid(c, uuid, _id):
     try:
-        return tuple(json.loads(c.execute("""SELECT item_uuids FROM users WHERE uuid = ?""",
-                                          (user_uuid,)).fetchone()[0]))
+        return tuple(json.loads(c.execute("""SELECT location_uuids FROM users WHERE uuid = ?""",
+                                          (uuid,)).fetchone()[0]))
+    except WrappedErrorResponse as e:
+        e.methods.append("database_helpers.get_user_locs_w_uuid")
+        raise e
+    except Exception as e:
+        raise WrappedErrorResponse(
+            rpc.make_error_resp(const.NONEXISTENT_USER_CODE, const.NONEXISTENT_USER, _id),
+            e,
+            "database_helpers.get_user_locs_w_uuid"
+        )
+
+
+# NOTE: not transaction wrapped
+def get_user_items(c, user_id, _id):
+    try:
+        return tuple(json.loads(c.execute("""SELECT item_uuids FROM users WHERE user_id = ?""",
+                                          (user_id,)).fetchone()[0]))
     except WrappedErrorResponse as e:
         e.methods.append("database_helpers.get_user_items")
         raise e
@@ -42,6 +59,22 @@ def get_user_items(c, user_uuid, _id):
             rpc.make_error_resp(const.NONEXISTENT_USER_CODE, const.NONEXISTENT_USER, _id),
             e,
             "database_helpers.get_user_items"
+        )
+
+
+# NOTE: not transaction wrapped
+def get_user_items_w_uuid(c, uuid, _id):
+    try:
+        return tuple(json.loads(c.execute("""SELECT item_uuids FROM users WHERE uuid = ?""",
+                                          (uuid,)).fetchone()[0]))
+    except WrappedErrorResponse as e:
+        e.methods.append("database_helpers.get_user_items_w_uuid")
+        raise e
+    except Exception as e:
+        raise WrappedErrorResponse(
+            rpc.make_error_resp(const.NONEXISTENT_USER_CODE, const.NONEXISTENT_USER, _id),
+            e,
+            "database_helpers.get_user_items_w_uuid"
         )
 
 
@@ -110,10 +143,10 @@ def get_item_locs(c, item_uuid, _id):
 
 
 # NOTE: not transaction wrapped
-def save_user_locs(c, user_uuid, user_loc_uuids, _id):
+def save_user_locs(c, user_id, user_loc_uuids, _id):
     try:
         user_loc_uuids = json.dumps(user_loc_uuids)
-        c.execute("""UPDATE users SET location_uuids = ? WHERE uuid = ?""", (user_loc_uuids, user_uuid,))
+        c.execute("""UPDATE users SET location_uuids = ? WHERE user_id = ?""", (user_loc_uuids, user_id,))
     except WrappedErrorResponse as e:
         e.methods.append("database_helpers.save_user_locs")
         raise e
@@ -126,10 +159,26 @@ def save_user_locs(c, user_uuid, user_loc_uuids, _id):
 
 
 # NOTE: not transaction wrapped
-def save_user_items(c, user_uuid, user_item_uuids, _id):
+def save_user_locs_w_uuid(c, uuid, user_loc_uuids, _id):
+    try:
+        user_loc_uuids = json.dumps(user_loc_uuids)
+        c.execute("""UPDATE users SET location_uuids = ? WHERE uuid = ?""", (user_loc_uuids, uuid,))
+    except WrappedErrorResponse as e:
+        e.methods.append("database_helpers.save_user_locs")
+        raise e
+    except Exception as e:
+        raise WrappedErrorResponse(
+            rpc.make_error_resp(const.NONEXISTENT_USER_CODE, const.NONEXISTENT_USER, _id),
+            e,
+            "database_helpers.save_user_locs"
+        )
+
+
+# NOTE: not transaction wrapped
+def save_user_items(c, user_id, user_item_uuids, _id):
     try:
         user_item_uuids = json.dumps(user_item_uuids)
-        c.execute("""UPDATE users SET item_uuids = ? WHERE uuid = ?""", (user_item_uuids, user_uuid,))
+        c.execute("""UPDATE users SET item_uuids = ? WHERE user_id = ?""", (user_item_uuids, user_id,))
     except WrappedErrorResponse as e:
         e.methods.append("database_helpers.save_user_items")
         raise e
@@ -138,6 +187,22 @@ def save_user_items(c, user_uuid, user_item_uuids, _id):
             rpc.make_error_resp(const.NONEXISTENT_USER_CODE, const.NONEXISTENT_USER, _id),
             e,
             "database_helpers.save_user_items"
+        )
+
+
+# NOTE: not transaction wrapped
+def save_user_items_w_uuid(c, uuid, user_item_uuids, _id):
+    try:
+        user_item_uuids = json.dumps(user_item_uuids)
+        c.execute("""UPDATE users SET item_uuids = ? WHERE uuid = ?""", (user_item_uuids, uuid,))
+    except WrappedErrorResponse as e:
+        e.methods.append("database_helpers.save_user_items_w_uuid")
+        raise e
+    except Exception as e:
+        raise WrappedErrorResponse(
+            rpc.make_error_resp(const.NONEXISTENT_USER_CODE, const.NONEXISTENT_USER, _id),
+            e,
+            "database_helpers.save_user_items_w_uuid"
         )
 
 
@@ -209,11 +274,11 @@ def save_item_locs(c, item_uuid, item_loc_uuids, _id):
 def link_user_w_loc(c, user_uuid, loc_uuid, _id):
     try:
         loc_user_uuids = get_loc_users(c, loc_uuid, _id)
-        user_loc_uuids = get_user_locs(c, user_uuid, _id)
+        user_loc_uuids = get_user_locs_w_uuid(c, user_uuid, _id)
         loc_user_uuids += (user_uuid,)
         user_loc_uuids += (loc_uuid,)
         save_loc_users(c, loc_uuid, loc_user_uuids, _id)
-        save_user_locs(c, user_uuid, user_loc_uuids, _id)
+        save_user_locs_w_uuid(c, user_uuid, user_loc_uuids, _id)
     except WrappedErrorResponse as e:
         e.methods.append("database_helpers.link_user_w_loc")
         raise e
@@ -229,7 +294,7 @@ def link_user_w_loc(c, user_uuid, loc_uuid, _id):
 def unlink_user_w_loc(c, user_uuid, loc_uuid, _id):
     try:
         loc_user_uuids = get_loc_users(c, loc_uuid, _id)
-        user_loc_uuids = get_user_locs(c, user_uuid, _id)
+        user_loc_uuids = get_user_locs_w_uuid(c, user_uuid, _id)
         loc_user_uuids = filter(lambda e: e != user_uuid, loc_user_uuids)
         user_loc_uuids = filter(lambda e: e != loc_uuid, user_loc_uuids)
         save_loc_users(c, loc_uuid, loc_user_uuids, _id)
@@ -269,7 +334,7 @@ def link_loc_w_item(c, loc_uuid, item_uuid, _id):
 def unlink_loc_w_item(c, loc_uuid, item_uuid, _id):
     try:
         loc_item_uuids = get_loc_items(c, loc_uuid, _id)
-        item_loc_uuids = get_user_locs(c, item_uuid, _id)
+        item_loc_uuids = get_user_locs_w_uuid(c, item_uuid, _id)
         loc_item_uuids = filter(lambda e: e != item_uuid, loc_item_uuids)
         item_loc_uuids = filter(lambda e: e != loc_uuid, item_loc_uuids)
         save_loc_users(c, loc_uuid, loc_item_uuids, _id)
@@ -289,11 +354,11 @@ def unlink_loc_w_item(c, loc_uuid, item_uuid, _id):
 def link_item_w_user(c, item_uuid, user_uuid, _id):
     try:
         item_user_uuids = get_item_users(c, item_uuid, _id)
-        user_item_uuids = get_user_items(c, user_uuid, _id)
+        user_item_uuids = get_user_items_w_uuid(c, user_uuid, _id)
         item_user_uuids += (user_uuid,)
         user_item_uuids += (item_uuid,)
         save_item_users(c, item_uuid, item_user_uuids, _id)
-        save_user_items(c, user_uuid, user_item_uuids, _id)
+        save_user_items_w_uuid(c, user_uuid, user_item_uuids, _id)
     except WrappedErrorResponse as e:
         e.methods.append("database_helpers.link_loc_w_item")
         raise e
@@ -326,26 +391,45 @@ def unlink_item_w_user(c, item_uuid, user_uuid, _id):
 
 
 # NOTE: not transaction wrapped
-def load_user(c, user_uuid, _id):
+def load_user_w_uuid(c, user_uuid, _id):
     try:
         line = c.execute("""SELECT * FROM users WHERE uuid = ?""", (user_uuid,)).fetchone()
-        return User(line[0], line[1], line[2], line[3], line[4], tuple(json.loads(line[5])), tuple(json.loads(line[6])))
+        return User(line[0], line[1], line[2], line[3], line[4], line[5], tuple(json.loads(line[6])), tuple(json.loads(line[7])))
     except WrappedErrorResponse as e:
-        e.methods.append("database_helpers.load_user")
+        e.methods.append("database_helpers.load_user_w_uuid")
+        raise e
+    except Exception as e:
+        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print(exc_traceback)
+        raise WrappedErrorResponse(
+            rpc.make_error_resp(const.NONEXISTENT_USER_CODE, const.NONEXISTENT_USER, _id),
+            e,
+            "database_helpers.load_user_w_uuid"
+        )
+
+
+# NOTE: not transaction wrapped
+def load_user_w_user_id(c, user_id, _id):
+    try:
+        line = c.execute("""SELECT * FROM users WHERE user_id = ?""", (user_id,)).fetchone()
+        return User(line[0], line[1], line[2], line[3], line[4], line[5], tuple(json.loads(line[6])), tuple(json.loads(line[7])))
+    except WrappedErrorResponse as e:
+        e.methods.append("database_helpers.load_user_w_user_id")
         raise e
     except Exception as e:
         raise WrappedErrorResponse(
             rpc.make_error_resp(const.NONEXISTENT_USER_CODE, const.NONEXISTENT_USER, _id),
             e,
-            "database_helpers.load_user"
+            "database_helpers.load_user_w_user_id"
         )
 
 
 # NOTE: not transaction wrapped
 def save_new_user(c, user_obj: User, _id):
     try:
-        c.execute("""INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?)""", (
+        c.execute("""INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?, ?)""", (
             user_obj.uuid,
+            user_obj.user_id,
             user_obj.type,
             user_obj.username,
             user_obj.password_hash,
@@ -368,9 +452,10 @@ def save_new_user(c, user_obj: User, _id):
 def save_existing_user(c, user_obj: User, _id):
     try:
         c.execute("""UPDATE users
-                     SET uuid = ?, type = ?, username = ?, password_hash = ?, avatar = ?, location_uuids = ?, item_uuids = ?
+                     SET uuid = ?, user_id = ?, type_ = ?, username = ?, password_hash = ?, avatar = ?, location_uuids = ?, item_uuids = ?
                      WHERE uuid = ?""", (
             user_obj.uuid,
+            user_obj.user_id,
             user_obj.type,
             user_obj.username,
             user_obj.password_hash,
