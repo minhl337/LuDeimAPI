@@ -1,5 +1,6 @@
 import hashlib
 import utils.ludeim_constants as lconst
+from uuid import uuid4
 
 
 from classes.ClassAbstrSerializable import AbstrSerializable
@@ -9,6 +10,7 @@ from classes.ClassAbstrChangeTracked import AbstrChangeTracked
 class User(AbstrSerializable, AbstrChangeTracked):
     def __init__(self,
                  uuid=None,
+                 user_id=None,
                  _type=None,
                  username=None,
                  password_hash=None,
@@ -25,11 +27,13 @@ class User(AbstrSerializable, AbstrChangeTracked):
         if password_hash is None:
             raise Exception("`password_hash` can't be None.")
         if uuid is None:
-            uuid = hashlib.sha256((username + password_hash).encode("utf-8")).hexdigest()
-        else:
-            assert uuid == hashlib.sha256((username + password_hash).encode("utf-8")).hexdigest()
+            uuid = uuid4().hex + uuid4().hex + uuid4().hex + uuid4().hex
         self.uuid = uuid
-
+        if user_id is None:
+            user_id = hashlib.sha256((username + password_hash).encode("utf-8")).hexdigest()
+        else:
+            assert user_id == hashlib.sha256((username + password_hash).encode("utf-8")).hexdigest()
+        self.user_id = user_id
         self.password_hash = password_hash
         if avatar is None:
             avatar = lconst.DEFAULT_USER_AVATAR

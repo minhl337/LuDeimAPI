@@ -49,7 +49,7 @@ class TestApiMethodBeginTransfer(unittest.TestCase):
                     random.randint(lconst.MIN_PASSWORD_HASH_LEN, lconst.MAX_PASSWORD_HASH_LEN)
                 )
             ])
-            derived_uuid_1 = ludeim.generate_user_uuid(username_1, password_hash_1)
+            derived_user_id_1 = ludeim.generate_user_user_id(username_1, password_hash_1)
             payload = {
                 "jsonrpc": "2.0",
                 "method": "add_user",
@@ -74,7 +74,7 @@ class TestApiMethodBeginTransfer(unittest.TestCase):
                     random.randint(lconst.MIN_PASSWORD_HASH_LEN, lconst.MAX_PASSWORD_HASH_LEN)
                 )
             ])
-            derived_uuid_2 = ludeim.generate_user_uuid(username_2, password_hash_2)
+            derived_user_id_2 = ludeim.generate_user_user_id(username_2, password_hash_2)
             payload = {
                 "jsonrpc": "2.0",
                 "method": "add_user",
@@ -138,7 +138,7 @@ class TestApiMethodBeginTransfer(unittest.TestCase):
                 "jsonrpc": "2.0",
                 "method": "add_location",
                 "params": {
-                    "uuid": derived_uuid_1,
+                    "user_id": derived_user_id_1,
                     "type": _type,
                     "name": name,
                     "address": address,
@@ -154,7 +154,7 @@ class TestApiMethodBeginTransfer(unittest.TestCase):
                 },
                 "id": 1
             }
-            resp = self.app.post(endpoint, json=payload)
+            self.app.post(endpoint, json=payload)
             # NOTE: add a location to user 2
             l.log(self.dbg, "\tadding a location to user 2")
             _type = random.choice(lconst.LOCATION_TYPES)
@@ -195,7 +195,7 @@ class TestApiMethodBeginTransfer(unittest.TestCase):
                 "jsonrpc": "2.0",
                 "method": "add_location",
                 "params": {
-                    "uuid": derived_uuid_2,
+                    "user_id": derived_user_id_2,
                     "type": _type,
                     "name": name,
                     "address": address,
@@ -255,6 +255,17 @@ class TestApiMethodBeginTransfer(unittest.TestCase):
             }
             resp = self.app.post(endpoint, json=payload)
             loc_uuid_2 = resp.json["result"][0]
+            # NOTE: get all users
+            payload = {
+                "jsonrpc": "2.0",
+                "method": "get_all_users",
+                "params": { },
+                "id": 1
+            }
+            resp = self.app.post(endpoint, json=payload)
+            for user in resp.json["result"]:
+                if user["username"] == username_2:
+                    dest_uuid_2 = user["uuid"]
             # NOTE: begin transfer
             l.log(self.dbg, "\tbeginning transfer from user 1's location to user 2's location")
             payload = {
@@ -263,7 +274,7 @@ class TestApiMethodBeginTransfer(unittest.TestCase):
                 "params": {
                     "item_uuid": item_uuid,
                     "destination_location_uuid": loc_uuid_2,
-                    "destination_user_uuid": derived_uuid_2
+                    "destination_user_uuid": dest_uuid_2
                 },
                 "id": 1
             }

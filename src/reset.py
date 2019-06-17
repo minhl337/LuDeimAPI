@@ -23,7 +23,8 @@ def build_db():
     # make tables
     c.execute("""CREATE TABLE users (
         uuid text,
-        type text,
+        user_id text,
+        type_ text,
         username text,
         password_hash text,
         avatar text,
@@ -74,12 +75,14 @@ def reset():
         test_location_uuids = json.dumps(())
         test_items_uuids = json.dumps(())
         test_pass_hash = hashlib.sha256(test_password.encode("utf-8")).hexdigest()
+        test_uuid = uuid4().hex + uuid4().hex + uuid4().hex + uuid4().hex
         test_user_id = hashlib.sha256((test_username + test_pass_hash).encode("utf-8")).hexdigest()
-        c.execute("""INSERT INTO users VALUES (?, ?, ?, ?, ?, ?)""",
-                  (test_user_id, test_type, test_username, test_pass_hash, test_avatar, test_location_uuids,
+        c.execute("""INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                  (test_uuid, test_user_id, test_type, test_username, test_pass_hash, test_avatar, test_location_uuids,
                    test_items_uuids))
         print("your test user was successfully added to the database. Here's its info:")
-        print("uuid: {}".format(test_user_id))
+        print("uuid: {}".format(test_uuid))
+        print("user_id: {}".format(test_user_id))
         print("type: {}".format(test_type))
         print("username: {}".format(test_username))
         print("password: {}".format(test_password))
