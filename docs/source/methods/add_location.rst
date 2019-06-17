@@ -7,7 +7,7 @@ Add Location
 
 :strong:`Argumentation:`
 
-    * **uuid** *(string)* |lit_conditionally_optional|_ -- This is your |lit_UUID|_.
+    * **user_id** *(string)* |lit_conditionally_optional|_ -- This is your |lit_user_id|_.
 
     * **type** *(string)* -- This must be a |lit_location_type|_. It is the type of location you want to create.
 
@@ -87,10 +87,10 @@ Add Location
 .. |lit_conditionally_optional| replace:: :literal:`conditionally optional`
 .. |lit_location_type| replace:: :literal:`location type`
 .. |lit_user| replace:: :literal:`user`
-.. |lit_UUID| replace:: :literal:`UUID`
+.. |lit_user_id| replace:: :literal:`user_id`
 
 .. _lit_representative_title: ../constants/titles.html
 .. _lit_conditionally_optional: ../miscellaneous/optional_arguments.html
 .. _lit_location_type: ../constants/location_types.html
 .. _lit_user: ../miscellaneous/permissions.html
-.. _lit_UUID: ../constants/uuids.html
+.. _lit_user_id: ../constants/uuids.html

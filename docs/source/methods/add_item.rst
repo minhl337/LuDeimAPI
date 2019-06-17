@@ -7,7 +7,7 @@ Add Item
 
 :strong:`Argumentation:`
 
-    * **uuid** *(string)* |lit_conditionally_optional|_ -- This is your |lit_UUID|_.
+    * **user_id** *(string)* |lit_conditionally_optional|_ -- This is your |lit_user_id|_.
 
     * **type** *(string)* |lit_optional|_ -- This must be an |lit_item_type|_. It is the type of item you want to create, defaulting to :literal:`diamond`.
 
@@ -59,7 +59,7 @@ Add Item
 .. |lit_optional| replace:: :literal:`optional`
 .. |lit_user| replace:: :literal:`user`
 .. |lit_location_UUID| replace:: :literal:`location UUID`
-.. |lit_UUID| replace:: :literal:`UUID`
+.. |lit_user_id| replace:: :literal:`user_id`
 
 .. |func_accept_transfer| replace:: :func:`accept_transfer`
 
@@ -68,6 +68,6 @@ Add Item
 .. _lit_optional: ../miscellaneous/optional_arguments.html
 .. _lit_user: ../miscellaneous/permissions.html
 .. _lit_location_UUID: ../constants/uuids.html
-.. _lit_UUID: ../constants/uuids.html
+.. _lit_user_id: ../constants/uuids.html
 
 .. _func_accept_transfer: ../methods/accept_transfer.html

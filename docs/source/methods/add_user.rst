@@ -15,7 +15,7 @@ Add User
 
 :strong:`Response Members:`
 
-    * **uuid:** *(string)* -- The new user's |lit_UUID|_ which is required to make user level permissioned request. Defined as SHA256(CONCAT(username, password_hash)).
+    * **user_id:** *(string)* -- The new user's |lit_user_id|_ which is required to make user level permissioned request. Defined as SHA256(CONCAT(username, password_hash)).
 
     * **type:** *(string)* -- The |lit_user_type|_ of the of user created.
 
@@ -41,7 +41,7 @@ Add User
         {
             "jsonrpc": "2.0",
             "result": {
-                "uuid": "ED905886F16EE7733E02EFADB3C95E2EC4B36CBB5511DACD76909BB513BA8E56",
+                "user_id": "ED905886F16EE7733E02EFADB3C95E2EC4B36CBB5511DACD76909BB513BA8E56",
                 "type": "mining_company"
             },
             "id": 1
@@ -53,8 +53,8 @@ Add User
 
 .. |lit_user_type| replace:: :literal:`user type`
 .. |lit_public| replace:: :literal:`public`
-.. |lit_UUID| replace:: :literal:`UUID`
+.. |lit_user_id| replace:: :literal:`user_id`
 
 .. _lit_user_type: ../constants/user_types.html
 .. _lit_public: ../miscellaneous/permissions.html
-.. _lit_UUID: ../constants/uuids.html
+.. _lit_user_id: ../constants/uuids.html

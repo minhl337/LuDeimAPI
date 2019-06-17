@@ -13,7 +13,7 @@ Login
 
 :strong:`Response Members:`
 
-    * **uuid:** *(string)* -- The new user's |lit_UUID|_ which is required to make user level permissioned request. Defined as SHA256(CONCAT(username, password_hash)).
+    * **user_id:** *(string)* -- The new user's |lit_user_id|_ which is required to make user level permissioned request. Defined as SHA256(CONCAT(username, password_hash)).
 
     * **type:** *(string)* -- The |lit_type|_ of the of user created.
 
@@ -50,7 +50,7 @@ Login
 
 :strong:`Notes`
 
-    This method is intended to be used when logging into an existing user. The login method is really just adding the user's |lit_UUID|_ and |lit_type|_ to the server session. Think of this method as a wrapper for a few |func_put_sess|_ calls.
+    This method is intended to be used when logging into an existing user. The login method is really just adding the user's |lit_user_id|_ and |lit_type|_ to the server session. Think of this method as a wrapper for a few |func_put_sess|_ calls.
 
 :strong:`Example Assumptions`
 
@@ -59,11 +59,11 @@ Login
     The examples above require an assumption to make sense. They assume the user sending the request exists in the system already.
 
 .. |lit_public| replace:: :literal:`user`
-.. |lit_UUID| replace:: :literal:`UUID`
+.. |lit_user_id| replace:: :literal:`user_id`
 .. |lit_type| replace:: :literal:`type`
 .. |func_put_sess| replace:: :func:`put_sess`
 
 .. _lit_public: ../miscellaneous/permissions.html
-.. _lit_UUID: ../constants/uuids.html
+.. _lit_user_id: ../constants/uuids.html
 .. _lit_type: ../constants/user_types.html
 .. _func_put_sess: ../methods/put_sess.html
