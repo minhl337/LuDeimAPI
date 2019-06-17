@@ -61,3 +61,5 @@ DATABASE_FAILURE_CODE = -19
 DATABASE_FAILURE = "There was a problem with the database"
 NOT_OWNER_CODE = -20
 NOT_OWNER = "You are not the owner of the thing you're trying to operate on"
+INVALID_REQUEST_CODE = -21
+INVALID_REQUEST = "Your request is not valid"

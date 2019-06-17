@@ -13,7 +13,10 @@
     "get_sess",
     "put_sess",
     "get_location",
-    "begin_transfer"
+    "begin_transfer",
+    "accept_transfer",
+    "rescind_transfer",
+    "reject_transfer"
   ],
   "param_primitives": [
     "str",
@@ -111,6 +114,24 @@
         "item_uuid": "str",
         "destination_location_uuid": "str",
         "destination_user_uuid": "str"
+      }
+    ],
+    "accept_transfer": [
+      {
+        "?uuid": "str",
+        "item_uuid": "str"
+      }
+    ],
+    "rescind_transfer": [
+      {
+        "?uuid": "str",
+        "item_uuid": "str"
+      }
+    ],
+    "reject_transfer": [
+      {
+        "?uuid": "str",
+        "item_uuid": "str"
       }
     ]
   }

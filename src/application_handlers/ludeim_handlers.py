@@ -656,6 +656,7 @@ def get_user_location_uuids(params, _id, conn, logger, config, session):
 
 # TODO:
 #  - optimize to not get username when a uuid is given
+# UNTESTED
 # NOTE: public
 def get_user_item_uuids(params, _id, conn, logger, config, session):
     try:
@@ -839,6 +840,8 @@ def begin_transfer(params, _id, conn, logger, config, session):
                 item = db.load_item(conn, params["item_uuid"], _id)
                 if item.user_uuids[-1] != uuid:
                     return rpc.make_error_resp(const.NOT_OWNER_CODE, const.NOT_OWNER, _id)
+                if item.status != lconst.STATIONARY:
+                    return rpc.make_error_resp(const.INVALID_REQUEST_CODE, const.INVALID_REQUEST, _id)
                 __get_user_username(_id, conn, params["destination_user_uuid"])  # NOTE: check the receiever exists
                 item.status = lconst.TRANSIT
                 item.location_uuids += (params["destination_location_uuid"],)
@@ -869,3 +872,224 @@ def begin_transfer(params, _id, conn, logger, config, session):
             const.INTERNAL_ERROR_CODE,
             const.INTERNAL_ERROR,
             _id)
+
+
+# UNTESTED
+# NOTE: user uuid protected
+def accept_transfer(params, _id, conn, logger, config, session):
+    try:
+        schemes = t.typize_config(config)
+        if not t.check_params_against_scheme_set(schemes["accept_transfer"], params):
+            return rpc.make_error_resp(
+                const.INVALID_PARAMS_CODE,
+                const.INVALID_PARAMS,
+                _id
+            )
+        if "uuid" in params:
+            uuid = params["uuid"]
+        elif "uuid" in session:
+            uuid = session["uuid"]
+        else:
+            return rpc.make_error_resp(const.NOT_LOGGED_IN_CODE, const.NOT_LOGGED_IN, _id)
+        with conn:
+            conn.execute("BEGIN EXCLUSIVE")
+            try:
+                item = db.load_item(conn, params["item_uuid"], _id)
+                if item.user_uuids[-1] != uuid:
+                    return rpc.make_error_resp(const.INVALID_REQUEST_CODE, const.INVALID_REQUEST, _id)
+                if item.status != lconst.TRANSIT:
+                    return rpc.make_error_resp(const.INVALID_REQUEST_CODE, const.INVALID_REQUEST, _id)
+                item.status = lconst.STATIONARY
+                db.save_existing_item(conn, item, _id)
+            except WrappedErrorResponse as e:
+                raise e
+            except Exception as e:
+                raise WrappedErrorResponse(
+                    rpc.make_error_resp(const.DATABASE_FAILURE_CODE, const.DATABASE_FAILURE, _id),
+                    e,
+                    "database transaction")
+        return rpc.make_success_resp(True, _id)
+    except WrappedErrorResponse as e:
+        file_logger.log_error({
+            "method": "accept_transfer" + str(e.methods),
+            "params": params,
+            "error": str(e.exception)
+        })
+        return e.response_obj
+    except Exception as e:
+        file_logger.log_error({
+            "method": "accept_transfer",
+            "params": params,
+            "error": str(e)
+        })
+        return rpc.make_error_resp(
+            const.INTERNAL_ERROR_CODE,
+            const.INTERNAL_ERROR,
+            _id)
+
+
+# UNTESTED
+# NOTE: user uuid protected
+def rescind_transfer(params, _id, conn, logger, config, session):
+    try:
+        schemes = t.typize_config(config)
+        if not t.check_params_against_scheme_set(schemes["rescind_transfer"], params):
+            return rpc.make_error_resp(
+                const.INVALID_PARAMS_CODE,
+                const.INVALID_PARAMS,
+                _id
+            )
+        if "uuid" in params:
+            uuid = params["uuid"]
+        elif "uuid" in session:
+            uuid = session["uuid"]
+        else:
+            return rpc.make_error_resp(const.NOT_LOGGED_IN_CODE, const.NOT_LOGGED_IN, _id)
+        with conn:
+            conn.execute("BEGIN EXCLUSIVE")
+            try:
+                item = db.load_item(conn, params["item_uuid"], _id)
+                if item.status != lconst.TRANSIT:
+                    return rpc.make_error_resp(const.INVALID_REQUEST_CODE, const.INVALID_REQUEST, _id)
+                if item.user_uuids[-2] != uuid:
+                    return rpc.make_error_resp(const.NOT_OWNER_CODE, const.NOT_OWNER, _id)
+                item.status = lconst.STATIONARY
+                item.user_uuids = item.user_uuids[:-1]  # NOTE: roll back the send (as if it never happened)
+                item.location_uuids = item.location_uuids[:-1]  # NOTE: roll back the send (as if it never happened)
+                db.save_existing_item(conn, item, _id)
+            except WrappedErrorResponse as e:
+                raise e
+            except Exception as e:
+                raise WrappedErrorResponse(
+                    rpc.make_error_resp(const.DATABASE_FAILURE_CODE, const.DATABASE_FAILURE, _id),
+                    e,
+                    "database transaction")
+        return rpc.make_success_resp(True, _id)
+    except WrappedErrorResponse as e:
+        file_logger.log_error({
+            "method": "rescind_transfer" + str(e.methods),
+            "params": params,
+            "error": str(e.exception)
+        })
+        return e.response_obj
+    except Exception as e:
+        file_logger.log_error({
+            "method": "rescind_transfer",
+            "params": params,
+            "error": str(e)
+        })
+        return rpc.make_error_resp(
+            const.INTERNAL_ERROR_CODE,
+            const.INTERNAL_ERROR,
+            _id)
+
+
+# UNTESTED
+# NOTE: user uuid protected
+def reject_transfer(params, _id, conn, logger, config, session):
+    try:
+        schemes = t.typize_config(config)
+        if not t.check_params_against_scheme_set(schemes["reject_transfer"], params):
+            return rpc.make_error_resp(
+                const.INVALID_PARAMS_CODE,
+                const.INVALID_PARAMS,
+                _id
+            )
+        if "uuid" in params:
+            uuid = params["uuid"]
+        elif "uuid" in session:
+            uuid = session["uuid"]
+        else:
+            return rpc.make_error_resp(const.NOT_LOGGED_IN_CODE, const.NOT_LOGGED_IN, _id)
+        with conn:
+            conn.execute("BEGIN EXCLUSIVE")
+            try:
+                item = db.load_item(conn, params["item_uuid"], _id)
+                if item.status != lconst.TRANSIT:
+                    return rpc.make_error_resp(const.INVALID_REQUEST_CODE, const.INVALID_REQUEST, _id)
+                if item.user_uuids[-1] != uuid:
+                    return rpc.make_error_resp(const.NOT_OWNER_CODE, const.NOT_OWNER, _id)
+                item.status = lconst.STATIONARY
+                item.user_uuids += (item.user_uuids[-2],)
+                item.location_uuids += (item.location_uuids[-2],)
+                db.save_existing_item(conn, item, _id)
+            except WrappedErrorResponse as e:
+                raise e
+            except Exception as e:
+                raise WrappedErrorResponse(
+                    rpc.make_error_resp(const.DATABASE_FAILURE_CODE, const.DATABASE_FAILURE, _id),
+                    e,
+                    "database transaction")
+        return rpc.make_success_resp(True, _id)
+    except WrappedErrorResponse as e:
+        file_logger.log_error({
+            "method": "reject_transfer" + str(e.methods),
+            "params": params,
+            "error": str(e.exception)
+        })
+        return e.response_obj
+    except Exception as e:
+        file_logger.log_error({
+            "method": "reject_transfer",
+            "params": params,
+            "error": str(e)
+        })
+        return rpc.make_error_resp(
+            const.INTERNAL_ERROR_CODE,
+            const.INTERNAL_ERROR,
+            _id)
+
+
+# WARNING: session updated
+# UNTESTED
+# NOTE: user uuid protected
+# TODO:
+#  - handle changing uuid (implement static uuid system for users)
+# def change_username(params, _id, conn, logger, config, session):
+#     try:
+#         schemes = t.typize_config(config)
+#         if not t.check_params_against_scheme_set(schemes["change_username"], params):
+#             return rpc.make_error_resp(
+#                 const.INVALID_PARAMS_CODE,
+#                 const.INVALID_PARAMS,
+#                 _id
+#             )
+#         if "uuid" in params:
+#             uuid = params["uuid"]
+#         elif "uuid" in session:
+#             uuid = session["uuid"]
+#         else:
+#             return rpc.make_error_resp(const.NOT_LOGGED_IN_CODE, const.NOT_LOGGED_IN, _id)
+#         with conn:
+#             conn.execute("BEGIN EXCLUSIVE")
+#             try:
+#                 user = db.load_user(conn, params["item_uuid"], _id)
+#                 user.username = params["new_username"]
+#                 user.uuid = ludeim.generate_user_uuid(user.username, user.password_hash)
+#                 db.save_existing_user(conn, user, _id)
+#                 session["uuid"] = user.uuid
+#             except WrappedErrorResponse as e:
+#                 raise e
+#             except Exception as e:
+#                 raise WrappedErrorResponse(
+#                     rpc.make_error_resp(const.DATABASE_FAILURE_CODE, const.DATABASE_FAILURE, _id),
+#                     e,
+#                     "database transaction")
+#         return rpc.make_success_resp(True, _id)
+#     except WrappedErrorResponse as e:
+#         file_logger.log_error({
+#             "method": "change_username" + str(e.methods),
+#             "params": params,
+#             "error": str(e.exception)
+#         })
+#         return e.response_obj
+#     except Exception as e:
+#         file_logger.log_error({
+#             "method": "change_username",
+#             "params": params,
+#             "error": str(e)
+#         })
+#         return rpc.make_error_resp(
+#             const.INTERNAL_ERROR_CODE,
+#             const.INTERNAL_ERROR,
+#             _id)
