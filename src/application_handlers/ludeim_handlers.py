@@ -562,6 +562,7 @@ def get_all_users(params, _id, conn, logger, config, session):
             _id)
 
 
+# UNDOCUMENTED
 # NOTE: public
 def get_user_locations(params, _id, conn, logger, config, session):
     try:
@@ -613,6 +614,7 @@ def get_user_locations(params, _id, conn, logger, config, session):
             _id)
 
 
+# UNDOCUMENTED
 # DEPRECATED: use get_user_locations instead
 # NOTE: public
 def get_user_location_uuids(params, _id, conn, logger, config, session):
@@ -662,6 +664,7 @@ def get_user_location_uuids(params, _id, conn, logger, config, session):
             _id)
 
 
+# UNDOCUMENTED
 # NOTE: public
 def get_user_items(params, _id, conn, logger, config, session):
     try:
@@ -713,6 +716,7 @@ def get_user_items(params, _id, conn, logger, config, session):
             _id)
 
 
+# UNDOCUMENTED
 # DEPRECATED: use get_user_items instead
 # NOTE: public
 def get_user_item_uuids(params, _id, conn, logger, config, session):
@@ -827,6 +831,7 @@ def put_sess(params, _id, conn, logger, config, session):
             _id)
 
 
+# UNDOCUMENTED
 # NOTE: user id protected
 def get_location(params, _id, conn, logger, config, session):
     try:
@@ -875,6 +880,7 @@ def get_location(params, _id, conn, logger, config, session):
             _id)
 
 
+# UNDOCUMENTED
 # NOTE: user id protected
 def begin_transfer(params, _id, conn, logger, config, session):
     try:
@@ -938,6 +944,7 @@ def begin_transfer(params, _id, conn, logger, config, session):
 
 
 # UNTESTED
+# UNDOCUMENTED
 # NOTE: user id protected
 def accept_transfer(params, _id, conn, logger, config, session):
     try:
@@ -992,6 +999,7 @@ def accept_transfer(params, _id, conn, logger, config, session):
 
 
 # UNTESTED
+# UNDOCUMENTED
 # NOTE: user id protected
 def rescind_transfer(params, _id, conn, logger, config, session):
     try:
@@ -1048,6 +1056,7 @@ def rescind_transfer(params, _id, conn, logger, config, session):
 
 
 # UNTESTED
+# UNDOCUMENTED
 # NOTE: user id protected
 def reject_transfer(params, _id, conn, logger, config, session):
     try:
@@ -1105,6 +1114,7 @@ def reject_transfer(params, _id, conn, logger, config, session):
 
 # WARNING: session updated
 # UNTESTED
+# UNDOCUMENTED
 # NOTE: user id protected
 def change_username(params, _id, conn, logger, config, session):
     try:
@@ -1157,6 +1167,7 @@ def change_username(params, _id, conn, logger, config, session):
 
 # WARNING: session updated
 # UNTESTED
+# UNDOCUMENTED
 # NOTE: user id protected
 def change_password_hash(params, _id, conn, logger, config, session):
     try:
