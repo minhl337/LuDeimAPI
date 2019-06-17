@@ -29,7 +29,7 @@ class TestApiMethodGetUserLocations(unittest.TestCase):
 
     def test__get_user_locations__valid__via_session(self):
         l.log(self.dbg, "entering: test__get_user_locations__valid__via_session", True)
-        for _ in range(10):  # NOTE: run 100 random iterations to for robustness
+        for _ in range(10):  # NOTE: run 10 random iterations to for robustness
             l.log(self.dbg, "\tstarting round {}".format(_))
             l.log(self.dbg, "\tresetting the database")
             reset.auto_reset()  # NOTE: reset the database
@@ -146,7 +146,7 @@ class TestApiMethodGetUserLocations(unittest.TestCase):
 
     def test__get_user_locations__valid__via_username(self):
         l.log(self.dbg, "entering: test__get_user_locations__valid__via_username", True)
-        for _ in range(10):  # NOTE: run 100 random iterations to for robustness
+        for _ in range(10):  # NOTE: run 10 random iterations to for robustness
             l.log(self.dbg, "\tstarting round {}".format(_))
             l.log(self.dbg, "\tresetting the database")
             reset.auto_reset()  # NOTE: reset the database

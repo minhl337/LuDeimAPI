@@ -613,8 +613,6 @@ def get_user_locations(params, _id, conn, logger, config, session):
             _id)
 
 
-# TODO:
-#  - optimize to not get username when a uuid is given
 # DEPRECATED: use get_user_locations instead
 # NOTE: public
 def get_user_location_uuids(params, _id, conn, logger, config, session):
@@ -664,7 +662,6 @@ def get_user_location_uuids(params, _id, conn, logger, config, session):
             _id)
 
 
-# UNTESTED
 # NOTE: public
 def get_user_items(params, _id, conn, logger, config, session):
     try:
@@ -716,8 +713,6 @@ def get_user_items(params, _id, conn, logger, config, session):
             _id)
 
 
-# TODO:
-#  - optimize to not get username when a uuid is given
 # UNTESTED
 # DEPRECATED: use get_user_items instead
 # NOTE: public
