@@ -117,10 +117,6 @@
       {
         "?user_id": "str",
         "location_uuid": "str"
-      },
-      {
-        "uuid": "str",
-        "location_uuid": "str"
       }
     ],
     "begin_transfer": [

@@ -43,7 +43,7 @@ Get User Items
             "result": [
                 {
                     "uuid": "CA0AEC8C35E27B62DB4A27ACED44E13B7C97BD715D0E5029A06491CC7C2A2200CA0AEC8C35E27B62DB4A27ACED44E13B7C97BD715D0E5029A06491CC7C2A2200",
-                    "type": "mine",
+                    "type": "diamond",
                     "location_uuids": [
                         "300F1FB5953602D6B49BCD34762B0BD26B519C057465499217CB337ED5512651",
                         "9DFA3179431258A0E49786E8BDED7307A84814950877B77A55B9C2AC71CB15B5",

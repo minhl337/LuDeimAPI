@@ -664,7 +664,6 @@ def get_user_location_uuids(params, _id, conn, logger, config, session):
             _id)
 
 
-# UNDOCUMENTED
 # NOTE: public
 def get_user_items(params, _id, conn, logger, config, session):
     try:
@@ -831,7 +830,7 @@ def put_sess(params, _id, conn, logger, config, session):
             _id)
 
 
-# UNDOCUMENTED
+# DEPRECATED: use get_user_location instead
 # NOTE: user id protected
 def get_location(params, _id, conn, logger, config, session):
     try:
