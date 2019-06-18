@@ -5,7 +5,6 @@ import string
 import json
 import utils.ludeim_constants as lconst
 import utils.ludeim_generic_helpers as ludeim
-import time
 import app
 import logging
 import testing.utils.logging as l
@@ -30,7 +29,7 @@ class TestApiMethodGetUserLocationUUIDS(unittest.TestCase):
 
     def test__get_user_location_uuids__valid(self):
         l.log(self.dbg, "entering: test__get_user_location_uuids__valid")
-        for _ in range(10):  # NOTE: run 100 random iterations to for robustness
+        for _ in range(10):  # NOTE: run 10 random iterations to for robustness
             l.log(self.dbg, "\tstarting round {}".format(_))
             l.log(self.dbg, "\tresetting the database")
             reset.auto_reset()  # NOTE: reset the database
