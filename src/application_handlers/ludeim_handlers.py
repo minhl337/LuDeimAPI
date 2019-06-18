@@ -562,7 +562,6 @@ def get_all_users(params, _id, conn, logger, config, session):
             _id)
 
 
-# UNDOCUMENTED
 # NOTE: public
 def get_user_locations(params, _id, conn, logger, config, session):
     try:
