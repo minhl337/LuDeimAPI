@@ -29,7 +29,9 @@ def build_db():
         password_hash text,
         avatar text,
         location_uuids text,
-        item_uuids text
+        item_uuids text,
+        incoming_item_uuids text,
+        outgoing_item_uuids text
     )""")
     c.execute("""CREATE TABLE locations (
         uuid text,
@@ -72,14 +74,16 @@ def reset():
         test_username = input("test user's username?\n")
         test_password = input("test user's password?\n")
         test_avatar = "https://picsum.photos/400"
-        test_location_uuids = json.dumps(())
-        test_items_uuids = json.dumps(())
+        test_location_uuids = json.dumps([])
+        test_items_uuids = json.dumps([])
+        test_incoming_items_uuids = json.dumps([])
+        test_outgoing_items_uuids = json.dumps([])
         test_pass_hash = hashlib.sha256(test_password.encode("utf-8")).hexdigest()
         test_uuid = uuid4().hex + uuid4().hex + uuid4().hex + uuid4().hex
         test_user_id = hashlib.sha256((test_username + test_pass_hash).encode("utf-8")).hexdigest()
-        c.execute("""INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?)""",
+        c.execute("""INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                   (test_uuid, test_user_id, test_type, test_username, test_pass_hash, test_avatar, test_location_uuids,
-                   test_items_uuids))
+                   test_items_uuids, test_incoming_items_uuids, test_outgoing_items_uuids))
         print("your test user was successfully added to the database. Here's its info:")
         print("uuid: {}".format(test_uuid))
         print("user_id: {}".format(test_user_id))

@@ -27,10 +27,10 @@ class Location(AbstrSerializable, AbstrChangeTracked):
             raise Exception("`type` can't be None.")
         self.type = _type
         if user_uuids is None:
-            user_uuids = list()
+            user_uuids = set()
         self.user_uuids = user_uuids
         if item_uuids is None:
-            item_uuids = list()
+            item_uuids = set()
         self.item_uuids = item_uuids
         if name is None:
             raise Exception("`name` can't be None.")

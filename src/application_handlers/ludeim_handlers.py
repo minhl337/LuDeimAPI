@@ -367,9 +367,9 @@ def add_location(params, _id, conn, logger, config, session):
             # NOTE: load the user
             user = db.load_user_w_user_id(conn, user_id, _id)
             # NOTE: add the location to the user's location_uuids list
-            user.location_uuids.append(location.uuid)
+            user.location_uuids.add(location.uuid)
             # NOTE: add the user to the location's user_uuids list
-            location.user_uuids.append(user.uuid)
+            location.user_uuids.add(user.uuid)
             # NOTE: save everything
             db.save_existing_user(conn, user, _id)
             db.save_new_location(conn, location, _id)
@@ -432,9 +432,9 @@ def add_item(params, _id, conn, logger, config, session):
             # NOTE: add the user to the item's user_uuids list
             item.user_uuids.append(user.uuid)
             # NOTE: add the item to the user's item_uuids list
-            user.item_uuids.append(item.uuid)
+            user.item_uuids.add(item.uuid)
             # NOTE: add the item to the location's item_uuids list
-            location.item_uuids.append(item.uuid)
+            location.item_uuids.add(item.uuid)
             # NOTE: save everything
             db.save_new_item(conn, item, _id)
             db.save_existing_user(conn, user, _id)
@@ -644,7 +644,7 @@ def get_user_items(params, _id, conn, logger, config, session):
                                              .fetchone()[0],
                                              _id)
                 # NOTE: load the target's items
-                items = [db.load_item(conn, uuid, _id) for uuid in target.item_uuids]
+                items = [db.load_item(conn, uuid, _id) for uuid in target.item_uuids | target.incoming_item_uuids | target.incoming_item_uuids]
         else:
             with conn:
                 # NOTE: get a lock on the database
@@ -652,7 +652,7 @@ def get_user_items(params, _id, conn, logger, config, session):
                 # NOTE: load the caller's user
                 caller = db.load_user_w_user_id(conn, user_id, _id)
                 # NOTE: load the caller's items
-                items = [db.load_item(conn, uuid, _id) for uuid in caller.item_uuids]
+                items = [db.load_item(conn, uuid, _id) for uuid in caller.item_uuids | caller.incoming_item_uuids | caller.incoming_item_uuids]
         return rpc.make_success_resp([i.one_hot_encode() for i in items], _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
@@ -703,7 +703,7 @@ def get_user_item_uuids(params, _id, conn, logger, config, session):
                                              .fetchone()[0],
                                              _id)
                 # NOTE: load the target's items
-                items = [db.load_item(conn, uuid, _id) for uuid in target.item_uuids]
+                items = [db.load_item(conn, uuid, _id) for uuid in target.item_uuids | target.incoming_item_uuids | target.outgoing_item_uuids]
         else:
             with conn:
                 # NOTE: get a lock on the database
@@ -711,7 +711,7 @@ def get_user_item_uuids(params, _id, conn, logger, config, session):
                 # NOTE: load the caller's user
                 caller = db.load_user_w_user_id(conn, user_id, _id)
                 # NOTE: load the caller's items
-                items = [db.load_item(conn, uuid, _id) for uuid in caller.item_uuids]
+                items = [db.load_item(conn, uuid, _id) for uuid in caller.item_uuids | caller.incoming_item_uuids | caller.outgoing_item_uuids]
         return rpc.make_success_resp([i.uuid for i in items], _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({

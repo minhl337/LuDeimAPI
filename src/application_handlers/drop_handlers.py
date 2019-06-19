@@ -2,15 +2,8 @@ import utils.response_constants as const
 import utils.jsonrpc2 as rpc
 import utils.logging as file_logger
 import utils.database_helpers as db
-# import utils.ludeim_generic_helpers as ludeim
 import utils.ludeim_constants as lconst
-from classes.ClassUser import User
-from classes.ClassLocation import Location
-from classes.ClassItem import Item
 from classes.ClassWrappedErrorResponse import WrappedErrorResponse
-import traceback
-import sys
-# import apihandler
 
 
 # UNTESTED
@@ -34,7 +27,7 @@ def drop_item(params, _id, conn, logger, config, session):
             # NOTE: load the user
             user = db.load_user_w_user_id(conn, user_id, _id)
             # CHECK: is the item attached to the user?
-            if params["item_uuid"] not in user.item_uuids:
+            if params["item_uuid"] not in user.item_uuids | user.outgoing_item_uuids:
                 return rpc.make_error_resp(0,
                                            "PROBLEM: The designated item uuid doesn't correspond to an item "
                                            "owned by the user.\n"
@@ -53,9 +46,9 @@ def drop_item(params, _id, conn, logger, config, session):
             # NOTE: set status to retired
             item.status = lconst.RETIRED
             # NOTE: remove the item from the user's item_uuids list
-            user.item_uuids.remove(item.uuid)
+            user.item_uuids.discard(item.uuid)
             # NOTE: remove the item from the location's item_uuids list
-            location.item_uuids.remove(item.uuid)
+            location.item_uuids.discard(item.uuid)
             # NOTE: save everything
             db.save_existing_item(conn, item, _id)
             db.save_existing_user(conn, user, _id)
@@ -113,8 +106,8 @@ def drop_location(params, _id, conn, logger, config, session):
                                            "location.\n"
                                            "SUGGESTION: Try transferring all items then trying again.",
                                            _id)
-            # NOTE: remove the location from the user's item_uuids list
-            user.location_uuids.remove(location.uuid)
+            # NOTE: remove the location from the user's location_uuids list
+            user.location_uuids.discard(location.uuid)
             # NOTE: save everything
             db.save_existing_location(conn, location, _id)
         return rpc.make_success_resp(location.one_hot_encode(), _id)
@@ -155,10 +148,11 @@ def drop_user(params, _id, conn, logger, config, session):
             # NOTE: load the user
             user = db.load_user_w_user_id(conn, user_id, _id)
             # CHECK: does the user have no items?
-            if len(user.item_uuids) != 0:
+            if len(user.item_uuids | user.incoming_item_uuids | user.outgoing_item_uuids) != 0:
                 return rpc.make_error_resp(0,
-                                           "PROBLEM: The designated user has at least 1 item under their ownership.\n"
-                                           "SUGGESTION: Try transferring/dropping all items then trying again.",
+                                           "PROBLEM: The designated user has at least 1 item under their ownership or "
+                                           "currently incoming.\n"
+                                           "SUGGESTION: Try transferring/dropping/reject all items then trying again.",
                                            _id)
             # CHECK: does the user have no locations?
             if len(user.location_uuids) != 0:

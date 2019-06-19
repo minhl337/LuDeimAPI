@@ -17,7 +17,9 @@ class User(AbstrSerializable, AbstrChangeTracked):
                  password_hash=None,
                  avatar=None,
                  location_uuids=None,
-                 item_uuids=None):
+                 item_uuids=None,
+                 incoming_item_uuids=None,
+                 outgoing_item_uuids=None):
         AbstrChangeTracked.__init__(self)
         if _type is None:
             raise Exception("`type` can't be None.")
@@ -40,11 +42,17 @@ class User(AbstrSerializable, AbstrChangeTracked):
             avatar = lconst.DEFAULT_USER_AVATAR
         self.avatar = avatar
         if location_uuids is None:
-            location_uuids = list()
+            location_uuids = set()
         self.location_uuids = location_uuids
         if item_uuids is None:
-            item_uuids = list()
+            item_uuids = set()
         self.item_uuids = item_uuids
+        if incoming_item_uuids is None:
+            incoming_item_uuids = set()
+        self.incoming_item_uuids = incoming_item_uuids
+        if outgoing_item_uuids is None:
+            outgoing_item_uuids = set()
+        self.outgoing_item_uuids = outgoing_item_uuids
 
     def recalculate_user_id(self):
         self.user_id = ludeim.generate_user_user_id(self.username, self.password_hash)
