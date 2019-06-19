@@ -8,7 +8,9 @@
     "logout",
     "get_user_locations",
     "get_user_location_uuids",
-    "get_user_items",
+    "get_user_inventory_items",
+    "get_user_incoming_items",
+    "get_user_outgoing_items",
     "get_user_item_uuids",
     "get_all_users",
     "get_sess",
@@ -94,7 +96,25 @@
         "?user_id": "str"
       }
     ],
-    "get_user_items": [
+    "get_user_inventory_items": [
+      {
+        "?user_id": "str",
+        "username": "str"
+      },
+      {
+        "?user_id": "str"
+      }
+    ],
+    "get_user_incoming_items": [
+      {
+        "?user_id": "str",
+        "username": "str"
+      },
+      {
+        "?user_id": "str"
+      }
+    ],
+    "get_user_outgoing_items": [
       {
         "?user_id": "str",
         "username": "str"
