@@ -55,6 +55,14 @@ def begin_transfer(params, _id, conn, logger, config, session):
                                            "at the destination, or a different destination where the receiver has a "
                                            "presence.",
                                            _id)
+            # NOTE: load the origin
+            origin = db.load_location(conn, item.location_uuids[-1], _id)
+            # NOTE: remove the item from the origin's item_uuids list
+            origin.item_uuids.discard(item.uuid)
+            # NOTE: add the item to the origin's outgoing_item_uuids list
+            origin.outgoing_item_uuids.add(item.uuid)
+            # NOTE: add the item to the destination's incoming_item_uuids list
+            destination.incoming_item_uuids.add(item.uuid)
             # NOTE: conditionally move item around in the user
             if receiver.uuid != caller.uuid:
                 # NOTE: remove the item from the caller's item_uuids list
@@ -71,9 +79,10 @@ def begin_transfer(params, _id, conn, logger, config, session):
             item.user_uuids.append(receiver.uuid)
             # NOTE: save everything
             db.save_existing_item(conn, item, _id)
-            # OPT: conditionally save the users based on if the transfer is internal or external
             db.save_existing_user(conn, caller, _id)
             db.save_existing_user(conn, receiver, _id)
+            db.save_existing_location(conn, origin, _id)
+            db.save_existing_location(conn, destination, _id)
         return rpc.make_success_resp(item.one_hot_encode(), _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
@@ -104,7 +113,8 @@ def accept_transfer(params, _id, conn, logger, config, session):
                                        "located in the session.\n"
                                        "SUGGESTION: Either either try again with a `user_id` argument, call "
                                        "login() then try again, or use put_sess() to manually add your user_id to "
-                                       "your session then try again.", _id)
+                                       "your session then try again.",
+                                       _id)
         with conn:
             # NOTE: get a lock on the database
             conn.execute("BEGIN EXCLUSIVE")
@@ -129,6 +139,16 @@ def accept_transfer(params, _id, conn, logger, config, session):
                                            "someone else's account without realizing it, or the sender could have "
                                            "called redirect_transfer() or rescind_transfer() without you realizing it.",
                                            _id)
+            # NOTE: load the origin
+            origin = db.load_location(conn, item.location_uuids[-2], _id)
+            # NOTE: load the destination
+            destination = db.load_location(conn, item.location_uuids[-1], _id)
+            # NOTE: remove the item from the origin's outgoing_item_uuids list
+            origin.outgoing_item_uuids.discard(item.uuid)
+            # NOTE: remove the item from the destination's incoming_item_uuids list
+            destination.incoming_item_uuids.discard(item.uuid)
+            # NOTE: add the item to the destination's item_uuids list
+            destination.item_uuids.add(item.uuid)
             # NOTE: set the item to stationary
             item.status = lconst.STATIONARY
             # NOTE: remove the item from the caller's incoming_item_uuids list
@@ -143,6 +163,8 @@ def accept_transfer(params, _id, conn, logger, config, session):
             db.save_existing_user(conn, caller, _id)
             db.save_existing_user(conn, sender, _id)
             db.save_existing_item(conn, item, _id)
+            db.save_existing_location(conn, origin, _id)
+            db.save_existing_location(conn, destination, _id)
         return rpc.make_success_resp(item.one_hot_encode(), _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
@@ -197,6 +219,16 @@ def rescind_transfer(params, _id, conn, logger, config, session):
                                            "SUGGESTION: You may be logged in to someone else's account without "
                                            "realizing it. Try calling login() then trying again.",
                                            _id)
+            # NOTE: load the origin
+            origin = db.load_location(conn, item.location_uuids[-2], _id)
+            # NOTE: load the destination
+            destination = db.load_location(conn, item.location_uuids[-1], _id)
+            # NOTE: remove the item from the destination's incoming_item_uuids list
+            destination.incoming_item_uuids.discard(item.uuid)
+            # NOTE: remove the item from the origin's outgoing_item_uuids list
+            origin.outgoing_item_uuids.discard(item.uuid)
+            # NOTE: add the item to the origin's item_uuids list
+            origin.item_uuids.add(item.uuid)
             # NOTE: set the item to stationary
             item.status = lconst.STATIONARY
             # NOTE: remove the item from the user's outgoing_item_uuids list
@@ -215,6 +247,8 @@ def rescind_transfer(params, _id, conn, logger, config, session):
             db.save_existing_item(conn, item, _id)
             db.save_existing_user(conn, caller, _id)
             db.save_existing_user(conn, receiever, _id)
+            db.save_existing_location(conn, origin, _id)
+            db.save_existing_location(conn, destination, _id)
         return rpc.make_success_resp(item.one_hot_encode(), _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
@@ -272,6 +306,16 @@ def reject_transfer(params, _id, conn, logger, config, session):
             sender = db.load_user_w_uuid(conn, item.user_uuids[-2], _id)
             # NOTE: load the origin location
             origin = db.load_location(conn, item.location_uuids[-2], _id)
+            # NOTE: load the destination location
+            destination = db.load_location(conn, item.location_uuids[-1], _id)
+            # NOTE: remove the item from the destination's incoming_item_uuids list
+            destination.incoming_item_uuids.discard(item.uuid)
+            # NOTE: remove the item from the origin's outgoing_item_uuids list
+            origin.outgoing_item_uuids.discard(item.uuid)
+            # NOTE: add the item to the destination's outgoing_item_uuids list
+            destination.outgoing_item_uuids.add(item.uuid)
+            # NOTE: add the item to the origin's incoming_item_uuids list
+            origin.incoming_item_uuids.add(item.uuid)
             # NOTE: is this an external rejection?
             if sender.uuid != caller.uuid:
                 # NOTE: remove the item from the caller's incoming_item_uuids list
@@ -359,10 +403,16 @@ def redirect_transfer(params, _id, conn, logger, config, session):
                                            "presence at the destination, or a different new destination where the "
                                            "receiver has a presence.",
                                            _id)
+            # NOTE: load the old_destination
+            old_destination = db.load_location(conn, item.location_uuids[-1], _id)
+            # NOTE: remove the item from the old_destination's incoming_item_uuids list
+            old_destination.incoming_item_uuids.discard(item.uuid)
+            # NOTE: add the item to the new_destination's incoming_item_uuids list
+            new_destination.incoming_item_uuids.add(item.uuid)
             # NOTE: load the sender's user
-            sender = db.load_user_w_uuid(conn, item.user_uuids[:-2], _id)
+            sender = db.load_user_w_uuid(conn, item.user_uuids[-2], _id)
             # NOTE: load the old_receiver's user
-            old_receiver = db.load_user_w_uuid(conn, item.user_uuids[:-1], _id)
+            old_receiver = db.load_user_w_uuid(conn, item.user_uuids[-1], _id)
             # NOTE: remove the item from the old receiver's incoming_item_uuids list
             old_receiver.incoming_item_uuids.discard(item.uuid)
             # NOTE: is this an external redirect?
