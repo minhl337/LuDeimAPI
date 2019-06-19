@@ -11,9 +11,6 @@ from classes.ClassWrappedErrorResponse import WrappedErrorResponse
 # TODO: update tests
 def begin_transfer(params, _id, conn, logger, config, session):
     try:
-        schemes = t.typize_config(config)
-        if not t.check_params_against_scheme_set(schemes["begin_transfer"], params):
-            return rpc.make_error_resp(const.INVALID_PARAMS_CODE, const.INVALID_PARAMS, _id)
         # NOTE: find user_id
         user_id = params.get("user_id", session.get("user_id", None))
         # CHECK: was a user_id found?
@@ -89,9 +86,6 @@ def begin_transfer(params, _id, conn, logger, config, session):
 # UNDOCUMENTED
 def accept_transfer(params, _id, conn, logger, config, session):
     try:
-        schemes = t.typize_config(config)
-        if not t.check_params_against_scheme_set(schemes["accept_transfer"], params):
-            return rpc.make_error_resp(const.INVALID_PARAMS_CODE, const.INVALID_PARAMS, _id)
         # NOTE: find user_id
         user_id = params.get("user_id", session.get("user_id", None))
         # CHECK: was a user_id found?
@@ -159,9 +153,6 @@ def accept_transfer(params, _id, conn, logger, config, session):
 # UNDOCUMENTED
 def rescind_transfer(params, _id, conn, logger, config, session):
     try:
-        schemes = t.typize_config(config)
-        if not t.check_params_against_scheme_set(schemes["rescind_transfer"], params):
-            return rpc.make_error_resp(const.INVALID_PARAMS_CODE, const.INVALID_PARAMS, _id)
         # NOTE: find user_id
         user_id = params.get("user_id", session.get("user_id", None))
         # CHECK: was a user_id found?
@@ -224,9 +215,6 @@ def rescind_transfer(params, _id, conn, logger, config, session):
 # UNDOCUMENTED
 def reject_transfer(params, _id, conn, logger, config, session):
     try:
-        schemes = t.typize_config(config)
-        if not t.check_params_against_scheme_set(schemes["reject_transfer"], params):
-            return rpc.make_error_resp(const.INVALID_PARAMS_CODE, const.INVALID_PARAMS, _id)
         # NOTE: find user_id
         user_id = params.get("user_id", session.get("user_id", None))
         # CHECK: was a user_id found?
@@ -297,9 +285,6 @@ def reject_transfer(params, _id, conn, logger, config, session):
 # UNDOCUMENTED
 def redirect_transfer(params, _id, conn, logger, config, session):
     try:
-        schemes = t.typize_config(config)
-        if not t.check_params_against_scheme_set(schemes["redirect_transfer"], params):
-            return rpc.make_error_resp(const.INVALID_PARAMS_CODE, const.INVALID_PARAMS, _id)
         # NOTE: find user_id
         user_id = params.get("user_id", session.get("user_id", None))
         # CHECK: was a user_id found?

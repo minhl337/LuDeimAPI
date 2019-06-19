@@ -9,9 +9,6 @@ from apihandler import dictize_session
 # TODO: update docs and tests
 def get_sess(params, _id, conn, logger, config, session):
     try:
-        schemes = t.typize_config(config)
-        if not t.check_params_against_scheme_set(schemes["get_sess"], params):
-            return rpc.make_error_resp(const.INVALID_PARAMS_CODE, const.INVALID_PARAMS, _id)
         # NOTE: find user_id
         user_id = params.get("user_id", session.get("user_id", None))
         # CHECK: was a user_id found?
@@ -44,9 +41,6 @@ def get_sess(params, _id, conn, logger, config, session):
 # TODO: update docs and tests
 def put_sess(params, _id, conn, logger, config, session):
     try:
-        schemes = t.typize_config(config)
-        if not t.check_params_against_scheme_set(schemes["put_sess"], params):
-            return rpc.make_error_resp(const.INVALID_PARAMS_CODE, const.INVALID_PARAMS, _id)
         # NOTE: find user_id
         user_id = params.get("user_id", session.get("user_id", None))
         # CHECK: was a user_id found?

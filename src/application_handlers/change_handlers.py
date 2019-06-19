@@ -11,9 +11,6 @@ from classes.ClassWrappedErrorResponse import WrappedErrorResponse
 # TODO: update docs
 def change_username(params, _id, conn, logger, config, session):
     try:
-        schemes = t.typize_config(config)
-        if not t.check_params_against_scheme_set(schemes["change_username"], params):
-            return rpc.make_error_resp(const.INVALID_PARAMS_CODE, const.INVALID_PARAMS, _id)
         # CHECK: is the username valid?
         length = len(params["new_username"])
         if length < lconst.MIN_USERNAME_LEN or length > lconst.MAX_USERNAME_LEN:
@@ -69,9 +66,6 @@ def change_username(params, _id, conn, logger, config, session):
 # UNDOCUMENTED
 def change_password_hash(params, _id, conn, logger, config, session):
     try:
-        schemes = t.typize_config(config)
-        if not t.check_params_against_scheme_set(schemes["change_password_hash"], params):
-            return rpc.make_error_resp(const.INVALID_PARAMS_CODE, const.INVALID_PARAMS, _id)
         # CHECK: is the password_hash valid?
         length = len(params["new_password_hash"])
         if length < lconst.MIN_PASSWORD_HASH_LEN or length > lconst.MAX_PASSWORD_HASH_LEN:

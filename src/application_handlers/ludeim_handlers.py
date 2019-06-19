@@ -9,7 +9,6 @@ from classes.ClassUser import User
 from classes.ClassLocation import Location
 from classes.ClassItem import Item
 from classes.ClassWrappedErrorResponse import WrappedErrorResponse
-import json
 import traceback
 import sys
 from apihandler import dictize_session
@@ -287,9 +286,6 @@ def __is_username_taken(_id, conn, username):
 #  - further password hash validation
 def add_user(params, _id, conn, logger, config, session):
     try:
-        schemes = t.typize_config(config)
-        if not t.check_params_against_scheme_set(schemes["add_user"], params):
-            return rpc.make_error_resp(const.INVALID_PARAMS_CODE, const.INVALID_PARAMS, _id)
         user = User(_type=params["type"],
                     username=params["username"],
                     password_hash=params["password_hash"])
@@ -337,9 +333,6 @@ def add_user(params, _id, conn, logger, config, session):
 #  - validate location representative
 def add_location(params, _id, conn, logger, config, session):
     try:
-        schemes = t.typize_config(config)
-        if not t.check_params_against_scheme_set(schemes["add_location"], params):
-            return rpc.make_error_resp(const.INVALID_PARAMS_CODE, const.INVALID_PARAMS, _id)
         # NOTE: find user_id
         user_id = params.get("user_id", session.get("user_id", None))
         # CHECK: was a user_id found?
@@ -402,9 +395,6 @@ def add_location(params, _id, conn, logger, config, session):
 # TODO: update tests and docs
 def add_item(params, _id, conn, logger, config, session):
     try:
-        schemes = t.typize_config(config)
-        if not t.check_params_against_scheme_set(schemes["add_item"], params):
-            return rpc.make_error_resp(const.INVALID_PARAMS_CODE, const.INVALID_PARAMS, _id)
         # NOTE: find user_id
         user_id = params.get("user_id", session.get("user_id", None))
         # CHECK: was a user_id found?
@@ -472,9 +462,6 @@ def add_item(params, _id, conn, logger, config, session):
 # TODO: update tests and docs
 def login(params, _id, conn, logger, config, session):
     try:
-        schemes = t.typize_config(config)
-        if not t.check_params_against_scheme_set(schemes["login"], params):
-            return rpc.make_error_resp(const.INVALID_PARAMS_CODE, const.INVALID_PARAMS, _id)
         # NOTE: calculate user_id
         user_id = params.get("user_id", ludeim.generate_user_user_id(params["username"], params["password_hash"]))
         with conn:
@@ -506,9 +493,6 @@ def login(params, _id, conn, logger, config, session):
 # TODO: update tests and docs
 def logout(params, _id, conn, logger, config, session):
     try:
-        schemes = t.typize_config(config)
-        if not t.check_params_against_scheme_set(schemes["logout"], params):
-            return rpc.make_error_resp(const.INVALID_PARAMS_CODE, const.INVALID_PARAMS, _id)
         # NOTE: find user_id
         user_id = params.get("user_id", session.get("user_id", None))
         # CHECK: was a user_id found?
@@ -545,9 +529,6 @@ def logout(params, _id, conn, logger, config, session):
 # TODO: update tests and docs
 def get_all_users(params, _id, conn, logger, config, session):
     try:
-        schemes = t.typize_config(config)
-        if not t.check_params_against_scheme_set(schemes["get_all_users"], params):
-            return rpc.make_error_resp(const.INVALID_PARAMS_CODE, const.INVALID_PARAMS, _id)
         # NOTE: find user_id
         user_id = params.get("user_id", session.get("user_id", None))
         # CHECK: was a user_id found?
@@ -590,9 +571,6 @@ def get_all_users(params, _id, conn, logger, config, session):
 # TODO: update tests and docs
 def get_user_locations(params, _id, conn, logger, config, session):
     try:
-        schemes = t.typize_config(config)
-        if not t.check_params_against_scheme_set(schemes["get_user_locations"], params):
-            return rpc.make_error_resp(const.INVALID_PARAMS_CODE, const.INVALID_PARAMS, _id)
         # NOTE: find user_id
         user_id = params.get("user_id", session.get("user_id", None))
         # CHECK: was a user_id found?
@@ -653,9 +631,6 @@ def get_user_locations(params, _id, conn, logger, config, session):
 # DEPRECATED: use get_user_locations instead
 def get_user_location_uuids(params, _id, conn, logger, config, session):
     try:
-        schemes = t.typize_config(config)
-        if not t.check_params_against_scheme_set(schemes["get_user_location_uuids"], params):
-            return rpc.make_error_resp(const.INVALID_PARAMS_CODE, const.INVALID_PARAMS, _id)
         # NOTE: find user_id
         user_id = params.get("user_id", session.get("user_id", None))
         # CHECK: was a user_id found?
@@ -714,9 +689,6 @@ def get_user_location_uuids(params, _id, conn, logger, config, session):
 # TODO: update tests and docs
 def get_user_items(params, _id, conn, logger, config, session):
     try:
-        schemes = t.typize_config(config)
-        if not t.check_params_against_scheme_set(schemes["get_user_items"], params):
-            return rpc.make_error_resp(const.INVALID_PARAMS_CODE, const.INVALID_PARAMS, _id)
         # NOTE: find user_id
         user_id = params.get("user_id", session.get("user_id", None))
         # CHECK: was a user_id found?
@@ -777,9 +749,6 @@ def get_user_items(params, _id, conn, logger, config, session):
 # DEPRECATED: use get_user_items instead
 def get_user_item_uuids(params, _id, conn, logger, config, session):
     try:
-        schemes = t.typize_config(config)
-        if not t.check_params_against_scheme_set(schemes["get_user_item_uuids"], params):
-            return rpc.make_error_resp(const.INVALID_PARAMS_CODE, const.INVALID_PARAMS, _id)
         # NOTE: find user_id
         user_id = params.get("user_id", session.get("user_id", None))
         # CHECK: was a user_id found?
@@ -838,9 +807,6 @@ def get_user_item_uuids(params, _id, conn, logger, config, session):
 # DEPRECATED: use get_user_location instead
 def get_location(params, _id, conn, logger, config, session):
     try:
-        schemes = t.typize_config(config)
-        if not t.check_params_against_scheme_set(schemes["get_location"], params):
-            return rpc.make_error_resp(const.INVALID_PARAMS_CODE, const.INVALID_PARAMS, _id)
         # NOTE: find user_id
         user_id = params.get("user_id", session.get("user_id", None))
         # CHECK: was a user_id found?
