@@ -1,14 +1,12 @@
 import utils.response_constants as const
 import utils.jsonrpc2 as rpc
 import utils.logging as file_logger
-import utils.typing as t
 import utils.database_helpers as db
 import utils.ludeim_constants as lconst
 from classes.ClassWrappedErrorResponse import WrappedErrorResponse
 
 
 # UNDOCUMENTED
-# TODO: update tests
 def begin_transfer(params, _id, conn, logger, config, session):
     try:
         # NOTE: find user_id

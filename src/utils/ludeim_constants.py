@@ -25,9 +25,11 @@ ITEM_TYPES = [
 ]
 STATIONARY = "stationary"
 TRANSIT = "transit"
+RETIRED = "retired"
 ITEM_STATUSES = [
     STATIONARY,
-    TRANSIT
+    TRANSIT,
+    RETIRED
 ]
 
 # misc
