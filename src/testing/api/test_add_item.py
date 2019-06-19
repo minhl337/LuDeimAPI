@@ -38,7 +38,7 @@ class TestApiMethodAddItem(unittest.TestCase):
 
     def test__add_item__valid__with_uuid(self):
         l.log(self.dbg, "entering: test__add_item__valid__with_uuid")
-        for _ in range(10):  # NOTE: run 100 random iterations to for robustness
+        for _ in range(10):  # NOTE: run 10 random iterations to for robustness
             l.log(self.dbg, "\tstarting round {}".format(_))
             l.log(self.dbg, "\tresetting the database")
             reset.auto_reset()  # NOTE: reset the database
@@ -141,13 +141,14 @@ class TestApiMethodAddItem(unittest.TestCase):
             payload = {
                 "jsonrpc": "2.0",
                 "method": "get_user_location_uuids",
-                "params": {
-                    "username": username_1
-                },
+                "params": { },
                 "id": 1
             }
+            # try:
             resp = self.app.post(endpoint, json=payload)
-            resp = json.loads(resp.data.decode("utf-8"))
+            # except Exception as e:
+            #     print(e.with_traceback())
+            resp = resp.json
             l.log(self.dbg, "\tadding an item to this user's location")
             # NOTE: add an item to the new user at this location
             payload = {
@@ -159,7 +160,6 @@ class TestApiMethodAddItem(unittest.TestCase):
                 "id": 1
             }
             resp = self.app.post(endpoint, json=payload)
-            resp = json.loads(resp.data.decode("utf-8"))
             l.log(self.dbg, "\tasserting the item was created and added")
             db_dump = db.get_connection().execute("""SELECT * FROM items""").fetchall()
             self.assertEqual(len(db_dump), 1, "database didn't update correctly")

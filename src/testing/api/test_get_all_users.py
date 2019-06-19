@@ -4,7 +4,7 @@ import random
 import string
 import json
 import utils.ludeim_constants as lconst
-import time
+import utils.ludeim_generic_helpers as ludeim
 import app
 import logging
 import testing.utils.logging as l
@@ -46,6 +46,7 @@ class TestApiMethodGetAllUsers(unittest.TestCase):
                         random.randint(lconst.MIN_PASSWORD_HASH_LEN, lconst.MAX_PASSWORD_HASH_LEN)
                     )
                 ])
+                derived_user_id = ludeim.generate_user_user_id(username_1, password_hash_1)
                 payload = {
                     "jsonrpc": "2.0",
                     "method": "add_user",
@@ -61,7 +62,9 @@ class TestApiMethodGetAllUsers(unittest.TestCase):
             payload = {
                 "jsonrpc": "2.0",
                 "method": "get_all_users",
-                "params": {},
+                "params": {
+                    "user_id": derived_user_id
+                },
                 "id": 1
             }
             resp = self.app.post(endpoint, json=payload)

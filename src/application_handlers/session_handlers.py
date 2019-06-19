@@ -3,7 +3,7 @@ import utils.jsonrpc2 as rpc
 import utils.logging as file_logger
 import utils.typing as t
 from classes.ClassWrappedErrorResponse import WrappedErrorResponse
-from apihandler import dictize_session
+import apihandler
 
 
 # TODO: update docs and tests
@@ -21,7 +21,7 @@ def get_sess(params, _id, conn, logger, config, session):
                                        "your session then try again.",
                                        _id)
         # NOTE: dictize session for response
-        return rpc.make_success_resp(dictize_session(session), _id)
+        return rpc.make_success_resp(apihandler.dictize_session(session), _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
             "method": "get_sess" + str(e.methods),
@@ -55,7 +55,7 @@ def put_sess(params, _id, conn, logger, config, session):
         # NOTE: update the session
         session[params["key"]] = params["value"]
         # NOTE: dictize session for response
-        return rpc.make_success_resp(dictize_session(session), _id)
+        return rpc.make_success_resp(apihandler.dictize_session(session), _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
             "method": "put_sess" + str(e.methods),

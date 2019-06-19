@@ -16,8 +16,8 @@ class User(AbstrSerializable, AbstrChangeTracked):
                  username=None,
                  password_hash=None,
                  avatar=None,
-                 location_uuids=(),
-                 item_uuids=()):
+                 location_uuids=None,
+                 item_uuids=None):
         AbstrChangeTracked.__init__(self)
         if _type is None:
             raise Exception("`type` can't be None.")
@@ -27,6 +27,7 @@ class User(AbstrSerializable, AbstrChangeTracked):
         self.username = username
         if password_hash is None:
             raise Exception("`password_hash` can't be None.")
+        self.password_hash = password_hash
         if uuid is None:
             uuid = uuid4().hex + uuid4().hex + uuid4().hex + uuid4().hex
         self.uuid = uuid
@@ -35,11 +36,14 @@ class User(AbstrSerializable, AbstrChangeTracked):
         else:
             assert user_id == hashlib.sha256((username + password_hash).encode("utf-8")).hexdigest()
         self.user_id = user_id
-        self.password_hash = password_hash
         if avatar is None:
             avatar = lconst.DEFAULT_USER_AVATAR
         self.avatar = avatar
+        if location_uuids is None:
+            location_uuids = list()
         self.location_uuids = location_uuids
+        if item_uuids is None:
+            item_uuids = list()
         self.item_uuids = item_uuids
 
     def recalculate_user_id(self):

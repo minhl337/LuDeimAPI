@@ -11,7 +11,7 @@ from classes.ClassItem import Item
 from classes.ClassWrappedErrorResponse import WrappedErrorResponse
 import traceback
 import sys
-from apihandler import dictize_session
+import apihandler
 
 
 # NOTE: not transaction wrapped
@@ -509,7 +509,7 @@ def logout(params, _id, conn, logger, config, session):
         # NOTE: remove user_id from session
         session.pop("type", None)
         # NOTE: dictize the session to return
-        return rpc.make_success_resp(dictize_session(session), _id)
+        return rpc.make_success_resp(apihandler.dictize_session(session), _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
             "method": "logout" + str(e.methods),
@@ -609,7 +609,7 @@ def get_user_locations(params, _id, conn, logger, config, session):
                 caller = db.load_user_w_user_id(conn, user_id, _id)
                 # NOTE: load the caller's locations
                 locations = [db.load_location(conn, uuid, _id) for uuid in caller.location_uuids]
-        return rpc.make_success_resp(map(lambda i: i.one_hot_encode(), locations), _id)
+        return rpc.make_success_resp([i.one_hot_encode() for i in locations], _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
             "method": "get_user_locations" + str(e.methods),
@@ -669,7 +669,7 @@ def get_user_location_uuids(params, _id, conn, logger, config, session):
                 caller = db.load_user_w_user_id(conn, user_id, _id)
                 # NOTE: load the caller's locations
                 locations = [db.load_location(conn, uuid, _id) for uuid in caller.location_uuids]
-        return rpc.make_success_resp(map(lambda i: i.uuid, locations), _id)
+        return rpc.make_success_resp([i.uuid for i in locations], _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
             "method": "get_user_location_uuids" + str(e.methods),
@@ -727,7 +727,7 @@ def get_user_items(params, _id, conn, logger, config, session):
                 caller = db.load_user_w_user_id(conn, user_id, _id)
                 # NOTE: load the caller's items
                 items = [db.load_item(conn, uuid, _id) for uuid in caller.item_uuids]
-        return rpc.make_success_resp(map(lambda i: i.one_hot_encode(), items), _id)
+        return rpc.make_success_resp([i.one_hot_encode() for i in items], _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
             "method": "get_user_items" + str(e.methods),
@@ -787,7 +787,7 @@ def get_user_item_uuids(params, _id, conn, logger, config, session):
                 caller = db.load_user_w_user_id(conn, user_id, _id)
                 # NOTE: load the caller's items
                 items = [db.load_item(conn, uuid, _id) for uuid in caller.item_uuids]
-        return rpc.make_success_resp(map(lambda i: i.uuid, items), _id)
+        return rpc.make_success_resp([i.uuid for i in items], _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
             "method": "get_user_item_uuids" + str(e.methods),

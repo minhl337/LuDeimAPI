@@ -10,8 +10,8 @@ class Location(AbstrSerializable, AbstrChangeTracked):
     def __init__(self,
                  uuid=None,
                  _type=None,
-                 user_uuids=(),
-                 item_uuids=(),
+                 user_uuids=None,
+                 item_uuids=None,
                  name=None,
                  address=None,
                  latitude=None,
@@ -26,7 +26,11 @@ class Location(AbstrSerializable, AbstrChangeTracked):
         if _type is None:
             raise Exception("`type` can't be None.")
         self.type = _type
+        if user_uuids is None:
+            user_uuids = list()
         self.user_uuids = user_uuids
+        if item_uuids is None:
+            item_uuids = list()
         self.item_uuids = item_uuids
         if name is None:
             raise Exception("`name` can't be None.")
