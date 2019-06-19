@@ -5,6 +5,7 @@ from uuid import uuid4
 
 from classes.ClassAbstrSerializable import AbstrSerializable
 from classes.ClassAbstrChangeTracked import AbstrChangeTracked
+import utils.ludeim_generic_helpers as ludeim
 
 
 class User(AbstrSerializable, AbstrChangeTracked):
@@ -30,7 +31,7 @@ class User(AbstrSerializable, AbstrChangeTracked):
             uuid = uuid4().hex + uuid4().hex + uuid4().hex + uuid4().hex
         self.uuid = uuid
         if user_id is None:
-            user_id = hashlib.sha256((username + password_hash).encode("utf-8")).hexdigest()
+            user_id = ludeim.generate_user_user_id(self.username, self.password_hash)
         else:
             assert user_id == hashlib.sha256((username + password_hash).encode("utf-8")).hexdigest()
         self.user_id = user_id
@@ -40,3 +41,6 @@ class User(AbstrSerializable, AbstrChangeTracked):
         self.avatar = avatar
         self.location_uuids = location_uuids
         self.item_uuids = item_uuids
+
+    def recalculate_user_id(self):
+        self.user_id = ludeim.generate_user_user_id(self.username, self.password_hash)

@@ -46,7 +46,9 @@ def handle_batch(obj, logger, session):
                 session[k] = d_sess[k]
         if len(results) == 0:
             return const.NO_RESPONSE
-        return jsonify(results)
+        resp = jsonify(results)
+        resp.headers.add('Access-Control-Allow-Headers', "Origin, X-Requested-With, Content-Type, Accept, x-auth")
+        return resp
     else:
         return evaluation
 
