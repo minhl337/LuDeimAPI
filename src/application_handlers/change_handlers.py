@@ -1,7 +1,6 @@
 import utils.response_constants as const
 import utils.jsonrpc2 as rpc
 import utils.logging as file_logger
-import utils.typing as t
 import utils.database_helpers as db
 import utils.ludeim_constants as lconst
 from classes.ClassWrappedErrorResponse import WrappedErrorResponse
@@ -105,6 +104,47 @@ def change_password_hash(params, _id, conn, logger, config, session):
     except Exception as e:
         file_logger.log_error({
             "method": "change_password_hash",
+            "params": params,
+            "error": str(e)
+        })
+        return rpc.make_error_resp(const.INTERNAL_ERROR_CODE, const.INTERNAL_ERROR, _id)
+
+
+# UNTESTED
+# UNDOCUMENTED
+def change_avatar(params, _id, conn, logger, config, session):
+    try:
+        # NOTE: find user_id
+        user_id = params.get("user_id", session.get("user_id", None))
+        # CHECK: was a user_id found?
+        if user_id is None:
+            return rpc.make_error_resp(0,
+                                       "PROBLEM: There was no `user_id` argument provided and no user_id could be "
+                                       "located in the session.\n"
+                                       "SUGGESTION: Either either try again with a `user_id` argument, call "
+                                       "login() then try again, or use put_sess() to manually add your user_id to "
+                                       "your session then try again.",
+                                       _id)
+        with conn:
+            # NOTE: get a lock on the database
+            conn.execute("BEGIN EXCLUSIVE")
+            # NOTE: load the caller's user
+            caller = db.load_user_w_user_id(conn, user_id, _id)
+            # NOTE: update the caller's username
+            caller.avatar = params["new_avatar"]
+            # NOTE: save the caller
+            db.save_existing_user(conn, caller, _id)
+        return rpc.make_success_resp(caller.one_hot_encode(), _id)
+    except WrappedErrorResponse as e:
+        file_logger.log_error({
+            "method": "change_avatar" + str(e.methods),
+            "params": params,
+            "error": str(e.exception)
+        })
+        return e.response_obj
+    except Exception as e:
+        file_logger.log_error({
+            "method": "change_avatar",
             "params": params,
             "error": str(e)
         })

@@ -1,14 +1,12 @@
 import utils.response_constants as const
 import utils.jsonrpc2 as rpc
 import utils.logging as file_logger
-import utils.typing as t
 import utils.database_helpers as db
 import utils.ludeim_constants as lconst
 from classes.ClassWrappedErrorResponse import WrappedErrorResponse
 
 
 # UNDOCUMENTED
-# TODO: update tests
 def begin_transfer(params, _id, conn, logger, config, session):
     try:
         # NOTE: find user_id
@@ -57,14 +55,25 @@ def begin_transfer(params, _id, conn, logger, config, session):
                                            "at the destination, or a different destination where the receiver has a "
                                            "presence.",
                                            _id)
+            # NOTE: conditionally move item around in the user
+            if receiver.uuid != caller.uuid:
+                # NOTE: remove the item from the caller's item_uuids list
+                caller.item_uuids.discard(item.uuid)
+                # NOTE: add the item to the caller's outgoing_item_uuids list
+                caller.outgoing_item_uuids.add(item.uuid)
+                # NOTE: add the item to the receiver's incoming_item_uuids list
+                receiver.incoming_item_uuids.add(item.uuid)
             # NOTE: set the item to transit
             item.status = lconst.TRANSIT
             # NOTE: add the destination to the item's location_uuids list
             item.location_uuids.append(destination.uuid)
             # NOTE: add the receiver to the item's user_uuids list
             item.user_uuids.append(receiver.uuid)
-            # NOTE: save the edited item
+            # NOTE: save everything
             db.save_existing_item(conn, item, _id)
+            # OPT: conditionally save the users based on if the transfer is internal or external
+            db.save_existing_user(conn, caller, _id)
+            db.save_existing_user(conn, receiver, _id)
         return rpc.make_success_resp(item.one_hot_encode(), _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
@@ -112,7 +121,7 @@ def accept_transfer(params, _id, conn, logger, config, session):
             # NOTE: load the caller's user
             caller = db.load_user_w_user_id(conn, user_id, _id)
             # CHECK: is the caller the designated receiver of this item?
-            if item.user_uuids[-1] != caller.uuid:
+            if item.uuid not in caller.incoming_item_uuids | caller.item_uuids:
                 return rpc.make_error_resp(0,
                                            "PROBLEM: You are not the designated receiver for this item.\n"
                                            "SUGGESTION: Many things can cause this problem. The wrong user could have "
@@ -122,12 +131,14 @@ def accept_transfer(params, _id, conn, logger, config, session):
                                            _id)
             # NOTE: set the item to stationary
             item.status = lconst.STATIONARY
+            # NOTE: remove the item from the caller's incoming_item_uuids list
+            caller.incoming_item_uuids.discard(item.uuid)
             # NOTE: add the item to the caller's item_uuids list
-            caller.item_uuids.append(item.uuid)
+            caller.item_uuids.add(item.uuid)
             # NOTE: load the sender's user
             sender = db.load_user_w_user_id(conn, item.user_uuids[-2], _id)
-            # NOTE: remove the item from the sender's item_uuids list
-            sender.item_uuids.remove(item.uuid)
+            # NOTE: remove the item from the sender's outgoing_item_uuids list
+            sender.outgoing_item_uuids.discard(item.uuid)
             # NOTE: save everything
             db.save_existing_user(conn, caller, _id)
             db.save_existing_user(conn, sender, _id)
@@ -179,7 +190,7 @@ def rescind_transfer(params, _id, conn, logger, config, session):
             # NOTE: load the caller's user
             caller = db.load_user_w_user_id(conn, user_id, _id)
             # CHECK: does the caller own the item?
-            if item.uuid not in caller.item_uuids:
+            if item.uuid not in caller.outgoing_item_uuids | caller.item_uuids:
                 return rpc.make_error_resp(0,
                                            "PROBLEM: You are not the owner of this item, and therefore, can't rescind "
                                            "it's transfer\n"
@@ -188,12 +199,22 @@ def rescind_transfer(params, _id, conn, logger, config, session):
                                            _id)
             # NOTE: set the item to stationary
             item.status = lconst.STATIONARY
+            # NOTE: remove the item from the user's outgoing_item_uuids list
+            caller.outgoing_item_uuids.discard(item.uuid)
+            # NOTE: add the item to the user's item_uuids list
+            caller.item_uuids.add(item.uuid)
+            # NOTE: load the receiver's user
+            receiever = db.load_user_w_uuid(conn, item.user_uuids[:-1], _id)
+            # NOTE: remove the item from the receiever's incoming_item_uuids list
+            receiever.incoming_item_uuids.discard(item.uuid)
             # NOTE: remove the receiver from the item's user_uuids list
             item.user_uuids = item.user_uuids[:-1]
             # NOTE: remove the destination from the item's location_uuids list
             item.location_uuids = item.location_uuids[:-1]
-            # NOTE: save the item
+            # NOTE: save everything
             db.save_existing_item(conn, item, _id)
+            db.save_existing_user(conn, caller, _id)
+            db.save_existing_user(conn, receiever, _id)
         return rpc.make_success_resp(item.one_hot_encode(), _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
@@ -241,7 +262,7 @@ def reject_transfer(params, _id, conn, logger, config, session):
             # NOTE: load the caller's user
             caller = db.load_user_w_user_id(conn, user_id, _id)
             # CHECK: is the caller the designated receiver of this item?
-            if item.uuid not in caller.item_uuids:
+            if item.uuid not in caller.incoming_item_uuids | caller.item_uuids:
                 return rpc.make_error_resp(0,
                                            "PROBLEM: You are not the designated receiver of this item.\n"
                                            "SUGGESTION: You may be logged in to someone else's account without "
@@ -251,10 +272,16 @@ def reject_transfer(params, _id, conn, logger, config, session):
             sender = db.load_user_w_uuid(conn, item.user_uuids[-2], _id)
             # NOTE: load the origin location
             origin = db.load_location(conn, item.location_uuids[-2], _id)
-            # NOTE: remove the item from the sender's item_uuids list
-            sender.item_uuids.remove(item.uuid)
-            # NOTE: add the item to the caller's item_uuids list
-            caller.item_uuids.append(item.uuid)
+            # NOTE: is this an external rejection?
+            if sender.uuid != caller.uuid:
+                # NOTE: remove the item from the caller's incoming_item_uuids list
+                caller.incoming_item_uuids.discard(item.uuid)
+                # NOTE: add the item to the caller's outgoing_item_uuids list
+                caller.outgoing_item_uuids.add(item.uuid)
+                # NOTE: remove the item from the sender's outgoing_item_uuids list
+                sender.outgoing_item_uuids.discard(item.uuid)
+                # NOTE: add the item to the sender's incoming_item_uuids list
+                sender.incoming_item_uuids.add(item.uuid)
             # NOTE: add the sender to the item's user_uuids list
             item.user_uuids.append(sender.uuid)
             # NOTE: add the origin to the item's location_uuids list
@@ -312,7 +339,7 @@ def redirect_transfer(params, _id, conn, logger, config, session):
             # NOTE: load the caller's user
             caller = db.load_user_w_user_id(conn, user_id, _id)
             # CHECK: is the caller the owner of this item?
-            if item.uuid not in caller.item_uuids:
+            if item.uuid not in caller.outgoing_item_uuids | caller.item_uuids:
                 return rpc.make_error_resp(0,
                                            "PROBLEM: You are not the owner of this item, and therefore, don't have the "
                                            "ability to redirect this transfer\n"
@@ -332,6 +359,20 @@ def redirect_transfer(params, _id, conn, logger, config, session):
                                            "presence at the destination, or a different new destination where the "
                                            "receiver has a presence.",
                                            _id)
+            # NOTE: load the sender's user
+            sender = db.load_user_w_uuid(conn, item.user_uuids[:-2], _id)
+            # NOTE: load the old_receiver's user
+            old_receiver = db.load_user_w_uuid(conn, item.user_uuids[:-1], _id)
+            # NOTE: remove the item from the old receiver's incoming_item_uuids list
+            old_receiver.incoming_item_uuids.discard(item.uuid)
+            # NOTE: is this an external redirect?
+            if sender.uuid != new_receiver.uuid:
+                # NOTE: add the item to the new receiver's incoming_item_uuids list
+                new_receiver.incoming_item_uuids.append(item.uuid)
+                # NOTE: remove the item from the sender's item_uuids list
+                sender.item_uuids.discard(item.uuid)
+                # NOTE: add the item to the sender's outgoing_item_uuids list
+                sender.outgoing_item_uuids.add(item.uuid)
             # NOTE: remove the old receiver from the item's user_uuids list
             item.user_uuids = item.user_uuids[:-1]
             # NOTE: remove the old destination from the item's location_uuids list
@@ -342,8 +383,10 @@ def redirect_transfer(params, _id, conn, logger, config, session):
             # NOTE: add the new destination to the item's location_uuids list
             # OPT: combine with the above step
             item.location_uuids.append(new_destination.uuid)
-            # NOTE: save the item
+            # NOTE: save everything
             db.save_existing_item(conn, item, _id)
+            db.save_existing_user(conn, new_receiver, _id)
+            db.save_existing_user(conn, old_receiver, _id)
         return rpc.make_success_resp(item.one_hot_encode(), _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({

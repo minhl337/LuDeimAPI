@@ -600,7 +600,7 @@ class TestApiMethodAddLocation(unittest.TestCase):
 
     def test__add_location__valid__async_with_uuid(self):
         l.log(self.dbg, "entering: test__add_location__valid__async_with_uuid")
-        for _ in range(10):  # NOTE: run 100 random iterations to for robustness
+        for _ in range(10):  # NOTE: run 10 random iterations to for robustness
             l.log(self.dbg, "\tstarting round {}".format(_))
             l.log(self.dbg, "\tresetting the database")
             reset.auto_reset()  # NOTE: reset the database

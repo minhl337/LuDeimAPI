@@ -18,9 +18,10 @@
     "accept_transfer",
     "rescind_transfer",
     "reject_transfer",
+    "redirect_transfer",
     "change_username",
     "change_password_hash",
-    "redirect_transfer"
+    "change_avatar"
   ],
   "param_primitives": [
     "str",
@@ -178,6 +179,24 @@
       {
         "?user_id": "str",
         "new_password_hash": "str"
+      }
+    ],
+    "change_avatar": [
+      {
+        "?user_id": "str",
+        "new_avatar": "str"
+      }
+    ],
+    "drop_item": [
+      {
+        "?user_id": "str",
+        "item_uuid": "str"
+      }
+    ],
+    "drop_location": [
+      {
+        "?user_id": "str",
+        "location_uuid": "str"
       }
     ]
   }
