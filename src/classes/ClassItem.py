@@ -10,8 +10,8 @@ class Item(AbstrSerializable, AbstrChangeTracked):
     def __init__(self,
                  uuid=None,
                  _type=None,
-                 location_uuids=(),
-                 user_uuids=(),
+                 location_uuids=None,
+                 user_uuids=None,
                  status=lconst.STATIONARY):
         AbstrChangeTracked.__init__(self)
         if uuid is None:
@@ -20,6 +20,10 @@ class Item(AbstrSerializable, AbstrChangeTracked):
         if _type is None:
             raise Exception("`type` can't be None.")
         self.type = _type
+        if location_uuids is None:
+            location_uuids = list()
         self.location_uuids = location_uuids
+        if user_uuids is None:
+            user_uuids = list()
         self.user_uuids = user_uuids
         self.status = status

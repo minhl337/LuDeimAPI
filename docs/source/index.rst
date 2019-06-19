@@ -44,3 +44,7 @@ LuDeimAPI is a JSON-RPC 2.0 compliant API designed for use in the LuDeim diamond
    methods/add_item
    methods/get_user_location_uuids
    methods/get_all_users
+   methods/get_user_items
+   methods/get_location
+   methods/get_user_locations
+   methods/change_username

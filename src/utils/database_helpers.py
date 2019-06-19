@@ -394,7 +394,7 @@ def unlink_item_w_user(c, item_uuid, user_uuid, _id):
 def load_user_w_uuid(c, user_uuid, _id):
     try:
         line = c.execute("""SELECT * FROM users WHERE uuid = ?""", (user_uuid,)).fetchone()
-        return User(line[0], line[1], line[2], line[3], line[4], line[5], tuple(json.loads(line[6])), tuple(json.loads(line[7])))
+        return User(line[0], line[1], line[2], line[3], line[4], line[5], json.loads(line[6]), json.loads(line[7]))
     except WrappedErrorResponse as e:
         e.methods.append("database_helpers.load_user_w_uuid")
         raise e
@@ -412,7 +412,7 @@ def load_user_w_uuid(c, user_uuid, _id):
 def load_user_w_user_id(c, user_id, _id):
     try:
         line = c.execute("""SELECT * FROM users WHERE user_id = ?""", (user_id,)).fetchone()
-        return User(line[0], line[1], line[2], line[3], line[4], line[5], tuple(json.loads(line[6])), tuple(json.loads(line[7])))
+        return User(line[0], line[1], line[2], line[3], line[4], line[5], json.loads(line[6]), json.loads(line[7]))
     except WrappedErrorResponse as e:
         e.methods.append("database_helpers.load_user_w_user_id")
         raise e
@@ -479,7 +479,7 @@ def save_existing_user(c, user_obj: User, _id):
 def load_location(c, loc_uuid, _id):
     try:
         line = c.execute("""SELECT * FROM locations WHERE uuid = ?""", (loc_uuid,)).fetchone()
-        return Location(line[0], line[1], tuple(json.loads(line[2])), tuple(json.loads(line[3])), line[4], line[5], line[6],
+        return Location(line[0], line[1], json.loads(line[2]), json.loads(line[3]), line[4], line[5], line[6],
                         line[7], line[8], line[9], json.loads(line[10]))
     except WrappedErrorResponse as e:
         e.methods.append("database_helpers.load_location")
@@ -554,7 +554,7 @@ def save_new_location(c, loc_obj: Location, _id):
 def load_item(c, item_uuid, _id):
     try:
         line = c.execute("""SELECT * FROM items WHERE uuid = ?""", (item_uuid,)).fetchone()
-        return Item(line[0], line[1], tuple(json.loads(line[2])), tuple(json.loads(line[3])), line[4])
+        return Item(line[0], line[1], json.loads(line[2]), json.loads(line[3]), line[4])
     except WrappedErrorResponse as e:
         e.methods.append("database_helpers.load_item")
         raise e

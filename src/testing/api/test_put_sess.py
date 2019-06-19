@@ -2,7 +2,7 @@ import unittest
 import random
 import string
 import json
-import time
+import utils.ludeim_generic_helpers as ludeim
 import app
 import logging
 import testing.utils.logging as l
@@ -36,6 +36,7 @@ class TestApiMethodPutSess(unittest.TestCase):
                 "jsonrpc": "2.0",
                 "method": "put_sess",
                 "params": {
+                    "user_id": "dummy_user_id",
                     "key": "".join([
                         random.choice(string.ascii_letters + string.digits) for _ in range(128)
                     ]),

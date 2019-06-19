@@ -2,6 +2,7 @@ import concurrent.futures
 import sqlite3
 import utils.response_constants as const
 import utils.jsonrpc2 as rpc
+import utils.typing as t
 import json
 import application_handlers.handlers_consolidated as hc
 from flask import jsonify
@@ -46,7 +47,10 @@ def handle_batch(obj, logger, session):
                 session[k] = d_sess[k]
         if len(results) == 0:
             return const.NO_RESPONSE
-        return jsonify(results)
+        resp = jsonify(results)
+        resp.headers.add("Access-Control-Allow-Headers",
+                         "Origin, X-Requested-With, Content-Type, Accept, x-auth")
+        return resp
     else:
         return evaluation
 
@@ -70,6 +74,9 @@ def handle_obj(obj, config, logger, session):
 
 def method_call(method_name, params, _id, conn, logger, config, session):
     logger.info("[calling] {} with {}".format(method_name, params))
+    schemes = t.typize_config(config)
+    if not t.check_params_against_scheme_set(schemes.get(method_name, None), params):
+        return rpc.make_error_resp(const.INVALID_PARAMS_CODE, const.INVALID_PARAMS, _id)
     return methods.get(
         method_name,
         lambda v, w, x, y, z: rpc.make_error_resp(const.NO_METHOD_CODE, const.NO_METHOD, _id)

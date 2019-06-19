@@ -50,14 +50,6 @@ def make_success_resp(result, _id):
             "result": result,
             "id": _id
         }
-    # resp.set_cookie(key="ludeim_user",
-    #                 value=bytes(True),
-    #                 max_age=3155760000,
-    #                 expires=32503680000)
-    # resp.set_cookie(key="last_visit",
-    #                 value=bytes(int(time())),
-    #                 max_age=3155760000,
-    #                 expires=32503680000)
     return resp
 
 
@@ -71,6 +63,7 @@ def make_error_resp(code, msg, _id):
             },
             "id": _id
         })
+        resp.headers.add('Access-Control-Allow-Headers', "Origin, X-Requested-With, Content-Type, Accept, x-auth")
     except:
         resp = {
             "jsonrpc": "2.0",
@@ -80,12 +73,4 @@ def make_error_resp(code, msg, _id):
             },
             "id": _id
         }
-    # resp.set_cookie(key="ludeim_user",
-    #                 value=bytes(True),
-    #                 max_age=3155760000,
-    #                 expires=32503680000)
-    # resp.set_cookie(key="last_visit",
-    #                 value=bytes(int(time())),
-    #                 max_age=3155760000,
-    #                 expires=32503680000)
     return resp

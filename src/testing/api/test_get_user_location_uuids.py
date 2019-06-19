@@ -119,6 +119,7 @@ class TestApiMethodGetUserLocationUUIDS(unittest.TestCase):
                 "jsonrpc": "2.0",
                 "method": "get_user_location_uuids",
                 "params": {
+                    "user_id": derived_user_id_1,
                     "username": username_1
                 },
                 "id": 1

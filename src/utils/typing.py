@@ -91,6 +91,8 @@ def check_params_against_scheme(scheme, params):
 
 
 def check_params_against_scheme_set(scheme_set, params):
+    if scheme_set is None:
+        return False
     acc = False
     for scheme in scheme_set:
         acc = acc or check_params_against_scheme(scheme, params)

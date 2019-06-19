@@ -19,7 +19,8 @@
     "rescind_transfer",
     "reject_transfer",
     "change_username",
-    "change_password_hash"
+    "change_password_hash",
+    "redirect_transfer"
   ],
   "param_primitives": [
     "str",
@@ -55,22 +56,28 @@
     ],
     "add_item": [
       {
-        "location_uuid": "str",
         "?user_id": "str",
-        "?type": "str"
+        "?type": "str",
+        "location_uuid": "str"
       }
     ],
     "login": [
       {
         "username": "str",
         "password_hash": "str"
+      },
+      {
+        "user_id": "str"
       }
     ],
     "logout": [
-      {}
+      {
+        "?user_id": "str"
+      }
     ],
     "get_user_locations": [
       {
+        "?user_id": "str",
         "username": "str"
       },
       {
@@ -79,6 +86,7 @@
     ],
     "get_user_location_uuids": [
       {
+        "?user_id": "str",
         "username": "str"
       },
       {
@@ -87,6 +95,7 @@
     ],
     "get_user_items": [
       {
+        "?user_id": "str",
         "username": "str"
       },
       {
@@ -95,6 +104,7 @@
     ],
     "get_user_item_uuids": [
       {
+        "?user_id": "str",
         "username": "str"
       },
       {
@@ -102,13 +112,18 @@
       }
     ],
     "get_all_users": [
-      {}
+      {
+        "?user_id": "str"
+      }
     ],
     "get_sess": [
-      {}
+      {
+        "?uuid": "str"
+      }
     ],
     "put_sess": [
       {
+        "?user_id": "str",
         "key": "str",
         "value": "str"
       }
@@ -116,10 +131,6 @@
     "get_location": [
       {
         "?user_id": "str",
-        "location_uuid": "str"
-      },
-      {
-        "uuid": "str",
         "location_uuid": "str"
       }
     ],
@@ -147,6 +158,14 @@
       {
         "?user_id": "str",
         "item_uuid": "str"
+      }
+    ],
+    "redirect_transfer": [
+      {
+        "?user_id": "str",
+        "item_uuid": "str",
+        "new_destination_location_uuid": "str",
+        "new_destination_user_uuid": "str"
       }
     ],
     "change_username": [
