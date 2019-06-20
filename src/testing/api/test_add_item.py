@@ -71,7 +71,7 @@ class TestApiMethodAddItem(unittest.TestCase):
             # NOTE: login to the new user
             payload = {
                 "jsonrpc": "2.0",
-                "method": "login",
+                "method": "login_user",
                 "params": {
                     "username": username_1,
                     "password_hash": password_hash_1

@@ -21,6 +21,12 @@ def build_db():
     c = conn.cursor()
 
     # make tables
+    c.execute("""CREATE TABLE admins (
+        user_id text,
+        username text,
+        password_hash text,
+        avatar text
+    )""")
     c.execute("""CREATE TABLE users (
         uuid text,
         user_id text,
@@ -53,7 +59,8 @@ def build_db():
         type_ text,
         location_uuids text,
         user_uuids text,
-        status text
+        status text,
+        sister_items text
     )""")
     conn.commit()
     conn.close()
@@ -70,6 +77,22 @@ def reset():
     conn = sqlite3.connect(config["database_path"])
     c = conn.cursor()
 
+    # admins table initialization
+    while "break" != input("type 'break' to stop entering new test admins. Type anything else to continue: "):
+        test_username = input("test user's username?\n")
+        test_password = input("test user's password?\n")
+        test_pass_hash = hashlib.sha256(test_password.encode("utf-8")).hexdigest()
+        test_avatar = "https://picsum.photos/400"
+        test_user_id = hashlib.sha256((test_username + test_pass_hash).encode("utf-8")).hexdigest()
+        c.execute("""INSERT INTO admins VALUES (?, ?, ?, ?)""",
+                  (test_user_id, test_username, test_pass_hash, test_avatar))
+        print("your test admin was successfully added to the database. Here's its info:")
+        print("user_id: {}".format(test_user_id))
+        print("username: {}".format(test_username))
+        print("password: {}".format(test_password))
+        print("pass_hash: {}".format(test_pass_hash))
+        print("avatar: {}".format(test_avatar))
+
     # users table initialization
     while "break" != input("type 'break' to stop entering new test users. Type anything else to continue: "):
         test_type = input("what type of user would you like to create (mining_co, distributor, jeweler)?\n")
@@ -83,7 +106,7 @@ def reset():
         test_pass_hash = hashlib.sha256(test_password.encode("utf-8")).hexdigest()
         test_uuid = uuid4().hex + uuid4().hex + uuid4().hex + uuid4().hex
         test_user_id = hashlib.sha256((test_username + test_pass_hash).encode("utf-8")).hexdigest()
-        c.execute("""INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+        c.execute("""INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                   (test_uuid, test_user_id, test_type, test_username, test_pass_hash, test_avatar, test_location_uuids,
                    test_items_uuids, test_incoming_items_uuids, test_outgoing_items_uuids))
         print("your test user was successfully added to the database. Here's its info:")
@@ -120,7 +143,7 @@ def reset():
             "last_name": test_representative_last_name,
             "contact_info": test_representative_contact_info
         })
-        c.execute("""INSERT INTO locations VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+        c.execute("""INSERT INTO locations VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                   (test_uuid, test_type, test_user_uuids, test_items_uuids, test_incoming_items_uuids,
                    test_outgoing_items_uuids, test_name, test_address, test_latitude, test_longitude, test_details,
                    test_photo, test_representative,))
@@ -131,11 +154,12 @@ def reset():
     while "break" != input("type 'break' to stop entering new test items. Type anything else to continue: "):
         test_uuid = uuid4().hex
         test_type = input("what type of item would you like to create (diamond)?\n")
-        test_user_uuids = json.dumps(())
-        test_location_uuids = json.dumps(())
+        test_user_uuids = json.dumps([])
+        test_location_uuids = json.dumps([])
         test_status = lconst.STATIONARY
-        c.execute("""INSERT INTO items VALUES (?, ?, ?, ?, ?)""",
-                  (test_uuid, test_type, test_user_uuids, test_location_uuids, test_status))
+        test_sister_items = json.dumps([])
+        c.execute("""INSERT INTO items VALUES (?, ?, ?, ?, ?, ?)""",
+                  (test_uuid, test_type, test_user_uuids, test_location_uuids, test_status, test_sister_items))
         print("your test location was successfully added to the database. Here's its uuid:")
         print("uuid: {}".format(test_uuid))
 
@@ -167,7 +191,7 @@ def reset():
         loc_item_uuids += (item_uuid,)
         item_loc_uuids = json.dumps(item_loc_uuids)
         loc_item_uuids = json.dumps(loc_item_uuids)
-        c.execute("""UPDATE items SET loc_uuids = ? WHERE uuid = ?""", (item_loc_uuids, item_uuid,))
+        c.execute("""UPDATE items SET location_uuids = ? WHERE uuid = ?""", (item_loc_uuids, item_uuid,))
         c.execute("""UPDATE locations SET item_uuids = ? WHERE uuid = ?""", (loc_item_uuids, loc_uuid,))
         print("link successfully made!")
 
