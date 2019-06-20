@@ -2,6 +2,7 @@ import json
 import sqlite3
 import utils.jsonrpc2 as rpc
 import utils.response_constants as const
+from classes.ClassAdmin import Admin
 from classes.ClassUser import User
 from classes.ClassLocation import Location
 from classes.ClassItem import Item
@@ -452,6 +453,64 @@ def get_connection():
 #             e,
 #             "database_helpers.unlink_item_w_user"
 #         )
+
+# NOTE: not transaction wrapped
+def load_admin(c, user_id, _id):
+    try:
+        line = c.execute("""SELECT * FROM admins WHERE user_id = ?""", (user_id,)).fetchone()
+        return User(line[0], line[1], line[2], line[3])
+    except WrappedErrorResponse as e:
+        e.methods.append("database_helpers.load_admin")
+        raise e
+    except Exception as e:
+        raise WrappedErrorResponse(
+            rpc.make_error_resp(const.NONEXISTENT_USER_CODE, const.NONEXISTENT_USER, _id),
+            e,
+            "database_helpers.load_admin"
+        )
+
+
+# NOTE: not transaction wrapped
+def save_existing_admin(c, admin_obj: Admin, old_user_id, _id):
+    try:
+        c.execute("""UPDATE admins
+                     SET user_id = ?, username = ?, password_hash = ?, avatar = ? 
+                     WHERE user_id = ?""", (
+            admin_obj.user_id,
+            admin_obj.username,
+            admin_obj.password_hash,
+            admin_obj.avatar,
+            old_user_id
+        ))
+    except WrappedErrorResponse as e:
+        e.methods.append("database_helpers.save_existing_admin")
+        raise e
+    except Exception as e:
+        raise WrappedErrorResponse(
+            rpc.make_error_resp(const.DATABASE_FAILURE_CODE, const.DATABASE_FAILURE, _id),
+            e,
+            "database_helpers.save_existing_admin"
+        )
+
+
+# NOTE: not transaction wrapped
+def save_new_admin(c, admin_obj: Admin, _id):
+    try:
+        c.execute("""INSERT INTO admins VALUES (?, ?, ?, ?)""", (
+            admin_obj.user_id,
+            admin_obj.username,
+            admin_obj.password_hash,
+            admin_obj.avatar
+        ))
+    except WrappedErrorResponse as e:
+        e.methods.append("database_helpers.save_new_admin")
+        raise e
+    except Exception as e:
+        raise WrappedErrorResponse(
+            rpc.make_error_resp(const.DATABASE_FAILURE_CODE, const.DATABASE_FAILURE, _id),
+            e,
+            "database_helpers.save_new_admin"
+        )
 
 
 # NOTE: not transaction wrapped

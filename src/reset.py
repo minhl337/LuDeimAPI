@@ -21,6 +21,12 @@ def build_db():
     c = conn.cursor()
 
     # make tables
+    c.execute("""CREATE TABLE admins (
+        user_id text,
+        username text,
+        password_hash text,
+        avatar text
+    )""")
     c.execute("""CREATE TABLE users (
         uuid text,
         user_id text,
@@ -69,6 +75,22 @@ def reset():
     auto_reset()
     conn = sqlite3.connect(config["database_path"])
     c = conn.cursor()
+
+    # admins table initialization
+    while "break" != input("type 'break' to stop entering new test admins. Type anything else to continue: "):
+        test_username = input("test user's username?\n")
+        test_password = input("test user's password?\n")
+        test_pass_hash = hashlib.sha256(test_password.encode("utf-8")).hexdigest()
+        test_avatar = "https://picsum.photos/400"
+        test_user_id = hashlib.sha256((test_username + test_pass_hash).encode("utf-8")).hexdigest()
+        c.execute("""INSERT INTO admins VALUES (?, ?, ?, ?)""",
+                  (test_user_id, test_username, test_pass_hash, test_avatar))
+        print("your test admin was successfully added to the database. Here's its info:")
+        print("user_id: {}".format(test_user_id))
+        print("username: {}".format(test_username))
+        print("password: {}".format(test_password))
+        print("pass_hash: {}".format(test_pass_hash))
+        print("avatar: {}".format(test_avatar))
 
     # users table initialization
     while "break" != input("type 'break' to stop entering new test users. Type anything else to continue: "):
