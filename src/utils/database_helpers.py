@@ -550,8 +550,8 @@ def save_existing_user(c, user_obj: User, _id):
 def load_location(c, loc_uuid, _id):
     try:
         line = c.execute("""SELECT * FROM locations WHERE uuid = ?""", (loc_uuid,)).fetchone()
-        return Location(line[0], line[1], set(json.loads(line[2])), set(json.loads(line[3])), line[4], line[5], line[6],
-                        line[7], line[8], line[9], json.loads(line[10]))
+        return Location(line[0], line[1], set(json.loads(line[2])), set(json.loads(line[3])), set(json.loads(line[4])), set(json.loads(line[5])), line[6],
+                        line[7], line[8], line[9], line[10], line[11], json.loads(line[12]))
     except WrappedErrorResponse as e:
         e.methods.append("database_helpers.load_location")
         raise e
@@ -567,13 +567,16 @@ def load_location(c, loc_uuid, _id):
 def save_existing_location(c, loc_obj: Location, _id):
     try:
         c.execute("""UPDATE locations
-                     SET uuid = ?, type = ?, user_uuids = ?, item_uuids = ?, name = ?, address = ?, latitude = ?,
-                     longitude = ?, details = ?, photo = ?, representative = ?
+                     SET uuid = ?, type = ?, user_uuids = ?, item_uuids = ?, incoming_item_uuids = ?, 
+                     outgoing_item_uuids = ?, name = ?, address = ?, latitude = ?, longitude = ?, details = ?, 
+                     photo = ?, representative = ?
                      WHERE uuid = ?""", (
             loc_obj.uuid,
             loc_obj.type,
             json.dumps(list(loc_obj.user_uuids)),
             json.dumps(list(loc_obj.item_uuids)),
+            json.dumps(list(loc_obj.incoming_item_uuids)),
+            json.dumps(list(loc_obj.outgoing_item_uuids)),
             loc_obj.name,
             loc_obj.address,
             loc_obj.latitude,
@@ -597,11 +600,13 @@ def save_existing_location(c, loc_obj: Location, _id):
 # NOTE: not transaction wrapped
 def save_new_location(c, loc_obj: Location, _id):
     try:
-        c.execute("""INSERT INTO locations VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (
+        c.execute("""INSERT INTO locations VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""", (
             loc_obj.uuid,
             loc_obj.type,
             json.dumps(list(loc_obj.user_uuids)),
             json.dumps(list(loc_obj.item_uuids)),
+            json.dumps(list(loc_obj.incoming_item_uuids)),
+            json.dumps(list(loc_obj.outgoing_item_uuids)),
             loc_obj.name,
             loc_obj.address,
             loc_obj.latitude,

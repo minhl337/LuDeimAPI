@@ -9,6 +9,7 @@
     "get_user_locations",
     "get_user_location_uuids",
     "get_user_items",
+    "get_location_items",
     "get_user_item_uuids",
     "get_all_users",
     "get_sess",
@@ -62,6 +63,63 @@
         "location_uuid": "str"
       }
     ],
+    "get_user_locations": [
+      {
+        "?user_id": "str",
+        "?username": "str"
+      }
+    ],
+    "get_user_location_uuids": [
+      {
+        "?user_id": "str",
+        "?username": "str"
+      }
+    ],
+
+    "get_user_items": [
+      {
+        "?user_id": "str",
+        "?uuid": "str",
+        "?location_uuid_filter": "str",
+        "?status_filter": "str",
+        "?ownership_filter": "bool",
+        "?stage_filter": "int"
+      }
+    ],
+    "get_location_items": [
+      {
+        "?user_id": "str",
+        "uuid": "str",
+        "?user_uuid_filter": "str",
+        "?status_filter": "str",
+        "?stage_filter": "str"
+      }
+    ],
+    "get_user_item_uuids": [
+      {
+        "?user_id": "str",
+        "?username": "str"
+      }
+    ],
+    "get_all_users": [
+      {
+        "?user_id": "str"
+      }
+    ],
+
+
+    "get_sess": [
+      {
+        "?uuid": "str"
+      }
+    ],
+    "put_sess": [
+      {
+        "?user_id": "str",
+        "key": "str",
+        "value": "str"
+      }
+    ],
     "login": [
       {
         "username": "str",
@@ -76,59 +134,7 @@
         "?user_id": "str"
       }
     ],
-    "get_user_locations": [
-      {
-        "?user_id": "str",
-        "username": "str"
-      },
-      {
-        "?user_id": "str"
-      }
-    ],
-    "get_user_location_uuids": [
-      {
-        "?user_id": "str",
-        "username": "str"
-      },
-      {
-        "?user_id": "str"
-      }
-    ],
-    "get_user_items": [
-      {
-        "?user_id": "str",
-        "username": "str"
-      },
-      {
-        "?user_id": "str"
-      }
-    ],
-    "get_user_item_uuids": [
-      {
-        "?user_id": "str",
-        "username": "str"
-      },
-      {
-        "?user_id": "str"
-      }
-    ],
-    "get_all_users": [
-      {
-        "?user_id": "str"
-      }
-    ],
-    "get_sess": [
-      {
-        "?uuid": "str"
-      }
-    ],
-    "put_sess": [
-      {
-        "?user_id": "str",
-        "key": "str",
-        "value": "str"
-      }
-    ],
+
     "get_location": [
       {
         "?user_id": "str",

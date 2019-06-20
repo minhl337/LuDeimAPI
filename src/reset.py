@@ -38,6 +38,8 @@ def build_db():
         type text,
         user_uuids text,
         item_uuids text,
+        incoming_item_uuids text,
+        outgoing_item_uuids text,
         name text,
         address text,
         latitude real,
@@ -98,8 +100,10 @@ def reset():
     while "break" != input("type 'break' to stop entering new test locations. Type anything else to continue: "):
         test_uuid = uuid4().hex
         test_type = input("what type of location would you like to create (mine, warehouse, store)?\n")
-        test_user_uuids = json.dumps(())
-        test_items_uuids = json.dumps(())
+        test_user_uuids = json.dumps([])
+        test_items_uuids = json.dumps([])
+        test_incoming_items_uuids = json.dumps([])
+        test_outgoing_items_uuids = json.dumps([])
         test_name = input("what's the name of this location?\n")
         test_address = input("what's the address of this location?\n")
         test_latitude = float(input("what's the latitude of this location?\n"))
@@ -116,9 +120,10 @@ def reset():
             "last_name": test_representative_last_name,
             "contact_info": test_representative_contact_info
         })
-        c.execute("""INSERT INTO locations VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
-                  (test_uuid, test_type, test_user_uuids, test_items_uuids, test_name, test_address, test_latitude,
-                   test_longitude, test_details, test_photo, test_representative,))
+        c.execute("""INSERT INTO locations VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                  (test_uuid, test_type, test_user_uuids, test_items_uuids, test_incoming_items_uuids,
+                   test_outgoing_items_uuids, test_name, test_address, test_latitude, test_longitude, test_details,
+                   test_photo, test_representative,))
         print("your test location was successfully added to the database. Here's its uuid:")
         print("uuid: {}".format(test_uuid))
 

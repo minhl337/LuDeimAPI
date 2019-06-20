@@ -100,10 +100,9 @@ def drop_location(params, _id, conn, logger, config, session):
             # NOTE: load the location
             location = db.load_location(conn, params["location_uuid"], _id)
             # CHECK: is the location empty of items?
-            if len(location.item_uuids) != 0:
+            if len(location.item_uuids | location.incoming_item_uuids | location.outgoing_item_uuids) != 0:
                 return rpc.make_error_resp(0,
-                                           "PROBLEM: The designated location uuid corresponds to a non-empty "
-                                           "location.\n"
+                                           "PROBLEM: The designated location has incoming, outgoing, or inventory  items.\n"
                                            "SUGGESTION: Try transferring all items then trying again.",
                                            _id)
             # NOTE: remove the location from the user's location_uuids list

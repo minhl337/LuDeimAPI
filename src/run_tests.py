@@ -10,7 +10,7 @@ from testing.api.test_put_sess import TestApiMethodPutSess
 from testing.api.test_get_location import TestApiMethodGetLocation
 from testing.api.test_begin_transfer import TestApiMethodBeginTransfer
 from testing.api.test_get_user_locations import TestApiMethodGetUserLocations
-from testing.api.test_get_user_items import TestApiMethodGetUserItems
+# from testing.api.test_get_user_items import TestApiMethodGetUserItems
 from testing.api.test_get_user_item_uuids import TestApiMethodGetUserItemUUIDS
 
 
@@ -34,7 +34,7 @@ suite.addTest(loader.loadTestsFromTestCase(TestApiMethodPutSess))
 suite.addTest(loader.loadTestsFromTestCase(TestApiMethodGetLocation))
 suite.addTest(loader.loadTestsFromTestCase(TestApiMethodBeginTransfer))
 suite.addTest(loader.loadTestsFromTestCase(TestApiMethodGetUserLocations))
-suite.addTest(loader.loadTestsFromTestCase(TestApiMethodGetUserItems))
+# suite.addTest(loader.loadTestsFromTestCase(TestApiMethodGetUserItems))
 suite.addTest(loader.loadTestsFromTestCase(TestApiMethodGetUserItemUUIDS))
 
 runner.run(suite)

@@ -12,6 +12,8 @@ class Location(AbstrSerializable, AbstrChangeTracked):
                  _type=None,
                  user_uuids=None,
                  item_uuids=None,
+                 incoming_item_uuids=None,
+                 outgoing_item_uuids=None,
                  name=None,
                  address=None,
                  latitude=None,
@@ -32,6 +34,12 @@ class Location(AbstrSerializable, AbstrChangeTracked):
         if item_uuids is None:
             item_uuids = set()
         self.item_uuids = item_uuids
+        if incoming_item_uuids is None:
+            incoming_item_uuids = set()
+        self.incoming_item_uuids = incoming_item_uuids
+        if outgoing_item_uuids is None:
+            outgoing_item_uuids = set()
+        self.outgoing_item_uuids = outgoing_item_uuids
         if name is None:
             raise Exception("`name` can't be None.")
         self.name = name
