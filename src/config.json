@@ -8,9 +8,8 @@
     "logout",
     "get_user_locations",
     "get_user_location_uuids",
-    "get_user_inventory_items",
-    "get_user_incoming_items",
-    "get_user_outgoing_items",
+    "get_user_items",
+    "get_location_items",
     "get_user_item_uuids",
     "get_all_users",
     "get_sess",
@@ -23,8 +22,7 @@
     "redirect_transfer",
     "change_username",
     "change_password_hash",
-    "change_avatar",
-    "get_user_items"
+    "change_avatar"
   ],
   "param_primitives": [
     "str",
@@ -65,6 +63,63 @@
         "location_uuid": "str"
       }
     ],
+    "get_user_locations": [
+      {
+        "?user_id": "str",
+        "?username": "str"
+      }
+    ],
+    "get_user_location_uuids": [
+      {
+        "?user_id": "str",
+        "?username": "str"
+      }
+    ],
+
+    "get_user_items": [
+      {
+        "?user_id": "str",
+        "?uuid": "str",
+        "?location_uuid_filter": "str",
+        "?status_filter": "str",
+        "?ownership_filter": "bool",
+        "?stage_filter": "int"
+      }
+    ],
+    "get_location_items": [
+      {
+        "?user_id": "str",
+        "uuid": "str",
+        "?user_uuid_filter": "str",
+        "?status_filter": "str",
+        "?stage_filter": "str"
+      }
+    ],
+    "get_user_item_uuids": [
+      {
+        "?user_id": "str",
+        "?username": "str"
+      }
+    ],
+    "get_all_users": [
+      {
+        "?user_id": "str"
+      }
+    ],
+
+
+    "get_sess": [
+      {
+        "?uuid": "str"
+      }
+    ],
+    "put_sess": [
+      {
+        "?user_id": "str",
+        "key": "str",
+        "value": "str"
+      }
+    ],
     "login": [
       {
         "username": "str",
@@ -79,67 +134,7 @@
         "?user_id": "str"
       }
     ],
-    "get_user_locations": [
-      {
-        "?user_id": "str",
-        "?username": "str"
-      }
-    ],
-    "get_user_location_uuids": [
-      {
-        "?user_id": "str",
-        "?username": "str"
-      }
-    ],
-    "get_user_items": [
-      {
-        "?user_id": "str",
-        "?location_uuid_filter": "str",
-        "?status_filter": "str",
-        "?ownership_filter": "bool"
-      }
-    ],
-    "get_user_inventory_items": [
-      {
-        "?user_id": "str",
-        "?username": "str"
-      }
-    ],
-    "get_user_incoming_items": [
-      {
-        "?user_id": "str",
-        "?username": "str"
-      }
-    ],
-    "get_user_outgoing_items": [
-      {
-        "?user_id": "str",
-        "?username": "str"
-      }
-    ],
-    "get_user_item_uuids": [
-      {
-        "?user_id": "str",
-        "?username": "str"
-      }
-    ],
-    "get_all_users": [
-      {
-        "?user_id": "str"
-      }
-    ],
-    "get_sess": [
-      {
-        "?uuid": "str"
-      }
-    ],
-    "put_sess": [
-      {
-        "?user_id": "str",
-        "key": "str",
-        "value": "str"
-      }
-    ],
+
     "get_location": [
       {
         "?user_id": "str",

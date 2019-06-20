@@ -32,223 +32,38 @@ def get_user_items(params, _id, conn, logger, config, session):
                                        "login() then try again, or use put_sess() to manually add your user_id to "
                                        "your session then try again.",
                                        _id)
-        if "username" in params:
-            with conn:
-                # NOTE: get a lock on the database
-                conn.execute("BEGIN EXCLUSIVE")
-                # CHECK: is there a user associated with the given username?
-                if not __is_username_taken(_id, conn, params["username"]):
-                    return rpc.make_error_resp(0,
-                                               "PROBLEM: No user in the system exists with the designated username.\n"
-                                               "SUGGESTION: Try a different username.",
-                                               _id)
-                # NOTE: load the target user
-                target = db.load_user_w_uuid(conn,
-                                             conn
-                                             .execute("""SELECT uuid FROM users WHERE username = ?""",
-                                                      (params["username"],))
-                                             .fetchone()[0],
-                                             _id)
-                # NOTE: load the target's items
-                items = [db.load_item(conn, uuid, _id) for uuid in (target.item_uuids | target.incoming_item_uuids | target.outgoing_item_uuids)]
-        else:
-            with conn:
-                # NOTE: get a lock on the database
-                conn.execute("BEGIN EXCLUSIVE")
-                # NOTE: load the caller's user
-                caller = db.load_user_w_user_id(conn, user_id, _id)
-                # NOTE: load the caller's items
-                items = [db.load_item(conn, uuid, _id) for uuid in (caller.item_uuids | caller.incoming_item_uuids | caller.outgoing_item_uuids)]
-                # NOTE: form the predicate function for the filter
-                p = lambda item: ("status_filter" not in params or item.status == params.get("status_filter")) and\
-                                 ("ownership_filter" not in params or (item.uuid in caller.incoming_item_uuids) == params["ownership_filter"]) and\
-                                 ("location_uuid_filter" not in params or item.location_uuids[-1] == params["location_uuid_filter"])
+        with conn:
+            # NOTE: get a lock on the database
+            conn.execute("BEGIN EXCLUSIVE")
+            # NOTE: load the target user
+            if "uuid" in params:
+                target = db.load_user_w_uuid(conn, params["uuid"], _id)
+            else:
+                target = db.load_user_w_user_id(conn, user_id, _id)
+            # NOTE: load the target's items
+            items = [db.load_item(conn, uuid, _id) for uuid in (target.item_uuids | target.incoming_item_uuids | target.outgoing_item_uuids)]
+        # NOTE: form the predicate function for the filter
+        stages = [target.item_uuids, target.incoming_item_uuids, target.outgoing_item_uuids]
+        p = lambda item: (
+                ("status_filter" not in params or
+                 item.status == params.get("status_filter")) and
+                ("ownership_filter" not in params or
+                 (item.uuid in target.incoming_item_uuids) == params["ownership_filter"]) and
+                ("location_uuid_filter" not in params or
+                 item.location_uuids[-1] == params["location_uuid_filter"]) and
+                ("stage_filter" not in params or
+                 item.uuid in stages[params["stage_filter"]]))
         return rpc.make_success_resp([i.one_hot_encode() for i in items if p(i)], _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
-            "method": "get_user_inventory_items" + str(e.methods),
+            "method": "get_user_items" + str(e.methods),
             "params": params,
             "error": str(e.exception)
         })
         return e.response_obj
     except Exception as e:
         file_logger.log_error({
-            "method": "get_user_inventory_items",
-            "params": params,
-            "error": str(e),
-        })
-        return rpc.make_error_resp(const.INTERNAL_ERROR_CODE, const.INTERNAL_ERROR, _id)
-
-
-def get_user_inventory_items(params, _id, conn, logger, config, session):
-    try:
-        # NOTE: find user_id
-        user_id = params.get("user_id", session.get("user_id", None))
-        # CHECK: was a user_id found?
-        if user_id is None:
-            return rpc.make_error_resp(0,
-                                       "PROBLEM: There was no `user_id` argument provided and no user_id could be "
-                                       "located in the session.\n"
-                                       "SUGGESTION: Either either try again with a `user_id` argument, call "
-                                       "login() then try again, or use put_sess() to manually add your user_id to "
-                                       "your session then try again.",
-                                       _id)
-        if "username" in params:
-            with conn:
-                # NOTE: get a lock on the database
-                conn.execute("BEGIN EXCLUSIVE")
-                # CHECK: is there a user associated with the given username?
-                if not __is_username_taken(_id, conn, params["username"]):
-                    return rpc.make_error_resp(0,
-                                               "PROBLEM: No user in the system exists with the designated username.\n"
-                                               "SUGGESTION: Try a different username.",
-                                               _id)
-                # NOTE: load the target user
-                target = db.load_user_w_uuid(conn,
-                                             conn
-                                             .execute("""SELECT uuid FROM users WHERE username = ?""",
-                                                      (params["username"],))
-                                             .fetchone()[0],
-                                             _id)
-                # NOTE: load the target's items
-                items = [db.load_item(conn, uuid, _id) for uuid in target.item_uuids]
-        else:
-            with conn:
-                # NOTE: get a lock on the database
-                conn.execute("BEGIN EXCLUSIVE")
-                # NOTE: load the caller's user
-                caller = db.load_user_w_user_id(conn, user_id, _id)
-                # NOTE: load the caller's items
-                items = [db.load_item(conn, uuid, _id) for uuid in caller.item_uuids]
-        return rpc.make_success_resp([i.one_hot_encode() for i in items], _id)
-    except WrappedErrorResponse as e:
-        file_logger.log_error({
-            "method": "get_user_inventory_items" + str(e.methods),
-            "params": params,
-            "error": str(e.exception)
-        })
-        return e.response_obj
-    except Exception as e:
-        file_logger.log_error({
-            "method": "get_user_inventory_items",
-            "params": params,
-            "error": str(e),
-        })
-        return rpc.make_error_resp(const.INTERNAL_ERROR_CODE, const.INTERNAL_ERROR, _id)
-
-
-# UNDOCUMENTED
-# UNTESTED
-def get_user_incoming_items(params, _id, conn, logger, config, session):
-    try:
-        # NOTE: find user_id
-        user_id = params.get("user_id", session.get("user_id", None))
-        # CHECK: was a user_id found?
-        if user_id is None:
-            return rpc.make_error_resp(0,
-                                       "PROBLEM: There was no `user_id` argument provided and no user_id could be "
-                                       "located in the session.\n"
-                                       "SUGGESTION: Either either try again with a `user_id` argument, call "
-                                       "login() then try again, or use put_sess() to manually add your user_id to "
-                                       "your session then try again.",
-                                       _id)
-        if "username" in params:
-            with conn:
-                # NOTE: get a lock on the database
-                conn.execute("BEGIN EXCLUSIVE")
-                # CHECK: is there a user associated with the given username?
-                if not __is_username_taken(_id, conn, params["username"]):
-                    return rpc.make_error_resp(0,
-                                               "PROBLEM: No user in the system exists with the designated username.\n"
-                                               "SUGGESTION: Try a different username.",
-                                               _id)
-                # NOTE: load the target user
-                target = db.load_user_w_uuid(conn,
-                                             conn
-                                             .execute("""SELECT uuid FROM users WHERE username = ?""",
-                                                      (params["username"],))
-                                             .fetchone()[0],
-                                             _id)
-                # NOTE: load the target's items
-                items = [db.load_item(conn, uuid, _id) for uuid in target.incoming_item_uuids]
-        else:
-            with conn:
-                # NOTE: get a lock on the database
-                conn.execute("BEGIN EXCLUSIVE")
-                # NOTE: load the caller's user
-                caller = db.load_user_w_user_id(conn, user_id, _id)
-                # NOTE: load the caller's items
-                items = [db.load_item(conn, uuid, _id) for uuid in caller.incoming_item_uuids]
-        return rpc.make_success_resp([i.one_hot_encode() for i in items], _id)
-    except WrappedErrorResponse as e:
-        file_logger.log_error({
-            "method": "get_user_incoming_items" + str(e.methods),
-            "params": params,
-            "error": str(e.exception)
-        })
-        return e.response_obj
-    except Exception as e:
-        file_logger.log_error({
-            "method": "get_user_incoming_items",
-            "params": params,
-            "error": str(e),
-        })
-        return rpc.make_error_resp(const.INTERNAL_ERROR_CODE, const.INTERNAL_ERROR, _id)
-
-
-# UNDOCUMENTED
-# UNTESTED
-def get_user_outgoing_items(params, _id, conn, logger, config, session):
-    try:
-        # NOTE: find user_id
-        user_id = params.get("user_id", session.get("user_id", None))
-        # CHECK: was a user_id found?
-        if user_id is None:
-            return rpc.make_error_resp(0,
-                                       "PROBLEM: There was no `user_id` argument provided and no user_id could be "
-                                       "located in the session.\n"
-                                       "SUGGESTION: Either either try again with a `user_id` argument, call "
-                                       "login() then try again, or use put_sess() to manually add your user_id to "
-                                       "your session then try again.",
-                                       _id)
-        if "username" in params:
-            with conn:
-                # NOTE: get a lock on the database
-                conn.execute("BEGIN EXCLUSIVE")
-                # CHECK: is there a user associated with the given username?
-                if not __is_username_taken(_id, conn, params["username"]):
-                    return rpc.make_error_resp(0,
-                                               "PROBLEM: No user in the system exists with the designated username.\n"
-                                               "SUGGESTION: Try a different username.",
-                                               _id)
-                # NOTE: load the target user
-                target = db.load_user_w_uuid(conn,
-                                             conn
-                                             .execute("""SELECT uuid FROM users WHERE username = ?""",
-                                                      (params["username"],))
-                                             .fetchone()[0],
-                                             _id)
-                # NOTE: load the target's items
-                items = [db.load_item(conn, uuid, _id) for uuid in target.outgoing_item_uuids]
-        else:
-            with conn:
-                # NOTE: get a lock on the database
-                conn.execute("BEGIN EXCLUSIVE")
-                # NOTE: load the caller's user
-                caller = db.load_user_w_user_id(conn, user_id, _id)
-                # NOTE: load the caller's items
-                items = [db.load_item(conn, uuid, _id) for uuid in caller.outgoing_item_uuids]
-        return rpc.make_success_resp([i.one_hot_encode() for i in items], _id)
-    except WrappedErrorResponse as e:
-        file_logger.log_error({
-            "method": "get_user_outgoing_items" + str(e.methods),
-            "params": params,
-            "error": str(e.exception)
-        })
-        return e.response_obj
-    except Exception as e:
-        file_logger.log_error({
-            "method": "get_user_outgoing_items",
+            "method": "get_user_items",
             "params": params,
             "error": str(e),
         })
@@ -258,7 +73,49 @@ def get_user_outgoing_items(params, _id, conn, logger, config, session):
 # UNDOCUMENTED
 # UNTESTED
 def get_location_items(params, _id, conn, logger, config, session):
-    pass
+    try:
+        # NOTE: find user_id
+        user_id = params.get("user_id", session.get("user_id", None))
+        # CHECK: was a user_id found?
+        if user_id is None:
+            return rpc.make_error_resp(0,
+                                       "PROBLEM: There was no `user_id` argument provided and no user_id could be "
+                                       "located in the session.\n"
+                                       "SUGGESTION: Either either try again with a `user_id` argument, call "
+                                       "login() then try again, or use put_sess() to manually add your user_id to "
+                                       "your session then try again.",
+                                       _id)
+        with conn:
+            # NOTE: get a lock on the database
+            conn.execute("BEGIN EXCLUSIVE")
+            # NOTE: load the target location
+            target = db.load_location(conn, params["uuid"], _id)
+            # NOTE: load the target's items
+            items = [db.load_item(conn, uuid, _id) for uuid in (target.item_uuids | target.incoming_item_uuids | target.outgoing_item_uuids)]
+        # NOTE: form the predicate function for the filter
+        stages = [target.item_uuids, target.incoming_item_uuids, target.outgoing_item_uuids]
+        p = lambda item: (
+                ("status_filter" not in params or
+                 item.status == params.get("status_filter")) and
+                ("user_uuid_filter" not in params or
+                 item.user_uuids[-1] == params["user_uuid_filter"]) and
+                ("stage_filter" not in params or
+                 item.uuid in stages[params["stage_filter"]]))
+        return rpc.make_success_resp([i.one_hot_encode() for i in items if p(i)], _id)
+    except WrappedErrorResponse as e:
+        file_logger.log_error({
+            "method": "get_location_items" + str(e.methods),
+            "params": params,
+            "error": str(e.exception)
+        })
+        return e.response_obj
+    except Exception as e:
+        file_logger.log_error({
+            "method": "get_location_items",
+            "params": params,
+            "error": str(e),
+        })
+        return rpc.make_error_resp(const.INTERNAL_ERROR_CODE, const.INTERNAL_ERROR, _id)
 
 
 def get_all_users(params, _id, conn, logger, config, session):
