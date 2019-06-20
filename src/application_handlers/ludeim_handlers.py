@@ -3,6 +3,7 @@ import utils.jsonrpc2 as rpc
 import utils.logging as file_logger
 import utils.database_helpers as db
 import utils.ludeim_constants as lconst
+from classes.ClassAdmin import Admin
 from classes.ClassUser import User
 from classes.ClassLocation import Location
 from classes.ClassItem import Item
@@ -270,7 +271,13 @@ def __get_user_username(_id, conn, user_id):
 
 
 # NOTE: not transaction wrapped
-__is_username_taken = lambda _id, conn, username: len(conn.execute("""SELECT * FROM users WHERE username = ?""", (username,)).fetchall()) != 0
+def __is_username_taken(conn, username):
+    return len(conn.execute("""SELECT * FROM users WHERE username = ?""", (username,)).fetchall()) != 0
+
+
+# NOTE: not transaction wrapped
+def __is_adminname_taken(conn, username):
+    return len(conn.execute("""SELECT * FROM admins WHERE username = ?""", (username,)).fetchall()) != 0
 
 
 # WARNING: REFACTOR LINE - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -293,7 +300,7 @@ def add_user(params, _id, conn, logger, config, session):
             return rpc.make_error_resp(const.INVALID_USER_PASSWORD_HASH_CODE, const.INVALID_USER_PASSWORD_HASH, _id)
         with conn:
             conn.execute("BEGIN EXCLUSIVE")
-            if __is_username_taken(_id, conn, params["username"]):
+            if __is_username_taken(conn, params["username"]):
                 return rpc.make_error_resp(const.USERNAME_TAKEN_CODE, const.USERNAME_TAKEN, _id)
             db.save_new_user(conn, user, _id)
         return rpc.make_success_resp({"type": user.type, "user_id": user.user_id}, _id)
@@ -410,6 +417,8 @@ def add_item(params, _id, conn, logger, config, session):
                                        _id)
         # NOTE: make the new item
         item = Item(_type=_type, location_uuids=[], user_uuids=[])
+        # NOTE: make the item stationary
+        item.status = lconst.STATIONARY
         with conn:
             # NOTE: get a lock on the database
             conn.execute("BEGIN EXCLUSIVE")
@@ -449,5 +458,36 @@ def add_item(params, _id, conn, logger, config, session):
             "method": "add_item",
             "params": params,
             "error": str(e),
+        })
+        return rpc.make_error_resp(const.INTERNAL_ERROR_CODE, const.INTERNAL_ERROR, _id)
+
+
+# UNTESTED
+# UNDOCUMENTED
+def add_admin(params, _id, conn, logger, config, session):
+    try:
+        # NOTE: make the new admin
+        admin = Admin(username=params["username"], password_hash=params["password_hash"])
+        with conn:
+            # NOTE: get a lock on the database
+            conn.execute("BEGIN EXCLUSIVE")
+            # CHECK: is the admin-name free?
+            if __is_adminname_taken(conn, params["username"]):
+                return rpc.make_error_resp(const.USERNAME_TAKEN_CODE, const.USERNAME_TAKEN, _id)
+            # NOTE: save the new admin
+            db.save_new_admin(conn, admin, _id)
+        return rpc.make_success_resp({"type": "admin", "user_id": admin.user_id}, _id)
+    except WrappedErrorResponse as e:
+        file_logger.log_error({
+            "method": "add_admin " + str(e.methods),
+            "params": params,
+            "error": str(e.exception)
+        })
+        return e.response_obj
+    except Exception as e:
+        file_logger.log_error({
+            "method": "add_admin",
+            "params": params,
+            "error": str(e)
         })
         return rpc.make_error_resp(const.INTERNAL_ERROR_CODE, const.INTERNAL_ERROR, _id)

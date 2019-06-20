@@ -178,7 +178,7 @@ class TestApiMethodAddLocation(unittest.TestCase):
             # NOTE: login to the new user
             payload = {
                 "jsonrpc": "2.0",
-                "method": "login",
+                "method": "login_user",
                 "params": {
                     "username": username,
                     "password_hash": password_hash
@@ -390,7 +390,7 @@ class TestApiMethodAddLocation(unittest.TestCase):
             l.log(self.dbg, "\tlogin to the user")
             payload = {
                 "jsonrpc": "2.0",
-                "method": "login",
+                "method": "login_user",
                 "params": {
                     "username": username,
                     "password_hash": password_hash
@@ -500,7 +500,7 @@ class TestApiMethodAddLocation(unittest.TestCase):
             l.log(self.dbg, "\tlogging in")
             payload = {
                 "jsonrpc": "2.0",
-                "method": "login",
+                "method": "login_user",
                 "params": {
                     "username": username,
                     "password_hash": password_hash
@@ -757,7 +757,7 @@ class TestApiMethodAddLocation(unittest.TestCase):
             # NOTE: login to the new user
             payload = {
                 "jsonrpc": "2.0",
-                "method": "login",
+                "method": "login_user",
                 "params": {
                     "username": username,
                     "password_hash": password_hash
@@ -866,7 +866,7 @@ class TestApiMethodAddLocation(unittest.TestCase):
             l.log(self.dbg, "\tlogin to the user")
             payload = {
                 "jsonrpc": "2.0",
-                "method": "login",
+                "method": "login_user",
                 "params": {
                     "username": username,
                     "password_hash": password_hash

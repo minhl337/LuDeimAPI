@@ -5,7 +5,7 @@ import string
 import utils.database_helpers as db
 import utils.ludeim_constants as lconst
 import utils.ludeim_generic_helpers as ludeim
-import time
+import json
 import app
 import logging
 import testing.utils.logging as l
@@ -23,7 +23,7 @@ class TestApiMethodBeginTransfer(unittest.TestCase):
         self.app = app.app.test_client()
         logging.basicConfig(level=logging.NOTSET)
         dbg = logging.getLogger('dbg')
-        dbg.setLevel(logging.DEBUG)
+        dbg.setLevel(logging.CRITICAL)
         self.dbg = dbg
         flask_logger = logging.getLogger('flask')
         flask_logger.setLevel(logging.CRITICAL)
@@ -90,7 +90,7 @@ class TestApiMethodBeginTransfer(unittest.TestCase):
             l.log(self.dbg, "\tlogging into the first user")
             payload = {
                 "jsonrpc": "2.0",
-                "method": "login",
+                "method": "login_user",
                 "params": {
                     "username": username_1,
                     "password_hash": password_hash_1
@@ -154,7 +154,7 @@ class TestApiMethodBeginTransfer(unittest.TestCase):
                 },
                 "id": 1
             }
-            self.app.post(endpoint, json=payload)
+            resp = self.app.post(endpoint, json=payload)
             # NOTE: add a location to user 2
             l.log(self.dbg, "\tadding a location to user 2")
             _type = random.choice(lconst.LOCATION_TYPES)

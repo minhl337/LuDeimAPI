@@ -90,7 +90,7 @@ class TestApiMethodLogin(unittest.TestCase):
             l.log(self.dbg, "\tlogging into the newly created user")
             payload = {
                 "jsonrpc": "2.0",
-                "method": "login",
+                "method": "login_user",
                 "params": {
                     "username": username,
                     "password_hash": password_hash
@@ -168,7 +168,7 @@ class TestApiMethodLogin(unittest.TestCase):
             l.log(self.dbg, "\tlogging into the newly created user")
             payload = {
                 "jsonrpc": "2.0",
-                "method": "login",
+                "method": "login_user",
                 "params": {
                     "username": username,
                     "password_hash": password_hash
@@ -253,7 +253,7 @@ class TestApiMethodLogin(unittest.TestCase):
             l.log(self.dbg, "\ttrying an invalid login that should fail")
             payload = {
                 "jsonrpc": "2.0",
-                "method": "login",
+                "method": "login_user",
                 "params": {
                     "username": username + "_extra_letters",
                     "password_hash": password_hash
@@ -338,7 +338,7 @@ class TestApiMethodLogin(unittest.TestCase):
             l.log(self.dbg, "\ttrying an invalid login attempt")
             payload = {
                 "jsonrpc": "2.0",
-                "method": "login",
+                "method": "login_user",
                 "params": {
                     "username": username,
                     "password_hash": password_hash + "_extra_letters"

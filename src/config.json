@@ -4,25 +4,37 @@
     "add_user",
     "add_location",
     "add_item",
-    "login",
-    "logout",
-    "get_user_locations",
+    "add_admin",
+
     "get_user_location_uuids",
+    "get_user_item_uuids",
+    "get_location",
+
     "get_user_items",
     "get_location_items",
-    "get_user_item_uuids",
     "get_all_users",
+    "get_user_locations",
+
     "get_sess",
     "put_sess",
-    "get_location",
+    "login_user",
+    "logout",
+    "login_admin",
+
     "begin_transfer",
     "accept_transfer",
     "rescind_transfer",
     "reject_transfer",
     "redirect_transfer",
+
     "change_username",
     "change_password_hash",
-    "change_avatar"
+    "change_avatar",
+
+    "drop_item",
+    "drop_location",
+    "drop_user",
+    "drop_admin"
   ],
   "param_primitives": [
     "str",
@@ -63,16 +75,29 @@
         "location_uuid": "str"
       }
     ],
-    "get_user_locations": [
+    "add_admin": [
+      {
+        "username": "str",
+        "password_hash": "str"
+      }
+    ],
+
+    "get_user_location_uuids": [
       {
         "?user_id": "str",
         "?username": "str"
       }
     ],
-    "get_user_location_uuids": [
+    "get_user_item_uuids": [
       {
         "?user_id": "str",
         "?username": "str"
+      }
+    ],
+    "get_location": [
+      {
+        "?user_id": "str",
+        "location_uuid": "str"
       }
     ],
 
@@ -95,18 +120,17 @@
         "?stage_filter": "str"
       }
     ],
-    "get_user_item_uuids": [
-      {
-        "?user_id": "str",
-        "?username": "str"
-      }
-    ],
     "get_all_users": [
       {
         "?user_id": "str"
       }
     ],
-
+    "get_user_locations": [
+      {
+        "?user_id": "str",
+        "?username": "str"
+      }
+    ],
 
     "get_sess": [
       {
@@ -120,7 +144,7 @@
         "value": "str"
       }
     ],
-    "login": [
+    "login_user": [
       {
         "username": "str",
         "password_hash": "str"
@@ -134,13 +158,16 @@
         "?user_id": "str"
       }
     ],
-
-    "get_location": [
+    "logout_admin": [
       {
-        "?user_id": "str",
-        "location_uuid": "str"
+        "username": "str",
+        "password_hash": "str"
+      },
+      {
+        "user_id": "str"
       }
     ],
+
     "begin_transfer": [
       {
         "?user_id": "str",
@@ -175,6 +202,7 @@
         "new_destination_user_uuid": "str"
       }
     ],
+
     "change_username": [
       {
         "?user_id": "str",
@@ -193,6 +221,7 @@
         "new_avatar": "str"
       }
     ],
+
     "drop_item": [
       {
         "?user_id": "str",
@@ -203,6 +232,16 @@
       {
         "?user_id": "str",
         "location_uuid": "str"
+      }
+    ],
+    "drop_user": [
+      {
+        "?user_id": "str"
+      }
+    ],
+    "drop_admin": [
+      {
+        "?user_id": "str"
       }
     ]
   }

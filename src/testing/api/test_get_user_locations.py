@@ -60,7 +60,7 @@ class TestApiMethodGetUserLocations(unittest.TestCase):
             l.log(self.dbg, "\tlogging user in")
             payload = {
                 "jsonrpc": "2.0",
-                "method": "login",
+                "method": "login_user",
                 "params": {
                     "username": username_1,
                     "password_hash": password_hash_1

@@ -177,3 +177,42 @@ def drop_user(params, _id, conn, logger, config, session):
             "error": str(e),
         })
         return rpc.make_error_resp(const.INTERNAL_ERROR_CODE, const.INTERNAL_ERROR, _id)
+
+
+# UNTESTED
+# UNDOCUMENTED
+def drop_admin(params, _id, conn, logger, config, session):
+    try:
+        # NOTE: find user_id
+        user_id = params.get("user_id", session.get("user_id", None))
+        # CHECK: was a user_id found?
+        if user_id is None:
+            return rpc.make_error_resp(0,
+                                       "PROBLEM: There was no `user_id` argument provided and no user_id could be "
+                                       "located in the session.\n"
+                                       "SUGGESTION: Either either try again with a `user_id` argument, call "
+                                       "login() then try again, or use put_sess() to manually add your user_id to "
+                                       "your session then try again.",
+                                       _id)
+        with conn:
+            # NOTE: get a lock on the database
+            conn.execute("BEGIN EXCLUSIVE")
+            # NOTE: load the admin
+            admin = db.load_admin(conn, user_id, _id)
+            # NOTE: delete the user
+            conn.execute("""DELETE FROM admins WHERE user_id = ?""", (admin.user_id,))
+        return rpc.make_success_resp(True, _id)
+    except WrappedErrorResponse as e:
+        file_logger.log_error({
+            "method": "drop_admin" + str(e.methods),
+            "params": params,
+            "error": str(e.exception)
+        })
+        return e.response_obj
+    except Exception as e:
+        file_logger.log_error({
+            "method": "drop_admin",
+            "params": params,
+            "error": str(e),
+        })
+        return rpc.make_error_resp(const.INTERNAL_ERROR_CODE, const.INTERNAL_ERROR, _id)

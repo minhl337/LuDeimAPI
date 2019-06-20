@@ -51,6 +51,14 @@ def put_sess(params, _id, conn, logger, config, session):
                                        "login() then try again, or use put_sess() to manually add your user_id to "
                                        "your session then try again.",
                                        _id)
+        # CHECK: type key isn't not being updated?
+        if params["key"] == "type":
+            return rpc.make_error_resp(0,
+                                       "PROBLEM: Updating the `type` key is not allowed since it could present "
+                                       "a permission escalation attack vector.\n"
+                                       "SUGGESTION: Just login and your type will automatically be added to your "
+                                       "session.",
+                                       _id)
         # NOTE: update the session
         session[params["key"]] = params["value"]
         # NOTE: dictize session for response
@@ -71,7 +79,7 @@ def put_sess(params, _id, conn, logger, config, session):
         return rpc.make_error_resp(const.INTERNAL_ERROR_CODE, const.INTERNAL_ERROR, _id)
 
 
-def login(params, _id, conn, logger, config, session):
+def login_user(params, _id, conn, logger, config, session):
     try:
         # NOTE: calculate user_id
         user_id = params.get("user_id", ludeim.generate_user_user_id(params["username"], params["password_hash"]))
@@ -87,14 +95,14 @@ def login(params, _id, conn, logger, config, session):
         return rpc.make_success_resp(user.one_hot_encode(), _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
-            "method": "login" + str(e.methods),
+            "method": "login_user" + str(e.methods),
             "params": params,
             "error": str(e.exception)
         })
         return e.response_obj
     except Exception as e:
         file_logger.log_error({
-            "method": "login",
+            "method": "login_user",
             "params": params,
             "error": str(e)
         })
@@ -130,6 +138,36 @@ def logout(params, _id, conn, logger, config, session):
     except Exception as e:
         file_logger.log_error({
             "method": "logout",
+            "params": params,
+            "error": str(e)
+        })
+        return rpc.make_error_resp(const.INTERNAL_ERROR_CODE, const.INTERNAL_ERROR, _id)
+
+
+def login_admin(params, _id, conn, logger, config, session):
+    try:
+        # NOTE: calculate user_id
+        user_id = params.get("user_id", ludeim.generate_user_user_id(params["username"], params["password_hash"]))
+        with conn:
+            # NOTE: get a lock on the database
+            conn.execute("BEGIN EXCLUSIVE")
+            # NOTE: get the user's type
+            admin = db.load_user_w_uuid(conn, user_id, _id)
+        # NOTE: add the user's user_id to the session
+        session["user_id"] = admin.user_id
+        # NOTE: add the user's type to the session
+        session["type"] = "admin"
+        return rpc.make_success_resp(admin.one_hot_encode(), _id)
+    except WrappedErrorResponse as e:
+        file_logger.log_error({
+            "method": "login_admin" + str(e.methods),
+            "params": params,
+            "error": str(e.exception)
+        })
+        return e.response_obj
+    except Exception as e:
+        file_logger.log_error({
+            "method": "login_admin",
             "params": params,
             "error": str(e)
         })
