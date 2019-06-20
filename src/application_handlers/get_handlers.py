@@ -2,18 +2,10 @@ import utils.response_constants as const
 import utils.jsonrpc2 as rpc
 import utils.logging as file_logger
 import utils.database_helpers as db
-# import utils.ludeim_generic_helpers as ludeim
-import utils.ludeim_constants as lconst
-from classes.ClassUser import User
-from classes.ClassLocation import Location
-from classes.ClassItem import Item
 from classes.ClassWrappedErrorResponse import WrappedErrorResponse
-import traceback
-import sys
-# import apihandler
 
 
-# NOTE: not transaction wrapped
+# NOTE: not transaction wrapped, TODO: make def
 __is_username_taken = lambda _id, conn, username: len(conn.execute("""SELECT * FROM users WHERE username = ?""", (username,)).fetchall()) != 0
 
 
@@ -210,6 +202,43 @@ def get_user_locations(params, _id, conn, logger, config, session):
     except Exception as e:
         file_logger.log_error({
             "method": "get_user_locations",
+            "params": params,
+            "error": str(e),
+        })
+        return rpc.make_error_resp(const.INTERNAL_ERROR_CODE, const.INTERNAL_ERROR, _id)
+
+
+def get_sister_items(params, _id, conn, logger, config, session):
+    try:
+        # NOTE: find user_id
+        user_id = params.get("user_id", session.get("user_id", None))
+        # CHECK: was a user_id found?
+        if user_id is None:
+            return rpc.make_error_resp(0,
+                                       "PROBLEM: There was no `user_id` argument provided and no user_id could be "
+                                       "located in the session.\n"
+                                       "SUGGESTION: Either either try again with a `user_id` argument, call "
+                                       "login() then try again, or use put_sess() to manually add your user_id to "
+                                       "your session then try again.",
+                                       _id)
+        with conn:
+            # NOTE: get a lock on the database
+            conn.execute("BEGIN EXCLUSIVE")
+            # NOTE: load the target location
+            target = db.load_item(conn, params["item_uuid"], _id)
+            # NOTE: load the target's items
+            items = [db.load_item(conn, uuid, _id) for uuid in target.sister_items]
+        return rpc.make_success_resp([i.one_hot_encode() for i in items], _id)
+    except WrappedErrorResponse as e:
+        file_logger.log_error({
+            "method": "get_sister_items" + str(e.methods),
+            "params": params,
+            "error": str(e.exception)
+        })
+        return e.response_obj
+    except Exception as e:
+        file_logger.log_error({
+            "method": "get_sister_items",
             "params": params,
             "error": str(e),
         })

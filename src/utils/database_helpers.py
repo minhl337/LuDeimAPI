@@ -689,7 +689,8 @@ def save_new_location(c, loc_obj: Location, _id):
 def load_item(c, item_uuid, _id):
     try:
         line = c.execute("""SELECT * FROM items WHERE uuid = ?""", (item_uuid,)).fetchone()
-        return Item(line[0], line[1], json.loads(line[2]), json.loads(line[3]), line[4], json.loads(line[5]))
+        return Item(line[0], line[1], json.loads(line[2]), json.loads(line[3]), line[4], json.loads(line[5]),
+                    json.loads(line[6]))
     except WrappedErrorResponse as e:
         e.methods.append("database_helpers.load_item")
         raise e
@@ -705,7 +706,8 @@ def load_item(c, item_uuid, _id):
 def save_existing_item(c, item_obj: Item, _id):
     try:
         c.execute("""UPDATE items
-                     SET uuid = ?, type_ = ?, location_uuids = ?, user_uuids = ?, status = ?, sister_items = ?
+                     SET uuid = ?, type_ = ?, location_uuids = ?, user_uuids = ?, status = ?, sister_items = ?, 
+                     details = ?
                      WHERE uuid = ?""", (
             item_obj.uuid,
             item_obj.type,
@@ -713,6 +715,7 @@ def save_existing_item(c, item_obj: Item, _id):
             json.dumps(item_obj.user_uuids),
             item_obj.status,
             json.dumps(item_obj.sister_items),
+            json.dumps(item_obj.details),
             item_obj.uuid,
         ))
     except WrappedErrorResponse as e:
@@ -729,13 +732,14 @@ def save_existing_item(c, item_obj: Item, _id):
 # NOTE: not transaction wrapped
 def save_new_item(c, item_obj: Item, _id):
     try:
-        c.execute("""INSERT INTO items VALUES (?, ?, ?, ?, ?, ?)""", (
+        c.execute("""INSERT INTO items VALUES (?, ?, ?, ?, ?, ?, ?)""", (
             item_obj.uuid,
             item_obj.type,
             json.dumps(item_obj.location_uuids),
             json.dumps(item_obj.user_uuids),
             item_obj.status,
-            json.dumps(item_obj.sister_items)
+            json.dumps(item_obj.sister_items),
+            json.dumps(item_obj.details)
         ))
     except WrappedErrorResponse as e:
         e.methods.append("database_helpers.save_new_item")

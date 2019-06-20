@@ -23,7 +23,7 @@ class TestApiMethodBeginTransfer(unittest.TestCase):
         self.app = app.app.test_client()
         logging.basicConfig(level=logging.NOTSET)
         dbg = logging.getLogger('dbg')
-        dbg.setLevel(logging.CRITICAL)
+        dbg.setLevel(logging.DEBUG)
         self.dbg = dbg
         flask_logger = logging.getLogger('flask')
         flask_logger.setLevel(logging.CRITICAL)

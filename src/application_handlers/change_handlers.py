@@ -149,3 +149,59 @@ def change_avatar(params, _id, conn, logger, config, session):
             "error": str(e)
         })
         return rpc.make_error_resp(const.INTERNAL_ERROR_CODE, const.INTERNAL_ERROR, _id)
+
+
+# UNTESTED
+# UNDOCUMENTED
+def change_item_detail(params, _id, conn, logger, config, session):
+    try:
+        # NOTE: find user_id
+        user_id = params.get("user_id", session.get("user_id", None))
+        # CHECK: was a user_id found?
+        if user_id is None:
+            return rpc.make_error_resp(0,
+                                       "PROBLEM: There was no `user_id` argument provided and no user_id could be "
+                                       "located in the session.\n"
+                                       "SUGGESTION: Either either try again with a `user_id` argument, call "
+                                       "login() then try again, or use put_sess() to manually add your user_id to "
+                                       "your session then try again.",
+                                       _id)
+        with conn:
+            # NOTE: get a lock on the database
+            conn.execute("BEGIN EXCLUSIVE")
+            # NOTE: load the caller's user
+            caller = db.load_user_w_user_id(conn, user_id, _id)
+            # NOTE: load the item
+            item = db.load_item(conn, params["item_uuid"], _id)
+            # CHECK: does the caller own this item?
+            if item.uuid not in caller.item_uuids | caller.outgoing_item_uuids:
+                return rpc.make_error_resp(0,
+                                           "PROBLEM: You don't own the item you're trying to edit.\n"
+                                           "SUGGESTION: Try editing an edit you own or ensure you're not logged in to "
+                                           "someone else's account.",
+                                           _id)
+            # CHECK: is the item stationary?
+            if item.status != lconst.STATIONARY:
+                return rpc.make_error_resp(0,
+                                           "PROBLEM: You can't edit a non-stationary item.\n"
+                                           "SUGGESTION: Rescind the transfer then try again.",
+                                           _id)
+            # NOTE: update the item's details field
+            item.details[params["key"]] = params["value"]
+            # NOTE: save the item
+            db.save_existing_item(conn, item, _id)
+        return rpc.make_success_resp(item.one_hot_encode(), _id)
+    except WrappedErrorResponse as e:
+        file_logger.log_error({
+            "method": "change_item_detail" + str(e.methods),
+            "params": params,
+            "error": str(e.exception)
+        })
+        return e.response_obj
+    except Exception as e:
+        file_logger.log_error({
+            "method": "change_item_detail",
+            "params": params,
+            "error": str(e)
+        })
+        return rpc.make_error_resp(const.INTERNAL_ERROR_CODE, const.INTERNAL_ERROR, _id)

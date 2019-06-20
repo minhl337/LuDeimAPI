@@ -13,7 +13,8 @@ class Item(AbstrSerializable, AbstrChangeTracked):
                  location_uuids=None,
                  user_uuids=None,
                  status=lconst.STATIONARY,
-                 sister_items=None):
+                 sister_items=None,
+                 details=None):
         AbstrChangeTracked.__init__(self)
         if uuid is None:
             uuid = uuid4().hex + uuid4().hex + uuid4().hex + uuid4().hex
@@ -31,3 +32,6 @@ class Item(AbstrSerializable, AbstrChangeTracked):
         if sister_items is None:
             sister_items = list()
         self.sister_items = sister_items
+        if details is None:
+            details = dict()
+        self.details = details
