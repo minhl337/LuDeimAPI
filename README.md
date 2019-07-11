@@ -9,4 +9,4 @@
 [![development codecov](https://codecov.io/gh/Topl/LuDeimAPI/branch/development/graph/badge.svg)](https://codecov.io/gh/Topl/LuDeimAPI/branch/development)
 
 ## Info
-LuDeimAPI contains the API server code for LuDeim's new supply chain management system. Documentation for this API can be found [here](https://ludeimapi.readthedocs.io/en/latest/).
+LuDeimAPI contains the API server code for LuDeim's new supply chain management system. Partial documentation for this API can be found [here](https://ludeimapi.readthedocs.io/en/latest/).
