@@ -1,4 +1,4 @@
-let storage_base = "http://127.0.0.1:4300";
+let storage_base = "http://165.22.206.32:4300";
 
 
 async function upload_file(file) {
