@@ -1,4 +1,4 @@
-let url_base = "http://127.0.0.1:4200";
+let url_base = "http://165.22.206.32:4200";
 
 async function req(method_name, params, id) {
     let url = url_base + "/api/";
