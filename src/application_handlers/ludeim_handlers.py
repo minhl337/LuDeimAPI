@@ -377,7 +377,7 @@ def add_location(params, _id, conn, logger, config, session):
             # NOTE: save everything
             db.save_existing_user(conn, user, _id)
             db.save_new_location(conn, location, _id)
-        return rpc.make_success_resp(location.one_hot_encode(), _id)
+        return rpc.make_success_resp(location.one_hot_jsonify(), _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
             "method": "add_location" + str(e.methods),
@@ -445,7 +445,7 @@ def add_item(params, _id, conn, logger, config, session):
             db.save_new_item(conn, item, _id)
             db.save_existing_user(conn, user, _id)
             db.save_existing_location(conn, location, _id)
-        return rpc.make_success_resp(item.one_hot_encode(), _id)
+        return rpc.make_success_resp(item.one_hot_jsonify(), _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
             "method": "add_item" + str(e.methods),

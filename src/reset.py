@@ -60,7 +60,8 @@ def build_db():
         location_uuids text,
         user_uuids text,
         status text,
-        sister_items text
+        sister_items text,
+        details text
     )""")
     conn.commit()
     conn.close()
@@ -158,8 +159,9 @@ def reset():
         test_location_uuids = json.dumps([])
         test_status = lconst.STATIONARY
         test_sister_items = json.dumps([])
-        c.execute("""INSERT INTO items VALUES (?, ?, ?, ?, ?, ?)""",
-                  (test_uuid, test_type, test_user_uuids, test_location_uuids, test_status, test_sister_items))
+        test_details = json.dumps(dict())
+        c.execute("""INSERT INTO items VALUES (?, ?, ?, ?, ?, ?, ?)""",
+                  (test_uuid, test_type, test_user_uuids, test_location_uuids, test_status, test_sister_items, test_details))
         print("your test location was successfully added to the database. Here's its uuid:")
         print("uuid: {}".format(test_uuid))
 

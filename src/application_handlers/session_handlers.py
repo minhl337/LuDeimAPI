@@ -92,7 +92,9 @@ def login_user(params, _id, conn, logger, config, session):
         session["user_id"] = user.user_id
         # NOTE: add the user's type to the session
         session["type"] = user.type
-        return rpc.make_success_resp(user.one_hot_encode(), _id)
+        # NOTE: add user uuid to the session
+        session["uuid"] = user.uuid
+        return rpc.make_success_resp(user.one_hot_jsonify(), _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
             "method": "login_user" + str(e.methods),
@@ -157,7 +159,7 @@ def login_admin(params, _id, conn, logger, config, session):
         session["user_id"] = admin.user_id
         # NOTE: add the user's type to the session
         session["type"] = "admin"
-        return rpc.make_success_resp(admin.one_hot_encode(), _id)
+        return rpc.make_success_resp(admin.one_hot_jsonify(), _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
             "method": "login_admin" + str(e.methods),

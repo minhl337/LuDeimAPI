@@ -7,13 +7,12 @@ from classes.ClassAbstrChangeTracked import AbstrChangeTracked
 import utils.ludeim_generic_helpers as ludeim
 
 
-class Admin(AbstrSerializable, AbstrChangeTracked):
+class Admin(AbstrSerializable):
     def __init__(self,
                  user_id=None,
                  username=None,
                  password_hash=None,
                  avatar=None):
-        AbstrChangeTracked.__init__(self)
         if username is None:
             raise Exception("`username` can't be None.")
         self.username = username

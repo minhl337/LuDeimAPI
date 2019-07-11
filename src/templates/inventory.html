@@ -1,18 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>LuDeim | Inventory</title>
-</head>
-<body>
-    <div id="header">
-        <h1>LuDeim | Home</h1>
-    </div>
-    <hr>
-    <div id="inventory">
-        <h3>Inventory</h3>
+    <head>
+        <meta charset="UTF-8">
+        <title>LuDeim | Inventory</title>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/lib/jsonrpc2.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/inventory.js') }}"></script>
+    </head>
+    <body>
+        <input type="submit" value="View All Locations" onclick="to_locations()">
+        <input type="submit" value="Logout" onclick="restart()" style="float: right">
+        <input type="submit" value="Settings" onclick="to_settings()" style="float: right">
         <hr>
-        <div id="inventory_lines"></div>
-    </div>
-</body>
+        <h2 style="text-align: center; word-wrap: break-word;">Inventory:</h2>
+        <h4 style="text-align: left; width: 85%; margin: auto; word-wrap: break-word;">Incoming From Another User:</h4>
+        <hr style="width: 85%; margin: auto;">
+        <br>
+        <div id="incoming" style="width: 85%; margin: auto; word-wrap: break-word;"></div>
+        <h4 style="text-align: left; width: 85%; margin: auto; word-wrap: break-word;">My Current Inventory:</h4>
+        <hr style="width: 85%; margin: auto;">
+        <br>
+        <div id="inventory" style="width: 85%; margin: auto; word-wrap: break-word;"></div>
+        <h4 style="text-align: left; width: 85%; margin: auto; word-wrap: break-word;">Outgoing To Another User:</h4>
+        <hr style="width: 85%; margin: auto;">
+        <br>
+        <div id="outgoing" style="width: 85%; margin: auto; word-wrap: break-word;"></div>
+        <hr>
+        <div style="text-align: center">
+            <input id="add_an_item" type="submit" value="Add Item" onclick="add_an_item_start()">
+        </div>
+    </body>
 </html>

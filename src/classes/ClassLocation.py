@@ -6,7 +6,7 @@ from classes.ClassAbstrChangeTracked import AbstrChangeTracked
 import utils.ludeim_constants as lconst
 
 
-class Location(AbstrSerializable, AbstrChangeTracked):
+class Location(AbstrSerializable):
     def __init__(self,
                  uuid=None,
                  _type=None,
@@ -21,7 +21,6 @@ class Location(AbstrSerializable, AbstrChangeTracked):
                  details=None,
                  photo=None,
                  representative=None):
-        AbstrChangeTracked.__init__(self)
         if uuid is None:
             uuid = uuid4().hex + uuid4().hex + uuid4().hex + uuid4().hex
         self.uuid = uuid

@@ -8,6 +8,7 @@ from classes.ClassLocation import Location
 from classes.ClassItem import Item
 from classes.ClassWrappedErrorResponse import WrappedErrorResponse
 import sys
+import traceback
 
 
 def get_connection():
@@ -517,13 +518,13 @@ def save_new_admin(c, admin_obj: Admin, _id):
 def load_user_w_uuid(c, user_uuid, _id):
     try:
         line = c.execute("""SELECT * FROM users WHERE uuid = ?""", (user_uuid,)).fetchone()
-        return User(line[0], line[1], line[2], line[3], line[4], line[5], set(json.loads(line[6])), set(json.loads(line[7])),
-                    set(json.loads(line[8])), set(json.loads(line[9])))
+        return User(line[0], line[1], line[2], line[3], line[4], line[5], set(json.loads(line[6])),
+                    set(json.loads(line[7])), set(json.loads(line[8])), set(json.loads(line[9])))
     except WrappedErrorResponse as e:
         e.methods.append("database_helpers.load_user_w_uuid")
         raise e
     except Exception as e:
-        exc_type, exc_value, exc_traceback = sys.exc_info()
+        print(traceback.format_exc())
         raise WrappedErrorResponse(
             rpc.make_error_resp(const.NONEXISTENT_USER_CODE, const.NONEXISTENT_USER, _id),
             e,
@@ -535,13 +536,13 @@ def load_user_w_uuid(c, user_uuid, _id):
 def load_user_w_user_id(c, user_id, _id):
     try:
         line = c.execute("""SELECT * FROM users WHERE user_id = ?""", (user_id,)).fetchone()
-
-        return User(line[0], line[1], line[2], line[3], line[4], line[5], set(json.loads(line[6])), set(json.loads(line[7])),
-                    set(json.loads(line[8])), set(json.loads(line[9])))
+        return User(line[0], line[1], line[2], line[3], line[4], line[5], set(json.loads(line[6])),
+                    set(json.loads(line[7])), set(json.loads(line[8])), set(json.loads(line[9])))
     except WrappedErrorResponse as e:
         e.methods.append("database_helpers.load_user_w_user_id")
         raise e
     except Exception as e:
+        print(traceback.format_exc())
         raise WrappedErrorResponse(
             rpc.make_error_resp(const.NONEXISTENT_USER_CODE, const.NONEXISTENT_USER, _id),
             e,
@@ -689,7 +690,8 @@ def save_new_location(c, loc_obj: Location, _id):
 def load_item(c, item_uuid, _id):
     try:
         line = c.execute("""SELECT * FROM items WHERE uuid = ?""", (item_uuid,)).fetchone()
-        return Item(line[0], line[1], json.loads(line[2]), json.loads(line[3]), line[4], json.loads(line[5]))
+        return Item(line[0], line[1], json.loads(line[2]), json.loads(line[3]), line[4], json.loads(line[5]),
+                    json.loads(line[6]))
     except WrappedErrorResponse as e:
         e.methods.append("database_helpers.load_item")
         raise e
@@ -705,7 +707,8 @@ def load_item(c, item_uuid, _id):
 def save_existing_item(c, item_obj: Item, _id):
     try:
         c.execute("""UPDATE items
-                     SET uuid = ?, type_ = ?, location_uuids = ?, user_uuids = ?, status = ?, sister_items = ?
+                     SET uuid = ?, type_ = ?, location_uuids = ?, user_uuids = ?, status = ?, sister_items = ?, 
+                     details = ?
                      WHERE uuid = ?""", (
             item_obj.uuid,
             item_obj.type,
@@ -713,6 +716,7 @@ def save_existing_item(c, item_obj: Item, _id):
             json.dumps(item_obj.user_uuids),
             item_obj.status,
             json.dumps(item_obj.sister_items),
+            json.dumps(item_obj.details),
             item_obj.uuid,
         ))
     except WrappedErrorResponse as e:
@@ -729,13 +733,14 @@ def save_existing_item(c, item_obj: Item, _id):
 # NOTE: not transaction wrapped
 def save_new_item(c, item_obj: Item, _id):
     try:
-        c.execute("""INSERT INTO items VALUES (?, ?, ?, ?, ?, ?)""", (
+        c.execute("""INSERT INTO items VALUES (?, ?, ?, ?, ?, ?, ?)""", (
             item_obj.uuid,
             item_obj.type,
             json.dumps(item_obj.location_uuids),
             json.dumps(item_obj.user_uuids),
             item_obj.status,
-            json.dumps(item_obj.sister_items)
+            json.dumps(item_obj.sister_items),
+            json.dumps(item_obj.details)
         ))
     except WrappedErrorResponse as e:
         e.methods.append("database_helpers.save_new_item")

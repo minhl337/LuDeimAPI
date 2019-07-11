@@ -146,7 +146,7 @@ def get_location(params, _id, conn, logger, config, session):
             conn.execute("BEGIN EXCLUSIVE")
             # NOTE: get target
             target = db.load_location(conn, params["location_uuid"], _id)
-        return rpc.make_success_resp(target.one_hot_encode(), _id)
+        return rpc.make_success_resp(target.one_hot_jsonify(), _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
             "method": "get_location" + str(e.methods),

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>LuDeim | View Location</title>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/lib/jsonrpc2.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/view_location.js') }}"></script>
+    </head>
+    <body>
+        <input type="submit" value="View All Inventory" onclick="to_inventory()">
+        <input type="submit" value="View All Locations" onclick="to_locations()">
+        <input type="submit" value="Logout" onclick="restart()" style="float: right">
+        <input type="submit" value="Settings" onclick="to_settings()" style="float: right">
+        <hr>
+        <h2 style="text-align: center">Location:</h2>
+        <pre id="location" style="width: 85%; margin: auto; word-wrap: break-word;"></pre>
+        <br>
+        <hr>
+        <h2 style="text-align: center">This Location's Inventory:</h2>
+        <h4 style="text-align: left; width: 85%; margin: auto;">Incoming From Another Location:</h4>
+        <div id="incoming" style="width: 85%; margin: auto; word-wrap: break-word;"></div>
+        <h4 style="text-align: left; width: 85%; margin: auto;">Inventory At This Location:</h4>
+        <div id="inventory" style="width: 85%; margin: auto; word-wrap: break-word;"></div>
+        <h4 style="text-align: left; width: 85%; margin: auto;">Outgoing To Another Location:</h4>
+        <div id="outgoing" style="width: 85%; margin: auto; word-wrap: break-word;"></div>
+        <hr>
+        <div style="text-align: center">
+            <input id="add_an_item" type="submit" value="Add Item To This Location" onclick="add_an_item_start()">
+            <input id="add_an_item" type="submit" value="Delete This Location" onclick="delete_location()">
+        </div>
+    </body>
+</html>

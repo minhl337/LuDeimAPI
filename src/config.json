@@ -14,6 +14,7 @@
     "get_location_items",
     "get_all_users",
     "get_user_locations",
+    "get_sister_items",
 
     "get_sess",
     "put_sess",
@@ -30,6 +31,8 @@
     "change_username",
     "change_password_hash",
     "change_avatar",
+    "change_item_detail",
+    "split_item",
 
     "drop_item",
     "drop_location",
@@ -58,6 +61,51 @@
         "name": "str",
         "address": "str",
         "latitude": "float",
+        "longitude": "float",
+        "details": "str",
+        "representative": {
+          "title": "str",
+          "first_name": "str",
+          "last_name": "str",
+          "contact_info": "str"
+        }
+      },
+      {
+        "?user_id": "str",
+        "type": "str",
+        "name": "str",
+        "address": "str",
+        "latitude": "int",
+        "longitude": "int",
+        "details": "str",
+        "representative": {
+          "title": "str",
+          "first_name": "str",
+          "last_name": "str",
+          "contact_info": "str"
+        }
+      },
+      {
+        "?user_id": "str",
+        "type": "str",
+        "name": "str",
+        "address": "str",
+        "latitude": "float",
+        "longitude": "int",
+        "details": "str",
+        "representative": {
+          "title": "str",
+          "first_name": "str",
+          "last_name": "str",
+          "contact_info": "str"
+        }
+      },
+      {
+        "?user_id": "str",
+        "type": "str",
+        "name": "str",
+        "address": "str",
+        "latitude": "int",
         "longitude": "float",
         "details": "str",
         "representative": {
@@ -100,7 +148,6 @@
         "location_uuid": "str"
       }
     ],
-
     "get_user_items": [
       {
         "?user_id": "str",
@@ -117,7 +164,7 @@
         "uuid": "str",
         "?user_uuid_filter": "str",
         "?status_filter": "str",
-        "?stage_filter": "str"
+        "?stage_filter": "int"
       }
     ],
     "get_all_users": [
@@ -131,10 +178,16 @@
         "?username": "str"
       }
     ],
+    "get_sister_items": [
+      {
+        "?user_id": "str",
+        "item_uuid": "str"
+      }
+    ],
 
     "get_sess": [
       {
-        "?uuid": "str"
+        "?user_id": "str"
       }
     ],
     "put_sess": [
@@ -219,6 +272,21 @@
       {
         "?user_id": "str",
         "new_avatar": "str"
+      }
+    ],
+    "change_item_detail": [
+      {
+        "?user_id": "str",
+        "item_uuid": "str",
+        "key": "str",
+        "value": "str"
+      }
+    ],
+    "split_item": [
+      {
+        "?user_id": "str",
+        "item_uuid": "str",
+        "?ways": "int"
       }
     ],
 
