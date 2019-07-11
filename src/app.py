@@ -30,6 +30,12 @@ def website(path):
 if __name__ == "__main__":
 	app.secret_key = "AmySantiago"
 	if "--local" not in sys.argv:
-		app.run(debug=True, port=4200, host="0.0.0.0")
+		if "--unsecure" not in sys.argv:
+			cert = sys.argv[0]
+			key = sys.argv[1]
+			context = (cert, key)
+			app.run(debug=True, port=4200, host="0.0.0.0", ssl_context=context)
+		else:
+			app.run(debug=True, port=4200, host="0.0.0.0")
 	else:
 		app.run(debug=True, port=4200)
