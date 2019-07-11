@@ -31,8 +31,8 @@ if __name__ == "__main__":
 	app.secret_key = "AmySantiago"
 	if "--local" not in sys.argv:
 		if "--unsecure" not in sys.argv:
-			cert = sys.argv[0]
-			key = sys.argv[1]
+			cert = sys.argv[1]
+			key = sys.argv[2]
 			context = (cert, key)
 			app.run(debug=True, port=4200, host="0.0.0.0", ssl_context=context)
 		else:
