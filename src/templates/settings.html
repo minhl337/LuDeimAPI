@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>LuDeim | Locations</title>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/lib/jsonrpc2.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/settings.js') }}"></script>
+    </head>
+    <body>
+        <input type="submit" value="View All Inventory" onclick="to_inventory()">
+        <input type="submit" value="View All Locations" onclick="to_locations()">
+        <input type="submit" value="Logout" onclick="restart()" style="float: right">
+        <hr>
+        <input type="submit" value="Change Username" onclick="exec_change_username()">
+        <input id="new_username" type="text"><br>
+        <input type="submit" value="Change Password" onclick="exec_change_password()">
+        <input id="new_password" type="text"><br>
+        <input type="submit" value="Change Avatar" onclick="exec_change_avatar()">
+        <input id="new_avatar" type="text"><br>
+    </body>
+</html>

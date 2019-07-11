@@ -1,19 +1,19 @@
-let locations = [];
+let this_location = {};
 
 function to_inventory() {
     window.location.href = url_base + '/website/inventory.html';
 }
 
 function to_locations() {
-    window.location.href = url_base + '/website/locations.html';
+    window.location.href = 'http://127.0.0.1:5000/website/locations.html';
 }
 
 async function restart() {
-    logout().then(_ => window.location.href = url_base + '/website/user_login.html');
+    logout().then(_ => window.location.href = 'http://127.0.0.1:5000/website/user_login.html');
 }
 
 function to_settings() {
-    window.location.href = url_base + '/website/settings.html';
+    window.location.href = 'http://127.0.0.1:5000/website/settings.html';
 }
 
 async function to_item(item) {
@@ -22,88 +22,29 @@ async function to_item(item) {
 }
 
 async function add_an_item_start() {
-    let target = document.getElementById("add_an_item");
-    let cont_div = document.createElement("div");
-    cont_div.id = "add_an_item";
-    cont_div.appendChild(document.createElement("hr"));
-    cont_div.appendChild(document.createElement("br"));
-
-    let type_select_label = document.createElement("label");
-    type_select_label.innerText = "Location to add item to: ";
-    cont_div.appendChild(type_select_label);
-
-    let selection = document.createElement("select");
-    selection.id = "selection_id";
-    locations.forEach(function (location) {
-        let opt = document.createElement("option");
-        opt.value = location.uuid;
-        opt.innerText = location.name;
-        selection.add(opt);
-    });
-    cont_div.appendChild(selection);
-
-    cont_div.appendChild(document.createElement("br"));
-
-    let submit_button = document.createElement("button");
-    submit_button.innerHTML = "Submit";
-    submit_button.addEventListener(
-            "click",
-            add_an_item_submit,
-            false
-    );
-    cont_div.appendChild(submit_button);
-
-    let cancel_button = document.createElement("button");
-    cancel_button.innerHTML = "Cancel";
-    cancel_button.addEventListener(
-            "click",
-            back_to_normal,
-            false
-    );
-    cont_div.appendChild(cancel_button);
-
-    target.replaceWith(cont_div);
-}
-
-async function back_to_normal() {
-    let target = document.getElementById("add_an_item");
-    let b = document.createElement("input");
-    b.id = "add_an_item";
-    b.type = "submit";
-    b.value = "Add Item";
-    b.addEventListener(
-            "click",
-            add_an_item_start,
-            false
-    );
-    target.replaceWith(b);
-}
-
-async function add_an_item_submit() {
-    let location_uuid = document.getElementById("selection_id").value;
-    add_item(location_uuid).then(_ => loader());
-    await back_to_normal()
-}
-
-async function load_locations() {
-    (await get_user_locations()).forEach(function(l) {
-        locations.push(l);
-    });
+    add_item(this_location.uuid).then(_ => loader());
+    await loader();
 }
 
 async function loader() {
-    let incoming_items = await get_user_items(0);
-    let inventory_items = await get_user_items(1);
-    let outgoing_items = await get_user_items(2);
+    let location = JSON.parse(localStorage.getItem("location_to_show"));
+    this_location = location;
+    let pre = document.getElementById("location");
+    pre.innerHTML = JSON.stringify(location, null, 2);
+    let incoming_items = await get_location_items(location.uuid, 0);
+    let inventory_items = await get_location_items(location.uuid, 1);
+    let outgoing_items = await get_location_items(location.uuid, 2);
     let incoming_div = document.getElementById("incoming");
     incoming_div.innerHTML = "";
+    incoming_div.appendChild(document.createElement("hr"));
     let inventory_div = document.getElementById("inventory");
     inventory_div.innerHTML = "";
+    inventory_div.appendChild(document.createElement("hr"));
     let outgoing_div = document.getElementById("outgoing");
     outgoing_div.innerHTML = "";
+    outgoing_div.appendChild(document.createElement("hr"));
     incoming_items.forEach(function (item) {
         let pre = document.createElement("pre");
-
         pre.innerText = JSON.stringify(item, null, 2);
         incoming_div.appendChild(pre);
         let button = document.createElement("button");
@@ -152,8 +93,8 @@ async function loader() {
     });
 }
 
+async function delete_location() {
+    drop_location(this_location.uuid).then(_ => window.location.href = url_base + "/website/locations.html")
+}
 
-window.onload = async function () {
-    await load_locations();
-    await loader();
-};
+window.onload = loader;

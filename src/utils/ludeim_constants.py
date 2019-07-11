@@ -26,10 +26,12 @@ ITEM_TYPES = [
 STATIONARY = "stationary"
 TRANSIT = "transit"
 RETIRED = "retired"
+SPLIT = "split"
 ITEM_STATUSES = [
     STATIONARY,
     TRANSIT,
-    RETIRED
+    RETIRED,
+    SPLIT
 ]
 
 # misc

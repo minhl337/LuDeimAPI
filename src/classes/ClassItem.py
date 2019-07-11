@@ -1,12 +1,10 @@
 from uuid import uuid4
 
-
 from classes.ClassAbstrSerializable import AbstrSerializable
-from classes.ClassAbstrChangeTracked import AbstrChangeTracked
 import utils.ludeim_constants as lconst
 
 
-class Item(AbstrSerializable, AbstrChangeTracked):
+class Item(AbstrSerializable):
     def __init__(self,
                  uuid=None,
                  _type=None,
@@ -15,7 +13,6 @@ class Item(AbstrSerializable, AbstrChangeTracked):
                  status=lconst.STATIONARY,
                  sister_items=None,
                  details=None):
-        AbstrChangeTracked.__init__(self)
         if uuid is None:
             uuid = uuid4().hex + uuid4().hex + uuid4().hex + uuid4().hex
         self.uuid = uuid

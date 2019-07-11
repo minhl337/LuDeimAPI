@@ -35,7 +35,7 @@ def get_user_items(params, _id, conn, logger, config, session):
             # NOTE: load the target's items
             items = [db.load_item(conn, uuid, _id) for uuid in (target.item_uuids | target.incoming_item_uuids | target.outgoing_item_uuids)]
         # NOTE: form the predicate function for the filter
-        stages = [target.item_uuids, target.incoming_item_uuids, target.outgoing_item_uuids]
+        stages = [target.incoming_item_uuids, target.item_uuids, target.outgoing_item_uuids]
         p = lambda item: (
                 ("status_filter" not in params or
                  item.status == params.get("status_filter")) and
@@ -45,7 +45,7 @@ def get_user_items(params, _id, conn, logger, config, session):
                  item.location_uuids[-1] == params["location_uuid_filter"]) and
                 ("stage_filter" not in params or
                  item.uuid in stages[params["stage_filter"]]))
-        return rpc.make_success_resp([i.one_hot_encode() for i in items if p(i)], _id)
+        return rpc.make_success_resp([i.one_hot_jsonify() for i in items if p(i)], _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
             "method": "get_user_items" + str(e.methods),
@@ -85,7 +85,7 @@ def get_location_items(params, _id, conn, logger, config, session):
             # NOTE: load the target's items
             items = [db.load_item(conn, uuid, _id) for uuid in (target.item_uuids | target.incoming_item_uuids | target.outgoing_item_uuids)]
         # NOTE: form the predicate function for the filter
-        stages = [target.item_uuids, target.incoming_item_uuids, target.outgoing_item_uuids]
+        stages = [target.incoming_item_uuids, target.item_uuids, target.outgoing_item_uuids]
         p = lambda item: (
                 ("status_filter" not in params or
                  item.status == params.get("status_filter")) and
@@ -93,7 +93,7 @@ def get_location_items(params, _id, conn, logger, config, session):
                  item.user_uuids[-1] == params["user_uuid_filter"]) and
                 ("stage_filter" not in params or
                  item.uuid in stages[params["stage_filter"]]))
-        return rpc.make_success_resp([i.one_hot_encode() for i in items if p(i)], _id)
+        return rpc.make_success_resp([i.one_hot_jsonify() for i in items if p(i)], _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
             "method": "get_location_items" + str(e.methods),
@@ -191,7 +191,7 @@ def get_user_locations(params, _id, conn, logger, config, session):
                 caller = db.load_user_w_user_id(conn, user_id, _id)
                 # NOTE: load the caller's locations
                 locations = [db.load_location(conn, uuid, _id) for uuid in caller.location_uuids]
-        return rpc.make_success_resp([i.one_hot_encode() for i in locations], _id)
+        return rpc.make_success_resp([i.one_hot_jsonify() for i in locations], _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
             "method": "get_user_locations" + str(e.methods),
@@ -228,7 +228,7 @@ def get_sister_items(params, _id, conn, logger, config, session):
             target = db.load_item(conn, params["item_uuid"], _id)
             # NOTE: load the target's items
             items = [db.load_item(conn, uuid, _id) for uuid in target.sister_items]
-        return rpc.make_success_resp([i.one_hot_encode() for i in items], _id)
+        return rpc.make_success_resp([i.one_hot_jsonify() for i in items], _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
             "method": "get_sister_items" + str(e.methods),

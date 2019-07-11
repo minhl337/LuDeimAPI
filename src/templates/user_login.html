@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>LuDeim | User Login</title>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/lib/jsonrpc2.js') }}"></script>
+        <script type="text/javascript" src="{{ url_for('static', filename='js/user_login.js') }}"></script>
+    </head>
+    <body>
+        <p>psst -- the username is `username` and the password is `password`</p>
+        username: <input id="uname" type="text" name="uname"><br>
+        password: <input id="pword" type="text" name="pword"><br>
+        <input type="submit" value="Submit" onclick="submit()">
+    </body>
+</html>

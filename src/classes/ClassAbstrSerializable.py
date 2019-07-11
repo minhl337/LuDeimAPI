@@ -13,6 +13,9 @@ class AbstrSerializable:
     def one_hot_encode(self):
         return json.dumps(self.__dict__, cls=SetSafeJSON)
 
+    def one_hot_jsonify(self):
+        return json.loads(json.dumps(self.__dict__, cls=SetSafeJSON))
+
     def compressed_encode(self):
         return zlib.compress(self.one_hot_encode().encode("utf-8"))
 

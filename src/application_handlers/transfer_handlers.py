@@ -57,6 +57,9 @@ def begin_transfer(params, _id, conn, logger, config, session):
                                            _id)
             # NOTE: load the origin
             origin = db.load_location(conn, item.location_uuids[-1], _id)
+            # NOTE: combine if necessary
+            if origin.uuid == destination.uuid:
+                destination = origin
             # NOTE: remove the item from the origin's item_uuids list
             origin.item_uuids.discard(item.uuid)
             # NOTE: add the item to the origin's outgoing_item_uuids list
@@ -83,7 +86,7 @@ def begin_transfer(params, _id, conn, logger, config, session):
             db.save_existing_user(conn, receiver, _id)
             db.save_existing_location(conn, origin, _id)
             db.save_existing_location(conn, destination, _id)
-        return rpc.make_success_resp(item.one_hot_encode(), _id)
+        return rpc.make_success_resp(item.one_hot_jsonify(), _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
             "method": "begin_transfer" + str(e.methods),
@@ -139,10 +142,15 @@ def accept_transfer(params, _id, conn, logger, config, session):
                                            "someone else's account without realizing it, or the sender could have "
                                            "called redirect_transfer() or rescind_transfer() without you realizing it.",
                                            _id)
+            # NOTE: load the sender's user
+            sender = db.load_user_w_uuid(conn, item.user_uuids[-2], _id)
             # NOTE: load the origin
             origin = db.load_location(conn, item.location_uuids[-2], _id)
             # NOTE: load the destination
             destination = db.load_location(conn, item.location_uuids[-1], _id)
+            # NOTE: combine if necessary
+            if origin.uuid == destination.uuid:
+                destination = origin
             # NOTE: remove the item from the origin's outgoing_item_uuids list
             origin.outgoing_item_uuids.discard(item.uuid)
             # NOTE: remove the item from the destination's incoming_item_uuids list
@@ -155,8 +163,6 @@ def accept_transfer(params, _id, conn, logger, config, session):
             caller.incoming_item_uuids.discard(item.uuid)
             # NOTE: add the item to the caller's item_uuids list
             caller.item_uuids.add(item.uuid)
-            # NOTE: load the sender's user
-            sender = db.load_user_w_user_id(conn, item.user_uuids[-2], _id)
             # NOTE: remove the item from the sender's outgoing_item_uuids list
             sender.outgoing_item_uuids.discard(item.uuid)
             # NOTE: save everything
@@ -165,7 +171,7 @@ def accept_transfer(params, _id, conn, logger, config, session):
             db.save_existing_item(conn, item, _id)
             db.save_existing_location(conn, origin, _id)
             db.save_existing_location(conn, destination, _id)
-        return rpc.make_success_resp(item.one_hot_encode(), _id)
+        return rpc.make_success_resp(item.one_hot_jsonify(), _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
             "method": "accept_transfer" + str(e.methods),
@@ -223,7 +229,15 @@ def rescind_transfer(params, _id, conn, logger, config, session):
             origin = db.load_location(conn, item.location_uuids[-2], _id)
             # NOTE: load the destination
             destination = db.load_location(conn, item.location_uuids[-1], _id)
-            # NOTE: remove the item from the destination's incoming_item_uuids list
+            # NOTE: combine if necessary
+            if origin.uuid == destination.uuid:
+                destination = origin
+            # NOTE: load the receiver's user
+            receiver = db.load_user_w_uuid(conn, item.user_uuids[-1], _id)
+            # NOTE: combine if necessary
+            if caller.uuid == receiver.uuid:
+                receiver = caller
+            # NOTE: remove the item from the destination's incoming_item_uuids
             destination.incoming_item_uuids.discard(item.uuid)
             # NOTE: remove the item from the origin's outgoing_item_uuids list
             origin.outgoing_item_uuids.discard(item.uuid)
@@ -235,10 +249,8 @@ def rescind_transfer(params, _id, conn, logger, config, session):
             caller.outgoing_item_uuids.discard(item.uuid)
             # NOTE: add the item to the user's item_uuids list
             caller.item_uuids.add(item.uuid)
-            # NOTE: load the receiver's user
-            receiever = db.load_user_w_uuid(conn, item.user_uuids[:-1], _id)
-            # NOTE: remove the item from the receiever's incoming_item_uuids list
-            receiever.incoming_item_uuids.discard(item.uuid)
+            # NOTE: remove the item from the receiever's incoming_item_uuids
+            receiver.incoming_item_uuids.discard(item.uuid)
             # NOTE: remove the receiver from the item's user_uuids list
             item.user_uuids = item.user_uuids[:-1]
             # NOTE: remove the destination from the item's location_uuids list
@@ -246,10 +258,10 @@ def rescind_transfer(params, _id, conn, logger, config, session):
             # NOTE: save everything
             db.save_existing_item(conn, item, _id)
             db.save_existing_user(conn, caller, _id)
-            db.save_existing_user(conn, receiever, _id)
+            db.save_existing_user(conn, receiver, _id)
             db.save_existing_location(conn, origin, _id)
             db.save_existing_location(conn, destination, _id)
-        return rpc.make_success_resp(item.one_hot_encode(), _id)
+        return rpc.make_success_resp(item.one_hot_jsonify(), _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
             "method": "rescind_transfer" + str(e.methods),
@@ -308,6 +320,9 @@ def reject_transfer(params, _id, conn, logger, config, session):
             origin = db.load_location(conn, item.location_uuids[-2], _id)
             # NOTE: load the destination location
             destination = db.load_location(conn, item.location_uuids[-1], _id)
+            # NOTE: combine if necessary
+            if origin.uuid == destination.uuid:
+                destination = origin
             # NOTE: remove the item from the destination's incoming_item_uuids list
             destination.incoming_item_uuids.discard(item.uuid)
             # NOTE: remove the item from the origin's outgoing_item_uuids list
@@ -335,7 +350,7 @@ def reject_transfer(params, _id, conn, logger, config, session):
             db.save_existing_user(conn, sender, _id)
             db.save_existing_user(conn, caller, _id)
             db.save_existing_item(conn, item, _id)
-        return rpc.make_success_resp(item.one_hot_encode(), _id)
+        return rpc.make_success_resp(item.one_hot_jsonify(), _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
             "method": "reject_transfer" + str(e.methods),
@@ -405,19 +420,33 @@ def redirect_transfer(params, _id, conn, logger, config, session):
                                            _id)
             # NOTE: load the old_destination
             old_destination = db.load_location(conn, item.location_uuids[-1], _id)
+            # NOTE: combine if necessary
+            if new_destination.uuid == old_destination.uuid:
+                new_destination = old_destination
             # NOTE: remove the item from the old_destination's incoming_item_uuids list
             old_destination.incoming_item_uuids.discard(item.uuid)
-            # NOTE: add the item to the new_destination's incoming_item_uuids list
+            # NOTE: add the item to the new_destination's incoming_item_uuids
             new_destination.incoming_item_uuids.add(item.uuid)
             # NOTE: load the sender's user
             sender = db.load_user_w_uuid(conn, item.user_uuids[-2], _id)
             # NOTE: load the old_receiver's user
             old_receiver = db.load_user_w_uuid(conn, item.user_uuids[-1], _id)
-            # NOTE: remove the item from the old receiver's incoming_item_uuids list
+            # NOTE: combine if necessary
+            if (sender.uuid == old_receiver.uuid
+                    and old_receiver.uuid == caller.uuid):
+                old_receiver = sender
+                caller = old_receiver
+            elif old_receiver.uuid == caller.uuid:
+                old_receiver = caller
+            elif caller.uuid == sender.uuid:
+                caller = sender
+            elif sender.uuid == old_receiver.uuid:
+                sender = old_receiver
+            # NOTE: remove the item from the old receiver's incoming_item_uuids
             old_receiver.incoming_item_uuids.discard(item.uuid)
             # NOTE: is this an external redirect?
             if sender.uuid != new_receiver.uuid:
-                # NOTE: add the item to the new receiver's incoming_item_uuids list
+                # NOTE: add the item to the new receiver's incoming_item_uuids
                 new_receiver.incoming_item_uuids.append(item.uuid)
                 # NOTE: remove the item from the sender's item_uuids list
                 sender.item_uuids.discard(item.uuid)
@@ -425,7 +454,7 @@ def redirect_transfer(params, _id, conn, logger, config, session):
                 sender.outgoing_item_uuids.add(item.uuid)
             # NOTE: remove the old receiver from the item's user_uuids list
             item.user_uuids = item.user_uuids[:-1]
-            # NOTE: remove the old destination from the item's location_uuids list
+            # NOTE: remove the old destination from the item's location_uuids
             item.location_uuids = item.location_uuids[:-1]
             # NOTE: add the new receiver to the item's user_uuids list
             # OPT: combine with the above step
@@ -437,7 +466,7 @@ def redirect_transfer(params, _id, conn, logger, config, session):
             db.save_existing_item(conn, item, _id)
             db.save_existing_user(conn, new_receiver, _id)
             db.save_existing_user(conn, old_receiver, _id)
-        return rpc.make_success_resp(item.one_hot_encode(), _id)
+        return rpc.make_success_resp(item.one_hot_jsonify(), _id)
     except WrappedErrorResponse as e:
         file_logger.log_error({
             "method": "redirect_transfer" + str(e.methods),

@@ -4,11 +4,10 @@ from uuid import uuid4
 
 
 from classes.ClassAbstrSerializable import AbstrSerializable
-from classes.ClassAbstrChangeTracked import AbstrChangeTracked
 import utils.ludeim_generic_helpers as ludeim
 
 
-class User(AbstrSerializable, AbstrChangeTracked):
+class User(AbstrSerializable):
     def __init__(self,
                  uuid=None,
                  user_id=None,
@@ -20,7 +19,6 @@ class User(AbstrSerializable, AbstrChangeTracked):
                  item_uuids=None,
                  incoming_item_uuids=None,
                  outgoing_item_uuids=None):
-        AbstrChangeTracked.__init__(self)
         if _type is None:
             raise Exception("`type` can't be None.")
         self.type = _type
